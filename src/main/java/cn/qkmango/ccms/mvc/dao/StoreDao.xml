@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.qkmango.ccms.mvc.dao.StoreDao">
+    <update id="update">
+        update t_store
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="area != null">area = #{area},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="manager != null and manager != ''">manager = #{manager},</if>
+            <if test="phone != null and phone != ''">phone = #{phone}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="count" resultType="int">
+        SELECT FOUND_ROWS()
+    </select>
+
+    <select id="list" resultMap="StoreAndAreaVO">
+        select SQL_CALC_FOUND_ROWS
+        s.id as storeId,
+        s.name as storeName,
+        s.address as storeAddress,
+        s.area as storeArea,
+        s.description as storeDescription,
+        s.manager as storeManager,
+        s.phone as storePhone,
+        a.name as areaName
+        from t_store s
+        left join t_area a on s.area = a.id
+        <where>
+            <if test="param != null">
+                <if test="param.id != null">
+                    s.id = #{param.id}
+                </if>
+                <if test="param.name != null and param.name != ''">
+                    and s.name like concat('%',#{param.name},'%')
+                </if>
+                <if test="param.address != null and param.address != ''">
+                    and s.address like concat('%',#{param.address},'%')
+                </if>
+                <if test="param.area != null">
+                    and s.area = #{param.area}
+                </if>
+                <if test="param.manager != null and param.manager != ''">
+                    and s.manager like concat('%',#{param.manager},'%')
+                </if>
+                <if test="param.phone != null and param.phone != ''">
+                    and s.phone like concat('%',#{param.phone},'%')
+                </if>
+            </if>
+        </where>
+        order by s.id desc
+        LIMIT #{skipCount},#{limit}
+    </select>
+
+    <select id="detail" resultMap="StoreAndAreaVO">
+        select s.id          as storeId,
+               s.name        as storeName,
+               s.address     as storeAddress,
+               s.area        as storeArea,
+               s.description as storeDescription,
+               s.manager     as storeManager,
+               s.phone       as storePhone,
+               a.name        as areaName
+        from t_store s
+                 left join t_area a on s.area = a.id
+        where s.id = #{id}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO t_store (name,
+                             address,
+                             area,
+                             description,
+                             manager,
+                             phone)
+        VALUES (#{name}, #{address}, #{area}, #{description}, #{manager}, #{phone})
+    </insert>
+
+    <delete id="delete">
+        DELETE
+        FROM t_store
+        WHERE id = #{id}
+    </delete>
+
+    <resultMap id="StoreAndAreaVO" type="cn.qkmango.ccms.domain.vo.StoreAndAreaVO">
+        <association property="store" javaType="cn.qkmango.ccms.domain.entity.Store">
+            <result column="storeId" property="id"/>
+            <result column="storeName" property="name"/>
+            <result column="storeAddress" property="address"/>
+            <result column="storeArea" property="area"/>
+            <result column="storeDescription" property="description"/>
+            <result column="storeManager" property="manager"/>
+            <result column="storePhone" property="phone"/>
+        </association>
+        <association property="area" javaType="cn.qkmango.ccms.domain.entity.Area">
+            <result column="areaId" property="id"/>
+            <result column="areaName" property="name"/>
+            <result column="areaDescription" property="description"/>
+        </association>
+    </resultMap>
+</mapper>

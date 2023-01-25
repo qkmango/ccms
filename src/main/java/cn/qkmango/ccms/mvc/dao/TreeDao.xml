@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.qkmango.ccms.mvc.dao.TreeDao">
+
+    <select id="areaList" resultType="cn.qkmango.ccms.domain.vo.TreeNode">
+        select id   as id,
+               name as title
+        from t_area
+    </select>
+
+    <select id="storeListByArea" resultType="cn.qkmango.ccms.domain.vo.TreeNode">
+        select id as id,
+        name as title
+        from t_store
+        <where>
+            <if test="area != null and area != ''">area=#{area}</if>
+        </where>
+    </select>
+
+    <select id="storeList" resultType="cn.qkmango.ccms.domain.vo.TreeNode">
+        select id   as id,
+               name as title,
+               area as parent
+        from t_store
+    </select>
+
+    <select id="facultyList" resultType="cn.qkmango.ccms.domain.vo.TreeNode">
+        select id as id,
+        name as title
+        from t_faculty
+        <if test="param != null">
+            <if test="param.ids != null">
+                <where>
+                    <foreach collection="param.ids" item="id" open="id in (" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </where>
+            </if>
+        </if>
+    </select>
+
+    <select id="specialtyList" resultType="cn.qkmango.ccms.domain.vo.TreeNode">
+        select
+        id as id,
+        name as title,
+        faculty as parent
+        from t_specialty
+        <if test="param != null">
+            <where>
+                <if test="param.ids != null">
+                    <foreach collection="param.ids" item="id" open="id in (" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+                <if test="param.parentIds != null">
+                    and
+                    <foreach collection="param.parentIds" item="id" open="faculty in (" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+            </where>
+        </if>
+    </select>
+
+    <select id="clazzList" resultType="cn.qkmango.ccms.domain.vo.TreeNode">
+        select
+        id as id,
+        name as title,
+        specialty as parent,
+        grade as addition
+        from t_clazz
+        <if test="param != null">
+            <where>
+                <if test="param.ids != null">
+                    <foreach collection="param.ids" item="id" open="id in (" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+                <if test="param.parentIds != null">
+                    and
+                    <foreach collection="param.parentIds" item="id" open="specialty in (" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+                <if test="param.grade != null and param.grade != ''">and grade = #{param.grade}</if>
+                <if test="param.startGrade != null and param.startGrade != ''">and grade &gt;= #{param.startGrade}</if>
+                <if test="param.endGrade != null and param.endGrade != ''">and grade &lt;= #{param.endGrade}</if>
+            </where>
+        </if>
+    </select>
+</mapper>

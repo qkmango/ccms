@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.qkmango.ccms.mvc.dao.NoticeDao">
+
+    <select id="getCount" resultType="int">
+        SELECT FOUND_ROWS()
+    </select>
+
+    <select id="getNoticeList" resultType="cn.qkmango.ccms.domain.entity.Notice">
+        SELECT SQL_CALC_FOUND_ROWS
+        n.id,
+        n.title,
+        <if test="preview == false">
+            n.content,
+        </if>
+        <if test="preview != false">
+            LEFT(n.content,20) as content,
+        </if>
+        n.createTime,
+        a.name as author
+        FROM t_notice n, t_admin a
+        <where>
+            n.author = a.id
+            <if test="param != null">
+                <if test="param.id != null">
+                    and n.id=#{param.id}
+                </if>
+                <if test="param.title != null and param.title != ''">
+                    and n.title like '%' #{param.title} '%'
+                </if>
+                <if test="param.content != null and param.content != ''">
+                    and n.content like '%' #{param.content} '%'
+                </if>
+            </if>
+        </where>
+        order by n.createTime desc
+        LIMIT #{skipCount},#{limit}
+    </select>
+
+    <select id="detail" resultType="cn.qkmango.ccms.domain.entity.Notice">
+        SELECT n.id,
+               n.title,
+               n.content,
+               n.createTime,
+               a.name as author
+        FROM t_notice n,
+             t_admin a
+        WHERE n.author = a.id
+          and n.id = #{id}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO t_notice (title, content, author, createTime)
+        VALUES (#{title}, #{content}, #{author}, #{createTime})
+    </insert>
+
+    <delete id="delete">
+        DELETE
+        FROM t_notice
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

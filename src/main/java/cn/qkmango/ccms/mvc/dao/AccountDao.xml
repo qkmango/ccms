@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.qkmango.ccms.mvc.dao.AccountDao">
+
+    <update id="changePassword">
+        update
+        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">
+            t_user
+        </if>
+        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">
+            t_admin
+        </if>
+        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@pos">
+            t_pos
+        </if>
+        set password = #{newPassword}
+        where id = #{id} and password = #{oldPassword}
+    </update>
+
+    <select id="login" resultType="cn.qkmango.ccms.domain.entity.Account">
+        select id,name
+        from
+        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">
+            t_user where id=#{id} and password = #{password} and unsubscribe=0;
+        </if>
+        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">
+            t_admin where id=#{id} and password = #{password};
+        </if>
+        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@pos">
+            t_pos where id=#{id} and password = #{password};
+        </if>
+    </select>
+
+    <select id="loginPos" resultType="cn.qkmango.ccms.domain.entity.Pos">
+        select id, name, type
+        from t_pos
+        where id = #{id}
+          and password = #{password};
+    </select>
+
+    <select id="userInfo" resultMap="UserInfoVO">
+        select u.id          as user_id,
+               u.name        as user_name,
+               u.idCard      as user_idcard,
+               u.unsubscribe as user_unsubscribe,
+               ca.balance    as card_balance,
+               ca.`lock`     as card_lock,
+               cz.name       as clazz_name,
+               sp.name       as specialized_name,
+               fa.name       as faculty_name
+
+        from t_user u
+                 left join t_card ca on ca.user = u.id
+                 left join t_clazz cz on cz.id = u.clazz
+                 left join t_specialty sp on sp.id = cz.specialty
+                 left join t_faculty fa on fa.id = sp.faculty
+        where u.id = #{id}
+    </select>
+
+    <resultMap id="UserInfoVO" type="cn.qkmango.ccms.domain.vo.UserInfoVO">
+        <association property="user">
+            <id property="id" column="user_id"/>
+            <result property="name" column="user_name"/>
+            <result property="idCard" column="user_idcard"/>
+            <result property="unsubscribe" column="user_unsubscribe"/>
+        </association>
+        <association property="card">
+            <result property="balance" column="card_balance"/>
+            <result property="lock" column="card_lock"/>
+        </association>
+        <association property="clazz">
+            <result property="name" column="clazz_name"/>
+        </association>
+        <association property="specialty">
+            <result property="name" column="specialized_name"/>
+        </association>
+        <association property="faculty">
+            <result property="name" column="faculty_name"/>
+        </association>
+    </resultMap>
+
+
+</mapper>

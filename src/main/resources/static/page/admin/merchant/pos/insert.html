@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>添加刷卡机</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../../lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../../css/public.css" media="all">
+    <link rel="stylesheet" href="../../../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layui-form-pane">
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>添加刷卡机</legend>
+    </fieldset>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">刷卡机名</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">所在地址</label>
+        <div class="layui-input-block">
+            <input type="text" name="address" lay-verify="required" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">所属商户</label>
+        <div class="layui-input-block">
+            <input type="text" name="store" id="store" lay-verify="required" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-block">
+            <select name="type" id="type" lay-verify="required">
+                <option value="">所有</option>
+                <option value="WATER">水费</option>
+                <option value="ELECTRIC">电费</option>
+                <option value="MEAL_EXPENSE">餐费</option>
+                <option value="ACCOMMODATION_FEE">住宿费</option>
+                <option value="RECHARGE">充值</option>
+                <option value="OTHER">其他</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-bg-green layui-layout-right" lay-submit lay-filter="saveBtn">
+                <i class="fa fa-check"></i> 提交
+            </button>
+        </div>
+    </div>
+</div>
+<script src="../../../../lib/layui-v2.6.3/layui.js"></script>
+<script>
+    layui.extend({
+        'cascader': '../../../../js/lay-module/cascader/cascader',
+    })
+    layui.use(['form', 'cascader'], function () {
+        const form = layui.form;
+        const layer = layui.layer;
+        const $ = layui.$;
+        const cascader = layui.cascader;
+
+        let tree = cascader({
+            elem: '#store',
+            // options: options,
+            clearable: true,
+            props: {
+                // expandTrigger: 'hover',
+                // checkStrictly: true,
+                lazy: true,
+                lazyLoad: function (node, resolve) {
+                    console.log(node.level)
+                    console.log(node)
+                    let url = '';
+                    //判断，如果是根节点，则加载区域数据，否则加载商户数据
+                    if (node.root === true) {
+                        url = '../../../../tree/area/lazy/list.do';
+                    } else {
+                        url = '../../../../tree/store/lazy/list.do?area=' + node.data.value;
+                    }
+                    $.ajax({
+                        url,
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.success) {
+                                let nodes = Array.from({length: res.data.length})
+                                for (let i = 0; i < nodes.length; i++) {
+                                    nodes[i] = {
+                                        value: res.data[i].id,
+                                        label: res.data[i].title,
+                                        flag:  res.meta,
+                                        leaf:  node.root !== true,
+                                    }
+                                }
+                                resolve(nodes);
+                            }
+                        }
+                    })
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            console.log(data.field);
+
+            $.ajax({
+                url: '../../../../merchant/pos/one/insert.do',
+                data: data.field,
+                type: 'post',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success) {
+                        layer.msg(res.message, {icon: 1,end: () => location.reload()});
+                        return;
+                    }
+                    layer.msg(res.message, {icon: 2});
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    layer.msg(jqXHR.status+'', {icon: 2});
+                }
+            })
+        });
+
+        return false;
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.qkmango.ccms.mvc.dao.ConsumeDao">
+    <!-- 获取未分页的总记录条数 -->
+    <select id="getCount" resultType="int">
+        SELECT FOUND_ROWS()
+    </select>
+
+    <select id="queryConsumePagination" resultType="cn.qkmango.ccms.domain.param.ConsumeParam">
+        select SQL_CALC_FOUND_ROWS
+        c.id,
+        c.user,
+        c.createTime,
+        c.price,
+        c.type,
+        c.info
+        from
+        t_consume c
+        <where>
+            <if test="pagination.param != null">
+                <if test="pagination.param.id != null">
+                    and c.id=#{pagination.param.id}
+                </if>
+                <if test="pagination.param.user != null and pagination.param.user != ''">
+                    and c.user=#{pagination.param.user}
+                </if>
+                <if test="pagination.param.startCreateTime!= null">
+                    and c.createTime >=#{pagination.param.startCreateTime}
+                </if>
+                <if test="pagination.param.endCreateTime!= null">
+                    and c.createTime &lt;=#{pagination.param.endCreateTime}
+                </if>
+                <if test="pagination.param.type != null">
+                    and c.type=#{pagination.param.type}
+                </if>
+                <if test="pagination.param.minPrice != null">
+                    and c.price >= #{pagination.param.minPrice}
+                </if>
+                <if test="pagination.param.maxPrice != null">
+                    and c.price &lt;= #{pagination.param.maxPrice}
+                </if>
+            </if>
+        </where>
+        order by c.id asc
+        LIMIT #{pagination.skipCount},#{pagination.limit}
+    </select>
+
+    <select id="currMonthConsumeInfo" resultType="java.util.HashMap">
+        SELECT sum(price)       as currMonthConsumeMoney,
+               count(id)        as currMonthConsumeCount,
+               ceil(avg(price)) as currMonthConsumeAvg,
+               max(price)       as currMonthConsumeMax
+        FROM t_consume
+        WHERE DATE_FORMAT(createTime, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+          and user = #{id};
+    </select>
+
+    <select id="currMonthConsumeTypePricePie" resultType="java.util.Map">
+        SELECT type,
+               sum(price) as price
+        FROM t_consume
+        WHERE DATE_FORMAT(createTime, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+          and user = #{id}
+        GROUP BY type
+    </select>
+
+    <select id="detail" resultMap="ConsumeDetailsVO" parameterType="cn.qkmango.ccms.domain.entity.Consume">
+        select
+        c.id as consumeId,
+        c.createTime as consumeCreateTime,
+        c.price as consumePrice,
+        c.type as consumeType,
+        c.info as consumeInfo,
+        u.id as userId,
+        u.name as userName,
+        u.idCard as userIdCard,
+        p.id as posId,
+        p.name as posName,
+        p.address as posAddress
+        from t_consume c
+        join t_user u on c.user = u.id
+        join t_pos p on c.pos = p.id
+        <where>
+            c.id = #{id}
+            <if test="user != null">and c.user=#{user}</if>
+        </where>
+
+    </select>
+
+
+    <insert id="insert">
+        insert into t_consume(createTime,
+                              price,
+                              user,
+                              type,
+                              info)
+        values (#{createTime}, #{price}, #{user}, #{type}, #{info})
+    </insert>
+
+
+    <resultMap id="ConsumeDetailsVO" type="cn.qkmango.ccms.domain.vo.ConsumeDetailsVO">
+        <association property="consume" javaType="cn.qkmango.ccms.domain.entity.Consume">
+            <result column="consumeId" property="id"/>
+            <result column="consumeCreateTime" property="createTime"/>
+            <result column="consumePrice" property="price"/>
+            <result column="consumeType" property="type"/>
+            <result column="consumeInfo" property="info"/>
+        </association>
+        <association property="user" javaType="cn.qkmango.ccms.domain.entity.User">
+            <result column="userId" property="id"/>
+            <result column="userName" property="name"/>
+            <result column="userIdCard" property="idCard"/>
+        </association>
+        <association property="pos" javaType="cn.qkmango.ccms.domain.entity.Pos">
+            <result column="posId" property="id"/>
+            <result column="posName" property="name"/>
+            <result column="posAddress" property="address"/>
+        </association>
+    </resultMap>
+
+</mapper>

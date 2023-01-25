@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>组织架构</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../css/public.css" media="all">
+    <link rel="stylesheet" href="../../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+</head>
+
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" lay-filter='queryParams' id="queryParams">
+                    <div class="layui-form-item">
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">年级</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grade" id="grade" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="fa fa-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </fieldset>
+
+        <div id="treeElem" style="margin-top: 10px"></div>
+
+        <script type="text/html" id="toolbarDemo"></script>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+    </div>
+</div>
+
+<script src="../../../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+
+<script>
+
+    layui.use(['form', 'tree','laydate'], function () {
+        const $ = layui.jquery;
+        const form = layui.form;
+        const layer = layui.layer;
+        const tree = layui.tree;
+        const laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#grade',
+            type: 'year',
+            range: true,
+            min: '2000-1-1',
+            max: '2099-12-31'
+        });
+
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            const grade = data.field.grade;
+            let param = {};
+            if (grade !== '') {
+                let split = grade.split(' - ');
+                param = {
+                    startGrade: split[0],
+                    endGrade: split[1]
+                };
+            }
+
+            $.ajax({
+                url: '../../../tree/class/preload/list.do',
+                data: param,
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success) {
+                        //渲染属性组件
+                        tree.render({
+                            elem: '#treeElem',
+                            accordion: true,
+                            data: res.data,
+                            click: function (obj) {
+                                if (obj.data.children === null || obj.data.children === undefined) {
+                                    const index = layer.open({
+                                        title: '班级详情',
+                                        type: 2,
+                                        offset: 'rb',
+                                        anim: 2,
+                                        area: ['50%', '100%'],
+                                        shade: 0.2,
+                                        shadeClose: true,
+                                        content: `./clazz/detail.html?id=${obj.data.id}`,
+                                    });
+                                }
+                            }
+                        });
+                        return;
+                    }
+                    layer.msg(res.message, {icon: 2});
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    layer.msg(jqXHR.status + '', {icon: 2});
+                }
+            })
+
+            return false;
+        });
+
+
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>编辑专业信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../../lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../../css/public.css" media="all">
+    <link rel="stylesheet" href="../../../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form layui-form-pane" lay-filter="editForm">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="id" lay-verify="required" class="layui-input" readonly>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">所属学院 <i class="fa fa-pencil layui-font-gray"></i></label>
+        <div class="layui-input-block">
+            <input type="text" name="facultyName" class="layui-input" readonly>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">名称 <i class="fa fa-pencil layui-font-gray"></i></label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">描述 <i class="fa fa-pencil layui-font-gray"></i></label>
+        <div class="layui-input-block">
+            <input type="text" name="description" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-bg-green layui-layout-right" lay-submit lay-filter="saveBtn">
+                <i class="fa fa-check"></i> 提交
+            </button>
+        </div>
+    </div>
+</form>
+<script src="../../../../lib/layui-v2.6.3/layui.js"></script>
+<script src="../../../../lib/util/utils.js"></script>
+<script>
+    layui.use(['form'], function () {
+        const form = layui.form;
+        const layer = layui.layer;
+        const $ = layui.$;
+
+        //获取ID和父页面表格刷新标志位名称
+        const id = utils.getUrlParam('id');
+        const tableReloadKey = utils.getUrlParam('tableReloadKey');
+        if (id === null || tableReloadKey === null) {
+            return;
+        }
+
+        //获取信息
+        $.ajax({
+            url: '../../../../teach/specialty/one/detail.do',
+            data: {'id': id},
+            type: 'get',
+            dataType: 'json',
+            success: function (res) {
+                if (res.success) {
+                    form.val('editForm', res.data);
+                    return
+                }
+                layer.msg(res.message, {icon: 2});
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                layer.msg(jqXHR.status+'', {icon: 2});
+            }
+        })
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.ajax({
+                url: '../../../../teach/specialty/one/update.do',
+                data: data.field,
+                type: 'post',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success) {
+                        layer.msg(res.message, {icon: 1,end:()=>{sessionStorage.setItem(tableReloadKey, 'true');}});
+                        return;
+                    }
+                    layer.msg(res.message, {icon: 2});
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    layer.msg(jqXHR.status+'', {icon: 2});
+                }
+            })
+            return false;
+        });
+
+        return false;
+    });
+</script>
+</body>
+</html>

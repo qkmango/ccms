@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.qkmango.ccms.mvc.dao.AreaDao">
+    <select id="count" resultType="int">
+        SELECT FOUND_ROWS()
+    </select>
+
+    <update id="update">
+        UPDATE t_area
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="list" resultType="cn.qkmango.ccms.domain.entity.Area">
+        select SQL_CALC_FOUND_ROWS
+        id,
+        name,
+        description
+        from t_area
+        <where>
+            <if test="param != null">
+                <if test="param.id != null">
+                    id = #{param.id}
+                </if>
+                <if test="param.name != null and param.name != ''">
+                    and `name` like concat('%',#{param.name},'%')
+                </if>
+                <if test="param.description != null and param.description != ''">
+                    and `description` like concat('%',#{param.description},'%')
+                </if>
+            </if>
+        </where>
+        order by id desc
+        LIMIT #{skipCount},#{limit}
+    </select>
+
+    <select id="detail" resultType="cn.qkmango.ccms.domain.entity.Area">
+        select id,
+               name,
+               description
+        from t_area
+        where id = #{id}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO t_area (name, description)
+        VALUES (#{name}, #{description})
+    </insert>
+
+    <delete id="delete">
+        DELETE
+        FROM t_area
+        WHERE id = #{id}
+    </delete>
+</mapper>

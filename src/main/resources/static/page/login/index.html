@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆</title>
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <script src="../../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="../../page/login/style.css"/>
+</head>
+<body>
+
+<div id="locale">
+    <button id="zh_CN" onclick="changeLocale('zh_CN')">中文</button>
+    <button id="en_US" onclick="changeLocale('en_US')">English</button>
+    <br>
+</div>
+
+<div class="header">
+    <img src="../../images/logo.svg" class="logo_img" alt="logo"/>
+</div>
+
+<h1 class="title">Sign in to System</h1>
+
+<div class="main">
+    <form class="form">
+        <label for="id">账号 <span class="tip"></span></label>
+        <input type="text" id="id" value="1"/>
+
+        <label for="password">密码<span class="tip"></span></label>
+        <input type="password" id="password" value="1"/>
+
+        <label for="permissionType">账户</label>
+        <select id="permissionType">
+            <option value="user">用户</option>
+            <option value="pos" selected>刷卡机</option>
+            <option value="admin" selected>管理员</option>
+        </select>
+
+        <input type="button" id="login_btn" value="Sign in">
+    </form>
+    <div class="label">账号为10位数字<br/>密码为8-16位大小写字母数字特殊字符</div>
+</div>
+
+<div class="link"><a
+        href="http://qkmango.cn" target="_blank">homepage</a><a
+        href="https://gitee.com/qkmango" target="_blank">Gitee</a><a
+        href="https://github.com/qkmango" target="_blank">Github</a></div>
+</body>
+</html>
+<script type="text/javascript" src="../../lib/util/layui_verify_config.js"></script>
+<script type="text/javascript" src="../../lib/util/cookie.js"></script>
+<script type="text/javascript" src="../../page/login/script.js"></script>

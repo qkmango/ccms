@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.qkmango.ccms.mvc.dao.CardDao">
+
+    <!-- 获取未分页的总记录条数 -->
+    <select id="count" resultType="int">
+        SELECT FOUND_ROWS()
+    </select>
+
+    <insert id="insert">
+        insert into t_card(user)
+        values (#{user})
+    </insert>
+
+    <update id="state">
+        update t_card
+        set `lock`=#{lock}
+        where user = #{user}
+    </update>
+
+    <update id="updateBalance">
+        update t_card
+        set balance = balance - #{price}
+        where user = #{user} and balance >= #{price} and `lock` = 0
+    </update>
+
+    <update id="recharge">
+        update t_card
+        set balance = balance + #{balance}
+        where user = #{user}
+          and `lock` = 0
+          and (select unsubscribe from t_user where id = #{user}) = 0
+    </update>
+
+    <select id="lastInsertId" resultType="java.lang.Integer">
+        SELECT LAST_INSERT_ID()
+    </select>
+
+    <select id="getCardByUserId" resultType="cn.qkmango.ccms.domain.entity.Card">
+        select user, balance,`lock`
+        from t_card
+        where user = #{user}
+    </select>
+
+    <select id="detail" resultType="cn.qkmango.ccms.domain.vo.UserAndCardVO" resultMap="UserAndCardVO">
+        select c.user,
+               c.balance,
+               c.`lock`,
+               u.id,
+               u.name,
+               u.clazz,
+               u.specialized,
+               u.faculty,
+               u.idCard,
+               u.unsubscribe
+        from t_card c,
+             t_user u
+        where c.user = u.id
+          and u.id = #{user};
+    </select>
+
+    <select id="list" resultMap="UserAndCardVO">
+        select SQL_CALC_FOUND_ROWS
+        u.id,
+        u.name,
+        u.clazz,
+        u.specialized,
+        u.faculty,
+        u.idCard,
+        u.unsubscribe,
+        c.balance,
+        c.lock
+        from
+        t_user u, t_card c
+        <where>
+            c.user = u.id
+            <if test="param != null">
+                <if test="param.id != null and param.id != ''">
+                    and u.id=#{param.id}
+                </if>
+                <if test="param.name != null and param.name != ''">
+                    and u.name like '%' #{param.name} '%'
+                </if>
+                <if test="param.idCard != null and param.idCard != ''">
+                    and u.idCard = #{param.idCard}
+                </if>
+                <if test="param.lock != null">
+                    and c.`lock` = #{param.lock}
+                </if>
+            </if>
+        </where>
+        order by u.id asc
+        <if test="pagination == true">
+            LIMIT #{skipCount},#{limit}
+        </if>
+
+    </select>
+
+    <resultMap id="UserAndCardVO" type="cn.qkmango.ccms.domain.vo.UserAndCardVO">
+        <association property="user" javaType="cn.qkmango.ccms.domain.entity.User">
+            <result column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="clazz" property="clazz"/>
+            <result column="specialized" property="specialized"/>
+            <result column="faculty" property="faculty"/>
+            <result column="idCard" property="idCard"/>
+            <result column="unsubscribe" property="unsubscribe"/>
+        </association>
+        <association property="card" javaType="cn.qkmango.ccms.domain.entity.Card">
+            <result column="balance" property="balance"/>
+            <result column="lock" property="lock"/>
+        </association>
+    </resultMap>
+
+
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.qkmango.ccms.mvc.dao.MessageDao">
+
+    <select id="count" resultType="int">
+        SELECT FOUND_ROWS()
+    </select>
+
+
+    <insert id="insert">
+        insert into t_message(content, author, createTime)
+        values (#{content}, #{author}, #{createTime})
+    </insert>
+
+    <delete id="delete">
+        delete from t_message where id = #{id}
+        <if test="author != null">and author = #{author}</if>
+    </delete>
+
+    <select id="list" resultType="cn.qkmango.ccms.domain.vo.MessageVO">
+        select SQL_CALC_FOUND_ROWS
+        m.id,
+        m.author,
+        u.name as authorName,
+        m.createTime,
+        <if test="preview == false">
+            m.content,
+        </if>
+        <if test="preview != false">
+            LEFT(m.content,20) as content
+        </if>
+        from t_message m,
+        t_user u
+        <where>
+            m.author = u.id
+            <if test="param != null">
+                <if test="param.startCreateTime!= null">
+                    and m.createTime >=#{param.startCreateTime}
+                </if>
+                <if test="param.endCreateTime!= null">
+                    and m.createTime &lt;=#{param.endCreateTime}
+                </if>
+                <if test="param.id != null">
+                    and m.id = #{param.id}
+                </if>
+                <if test="param.author != null and param.author != ''">
+                    and m.author = #{param.author}
+                </if>
+                <if test="param.content != null and param.content != ''">
+                    and m.content like concat('%',#{param.content},'%')
+                </if>
+            </if>
+        </where>
+        order by m.createTime desc
+        LIMIT #{skipCount},#{limit}
+    </select>
+
+    <select id="detail" resultType="cn.qkmango.ccms.domain.vo.MessageVO">
+        select m.id,
+               m.content,
+               m.author,
+               m.createTime,
+               u.name as authorName
+        from t_message m
+                 join t_user u on m.author = u.id
+        where m.id = #{id}
+    </select>
+</mapper>
