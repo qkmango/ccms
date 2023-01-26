@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.domain.vo;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -12,7 +10,6 @@ import java.util.List;
  * @version 1.0
  * @date 2023-01-03 18:45
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TreeNode implements Serializable {
     private String id;
     private String title;

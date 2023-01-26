@@ -31,7 +31,7 @@ public class I18nConfig {
 
     @Bean(name = "localeResolver")
     public CookieLocaleResolver cookieLocaleResolver() {
-        CookieLocaleResolver resolver = new CookieLocaleResolver();
+        CookieLocaleResolver resolver = new CookieLocaleResolver("locale");
         resolver.setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
         return resolver;
     }

@@ -2,11 +2,10 @@ package cn.qkmango.ccms.domain.entity;
 
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Update;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+
 import java.io.Serializable;
 
 /**
@@ -16,7 +15,6 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2022-12-29 17:52
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Store implements Serializable {
 
     @NotEmpty(groups = {Update.class})

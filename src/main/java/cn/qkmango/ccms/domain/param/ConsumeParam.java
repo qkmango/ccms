@@ -2,7 +2,6 @@ package cn.qkmango.ccms.domain.param;
 
 import cn.qkmango.ccms.domain.bind.ConsumeType;
 import cn.qkmango.ccms.domain.entity.Consume;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Date;
 
@@ -13,7 +12,6 @@ import java.util.Date;
  * @version 1.0
  * @date 2022-12-21 13:10
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConsumeParam extends Consume {
     /**
      * 开始时间

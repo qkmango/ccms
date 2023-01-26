@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.domain.vo;
 
 import cn.qkmango.ccms.domain.entity.Message;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,7 +12,6 @@ import java.util.Date;
  * @version 1.0
  * @date 2022-12-17 13:19
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessageVO extends Message implements Serializable {
     private String authorName;
 

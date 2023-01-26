@@ -2,7 +2,6 @@ package cn.qkmango.ccms.domain.vo;
 
 import cn.qkmango.ccms.domain.entity.Payment;
 import cn.qkmango.ccms.domain.entity.Record;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 
@@ -13,7 +12,6 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2023-01-17 18:59
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecordVO implements Serializable {
     private Record record;
     private Payment payment;

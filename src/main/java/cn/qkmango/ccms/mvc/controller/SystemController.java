@@ -1,13 +1,12 @@
 package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.map.R;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.annotation.Resource;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * 系统
@@ -20,20 +19,32 @@ import java.util.Locale;
 @RequestMapping("system")
 public class SystemController {
 
-    @Resource
-    private ReloadableResourceBundleMessageSource messageSource;
+    private static final Map<String, String> zh_CN = new HashMap<>(1);
+    private static final Map<String, String> en_US = new HashMap<>(1);
+
+    static {
+        zh_CN.put("locale", "zh_CN");
+        en_US.put("locale", "en_US");
+    }
 
     /**
-     * 更改语言环境
+     * 获取当前语言环境
+     * <p>
+     * 基于cookie的语言环境切换
      *
-     * @param locale 新的语言
+     * @param locale 当前语言环境
      * @return 更改后的语言环境
+     * 前端直接修改cookie即可，修改后的cookie会随请求发送到后端，实现国际化
+     * 前端设置cookie的方法：
+     * <li>locale: zh_CN <pre>&lt;script>document.cookie='locale=zh_CN'&lt;/script></pre></li>
+     * <li>locale: en_US <pre>&lt;script>document.cookie='locale=en_US'&lt;/script></pre></li>
      */
-    @RequestMapping(value = "setLocale.do")
-    public R<HashMap<String, String>> setLocale(String locale, Locale localeObj) {
-        HashMap<String, String> custom = new HashMap<>(1);
-        custom.put("locale", localeObj.getLanguage());
-        return R.success(custom, messageSource.getMessage("response.setLocale.success", null, localeObj));
+    @RequestMapping("locale.do")
+    public R<Map<String, String>> locale(Locale locale) {
+        if ("en".equals(locale.getLanguage())) {
+            return R.success(en_US);
+        }
+        return R.success(zh_CN);
     }
 
 }

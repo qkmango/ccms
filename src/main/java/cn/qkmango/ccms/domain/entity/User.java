@@ -3,8 +3,6 @@ package cn.qkmango.ccms.domain.entity;
 
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.domain.bind.PermissionType;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 
@@ -18,7 +16,6 @@ import jakarta.validation.constraints.Pattern;
  *
  * @author qkmango
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User extends Account {
 
     /**

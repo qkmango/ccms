@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.common.map;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 /**
  * 响应 Map
  *
@@ -9,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @version 1.0
  * @date 2022-10-23 17:04
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class R<T> {
     /**
      * 响应状态
@@ -100,6 +97,10 @@ public class R<T> {
     public R<T> setMeta(Object meta) {
         this.meta = meta;
         return this;
+    }
+
+    public static <T> R<T> success() {
+        return new R<T>(true, null, null, null, null);
     }
 
     public static <T> R<T> success(T data) {

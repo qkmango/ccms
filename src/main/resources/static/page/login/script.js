@@ -55,8 +55,8 @@ layui.use(['jquery', 'layer'], function () {
     }
 
 
-    const locale = getLocale();
-    if (locale === 'en-US') {
+    const locale = Cookies.get('locale');
+    if (locale === 'en_US') {
         document.querySelector('#en_US').className = 'this_locale_btn';
     } else {
         document.querySelector('#zh_CN').className = 'this_locale_btn';
@@ -90,33 +90,26 @@ layui.use(['jquery', 'layer'], function () {
         })
     }
 
-
-    /**
-     * 获取本地语言，基于cookie
-     */
-    function getLocale(name) {
-        if (name === undefined) {
-            name = 'org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE';
-        }
-        return getCookie(name);
-    }
 })
 
 /**
  * 更改语言
  */
 function changeLocale(locale) {
-    $.ajax({
-        url: '../../system/setLocale.do',
-        data: {
-            locale
-        },
-        success: function (data) {
-            if (data.success) {
-                window.location.reload();
-            }
-        }
-    })
+    // setCookie('locale', locale,24*60*60*1000);
+    Cookies.set('locale', locale, {expires: 7});
+    window.location.reload();
+    // $.ajax({
+    //     url: '../../system/setLocale.do',
+    //     data: {
+    //         locale
+    //     },
+    //     success: function (data) {
+    //         if (data.success) {
+    //             window.location.reload();
+    //         }
+    //     }
+    // })
 }
 
 

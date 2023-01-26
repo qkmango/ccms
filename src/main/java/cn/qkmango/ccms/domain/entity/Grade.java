@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.io.Serializable;
 
 /**
@@ -11,7 +9,6 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2023-01-13 12:42
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Grade implements Serializable {
     private String name;
     private String description;

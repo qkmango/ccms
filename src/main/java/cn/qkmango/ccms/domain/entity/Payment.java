@@ -5,12 +5,11 @@ import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.common.validate.group.Update;
 import cn.qkmango.ccms.domain.bind.PaymentState;
 import cn.qkmango.ccms.domain.bind.PaymentType;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -21,7 +20,6 @@ import java.util.Date;
  * @version 1.0
  * @date 2023-01-14 14:14
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Payment implements Serializable {
 
     @NotEmpty(groups = {Update.PaymentState.class, Update.class})

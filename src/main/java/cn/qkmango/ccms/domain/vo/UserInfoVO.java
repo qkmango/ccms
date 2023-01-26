@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.domain.vo;
 
 import cn.qkmango.ccms.domain.entity.*;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 
@@ -12,7 +11,6 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2023-01-18 14:43
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserInfoVO implements Serializable {
     private User user;
     private Card card;

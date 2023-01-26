@@ -2,10 +2,8 @@ package cn.qkmango.ccms.domain.entity;
 
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Update;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
-
 
 import java.io.Serializable;
 
@@ -16,7 +14,6 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2023-01-12 12:24
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Clazz implements Serializable {
 
     @NotEmpty(groups = {Update.class})

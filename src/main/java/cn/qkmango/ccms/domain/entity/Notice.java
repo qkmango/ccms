@@ -3,10 +3,9 @@ package cn.qkmango.ccms.domain.entity;
 import cn.qkmango.ccms.common.validate.group.Delete;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Query;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -17,7 +16,6 @@ import java.util.Date;
  * @version 1.0
  * @date 2022-12-07 22:45
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Notice implements Serializable {
     @NotNull(groups = {Delete.class, Query.class})
     private Integer id;

@@ -3,7 +3,6 @@ package cn.qkmango.ccms.domain.vo;
 import cn.qkmango.ccms.domain.entity.Consume;
 import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.entity.User;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 
@@ -14,7 +13,6 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2022-12-20 16:52
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConsumeDetailsVO implements Serializable {
     private User user;
     private Consume consume;

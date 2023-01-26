@@ -2,7 +2,6 @@ package cn.qkmango.ccms.domain.param;
 
 import cn.qkmango.ccms.domain.entity.Payment;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Date;
 
@@ -13,7 +12,6 @@ import java.util.Date;
  * @version 1.0
  * @date 2023-01-17 18:58
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentParam extends Payment {
     private Integer minPrice;
     private Integer maxPrice;

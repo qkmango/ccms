@@ -5,10 +5,9 @@ import cn.qkmango.ccms.common.validate.group.Query.Login;
 import cn.qkmango.ccms.common.validate.group.Update;
 import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.mvc.service.CardService;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+
 import java.io.Serializable;
 
 /**
@@ -17,7 +16,6 @@ import java.io.Serializable;
  * @author qkmango
  * @date 2022-10-22 16:36
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account implements Serializable {
 
     /**

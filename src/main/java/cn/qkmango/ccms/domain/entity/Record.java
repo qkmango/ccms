@@ -2,9 +2,8 @@ package cn.qkmango.ccms.domain.entity;
 
 import cn.qkmango.ccms.common.validate.group.Update;
 import cn.qkmango.ccms.domain.bind.PayState;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import jakarta.validation.constraints.NotEmpty;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -16,7 +15,6 @@ import java.util.Date;
  * @version 1.0
  * @date 2023-01-15 12:14
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Record implements Serializable {
 
     @NotEmpty(groups = {Update.class})

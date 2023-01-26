@@ -3,7 +3,6 @@ package cn.qkmango.ccms.domain.vo;
 import cn.qkmango.ccms.domain.entity.Clazz;
 import cn.qkmango.ccms.domain.entity.Faculty;
 import cn.qkmango.ccms.domain.entity.Specialty;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 
@@ -14,7 +13,6 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2023-01-12 13:58
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClazzVO implements Serializable {
     private Clazz clazz;
     private Faculty faculty;

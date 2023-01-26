@@ -3,7 +3,6 @@ package cn.qkmango.ccms.domain.vo;
 import cn.qkmango.ccms.domain.entity.Area;
 import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.entity.Store;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 
@@ -14,7 +13,6 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2023-01-07 13:21
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PosVO implements Serializable {
     private Pos pos;
     private Store store;

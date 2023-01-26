@@ -2,7 +2,6 @@ package cn.qkmango.ccms.config;
 
 import cn.qkmango.ccms.web.interceptor.LoginInterceptor;
 import cn.qkmango.ccms.web.interceptor.PermissionsInterceptor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -21,6 +20,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
         //国际化拦截器
         LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
+        localeChangeInterceptor.setParamName("locale");
         registry.addInterceptor(localeChangeInterceptor)
                 .addPathPatterns("/system/setLocale.do");
 

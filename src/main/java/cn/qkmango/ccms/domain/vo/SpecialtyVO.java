@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.domain.vo;
 
 import cn.qkmango.ccms.domain.entity.Specialty;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 
@@ -12,7 +11,6 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2023-01-11 13:32
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SpecialtyVO extends Specialty implements Serializable {
 
     private String facultyName;
