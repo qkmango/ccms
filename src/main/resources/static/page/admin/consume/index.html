@@ -142,7 +142,7 @@
             toolbar: '#toolbarDemo',
             defaultToolbar: ['filter', 'exports', 'print'],
             cols: [[
-                {field: 'id', title: 'ID', sort: true, templet: d=>{return d.id}},
+                {field: 'id', title: 'ID', sort: true,fixed:'left', templet: d=>{return d.id}},
                 {field: 'user', title: '学号', templet: d=> {return d.user}},
                 {field: 'createTime', title: '时间', templet: d=> {return timestampToTime(d.createTime)}},
                 {field: 'price', title: '金额', align: 'right', templet: d=> {
@@ -150,7 +150,7 @@
                 {field: 'type', title: '类别', templet: d=> {return FieldMapping.consume.type(d.type)}},
                 {field: 'info', title: '信息', templet: d=> {return d.info}},
 
-                {title: '操作', width: 100, align: 'center', templet: d=> {
+                {title: '操作', width: 100, align: 'center',fixed:'right', templet: d=> {
                         return `<a class="layui-btn layui-btn-xs" lay-event="detail"><i class="fa fa-info-circle"></i> 详情</a>`;
                     }
                 }

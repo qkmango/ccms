@@ -133,14 +133,14 @@
             toolbar: '#toolbarDemo',
             defaultToolbar: ['filter', 'exports', 'print'],
             cols: [[
-                {field: 'id', width: 120, title: 'ID', sort: true,templet: d=> {return d.clazz.id}},
+                {field: 'id', width: 120, title: 'ID',fixed:'left', sort: true,templet: d=> {return d.clazz.id}},
                 {field: 'grade',width: 70, title: '年级',templet: d=> {return d.clazz.grade}},
                 {field: 'name', title: '名称',templet: d=> {return d.clazz.name}},
                 {field: 'facultyName', title: '学院',templet: d=> {return d.faculty.name}},
                 {field: 'specialtyName', title: '专业',templet: d=> {return d.specialty.name}},
                 {field: 'description', title: '描述',templet: d=> {return d.clazz.description||''}},
                 {
-                    title: '操作', width: 250, align: 'center', templet: d=> {
+                    title: '操作', width: 250, align: 'center',fixed:'right', templet: d=> {
                         return `<div class="layui-btn-group">
                                     <button type="button" class="layui-btn layui-btn-xs layui-btn-green2-tint" lay-event="edit"><i class="fa fa-pencil"></i> 编辑</button>
                                     <button type="button" class="layui-btn layui-btn-xs layui-btn-red-tint" lay-event="delete"><i class="fa fa-remove"> 删除</i></button>

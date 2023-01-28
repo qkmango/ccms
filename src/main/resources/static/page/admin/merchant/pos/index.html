@@ -147,13 +147,13 @@
             toolbar: '#toolbarDemo',
             defaultToolbar: ['filter', 'exports', 'print'],
             cols: [[
-                {field: 'id', width: 120, title: 'ID', sort: true, templet: d=> {return d.pos.id;}},
+                {field: 'id', width: 120, title: 'ID', sort: true,fixed:'left', templet: d=> {return d.pos.id;}},
                 {field: 'name', title: '名称', templet: d=> {return d.pos.name;}},
                 {field: 'address', title: '地址', templet: d=> {return d.pos.address;}},
                 {field: 'type', width: 80, title: '类型', templet: d=> {return FieldMapping.consume.type(d.pos.type)}},
                 {field: 'storeName', title: '商户名称', templet: d=> {return d.store.name;}},
                 {field: 'areaName', title: '区域名称', templet: d=> {return d.area.name;}},
-                {title: '操作', width: 250, align: 'center', templet: d=> {
+                {title: '操作', width: 250, align: 'center',fixed:'right', templet: d=> {
                         return `<div class="layui-btn-group">
                                     <button type="button" class="layui-btn layui-btn-xs layui-btn-green2-tint" lay-event="detail"><i class="fa fa-info-circle"></i> 详情</button>
                                     <button type="button" class="layui-btn layui-btn-xs layui-btn-green2-tint" lay-event="edit"><i class="fa fa-pencil"></i> 编辑</button>

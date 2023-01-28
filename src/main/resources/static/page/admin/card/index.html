@@ -89,7 +89,7 @@
                 toolbar: '#toolbarDemo',
                 defaultToolbar: ['filter', 'exports', 'print'],
                 cols: [[
-                    { field: 'id', width: 120, title: '学号', sort: true, templet: d=> { return d.user.id } },
+                    { field: 'id', width: 120, title: '学号', sort: true,fixed:'left', templet: d=> { return d.user.id } },
                     { field: 'name', width: 100, title: '姓名', templet: d=> { return d.user.name } },
                     { field: 'idCard', width: 200, title: '身份证', templet: d=> { return d.user.idCard } },
                     { field: 'faculty', title: '学院', templet: d=> { return d.user.faculty } },
@@ -98,7 +98,7 @@
                     { field: 'balance', width: 100, title: '余额', align: 'right', templet: d=> { return d.card.balance/100 } },
                     { field: 'lock', width: 100, title: '状态',align: 'center', templet: d=> { return d.user.unsubscribe?'<i class="fa fa-close" style="color:var(--gray_5)"></i>':(d.card.lock ? '<i class="fa fa-lock" style="color:var(--red)"></i>' : '<i class="fa fa-check" style="color:var(--green2)"></i>') } },
 
-                    { title: '操作', width: 150,align: 'center', templet: d=> {return `<a class="layui-btn layui-btn-xs layui-btn-green2-tint" lay-event="info"><i class="fa fa-info-circle"></i> 详情</a>`;}}
+                    { title: '操作', width: 150,align: 'center',fixed:'right', templet: d=> {return `<a class="layui-btn layui-btn-xs layui-btn-green2-tint" lay-event="info"><i class="fa fa-info-circle"></i> 详情</a>`;}}
                 ]],
                 limits: [20, 40, 60, 80, 100],
                 limit: 20,

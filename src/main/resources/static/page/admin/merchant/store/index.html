@@ -128,7 +128,7 @@
                 toolbar: '#toolbarDemo',
                 defaultToolbar: ['filter', 'exports', 'print'],
                 cols: [[
-                    { field: 'id', width: 120, title: 'ID', sort: true,templet:d=> {return d.store.id}},
+                    { field: 'id', width: 120, title: 'ID',fixed:'left', sort: true,templet:d=> {return d.store.id}},
                     { field: 'name',title: '名称',templet:d=> {return d.store.name}},
                     { field: 'area', title: '所属区域',templet:d=> {return d.area.name}},
                     { field: 'address',title: '地址',templet:d=> {return d.store.address}},
@@ -136,7 +136,7 @@
                     { field: 'manager', title: '管理者',templet:d=> {return d.store.manager}},
                     { field: 'phone', title: '联系电话',templet:d=> {return d.store.phone}},
                     { field: 'description', title: '描述',templet:d=> {return d.store.description}},
-                    { title: '操作', width: 250,align:'center', templet: d=> {
+                    { title: '操作', width: 250,align:'center',fixed:'right', templet: d=> {
                         return `<div class="layui-btn-group">
                                     <button type="button" class="layui-btn layui-btn-xs layui-btn-green2-tint" lay-event="edit"><i class="fa fa-pencil"></i> 编辑</button>
                                     <button type="button" class="layui-btn layui-btn-xs layui-btn-red-tint" lay-event="delete"><i class="fa fa-remove"> 删除</i></button>
