@@ -24,12 +24,14 @@
         m.author,
         u.name as authorName,
         m.createTime,
-        <if test="preview == false">
-            m.content,
-        </if>
-        <if test="preview != false">
-            LEFT(m.content,20) as content
-        </if>
+        <choose>
+            <when test="preview == false">
+                m.content,
+            </when>
+            <otherwise>
+                LEFT(m.content,20) as content
+            </otherwise>
+        </choose>
         from t_message m,
         t_user u
         <where>

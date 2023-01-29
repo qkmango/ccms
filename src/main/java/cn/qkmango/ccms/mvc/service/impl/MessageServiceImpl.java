@@ -76,7 +76,6 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public R<List<MessageVO>> list(Pagination<MessageParam> pagination) {
-
         List<MessageVO> list = messageDao.list(pagination);
         int count = messageDao.count();
         return R.success(list).setCount(count);

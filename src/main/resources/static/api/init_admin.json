@@ -249,6 +249,19 @@
             ]
         },
         {
+            "title": "统计图表",
+            "icon": "fa fa-bar-chart",
+            "target": "_self",
+            "child": [
+                {
+                    "title": "消费统计图",
+                    "icon": "fa fa-id-card-o",
+                    "href": "page/common/account-info.html",
+                    "target": "_self"
+                }
+            ]
+        },
+        {
             "title": "个人中心",
             "icon": "fa fa-user",
             "target": "_self",
