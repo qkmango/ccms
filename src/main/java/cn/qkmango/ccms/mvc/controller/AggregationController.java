@@ -36,12 +36,11 @@ public class AggregationController {
     /**
      * 用户欢迎界面聚合数据
      * @param session 会话
-     * @param locale 语言环境
      * @return 用户首页所需的数据
      */
     @Permission(PermissionType.user)
     @GetMapping("userWelcome.do")
-    public R<Map<String, Object>> userWelcome(HttpSession session, Locale locale) {
+    public R<Map<String, Object>> userWelcome(HttpSession session) {
         Account account = (Account) session.getAttribute("account");
         R<Map<String, Object>> r = aggregationService.userWelcome(account.getId());
         r.setSuccess(true);

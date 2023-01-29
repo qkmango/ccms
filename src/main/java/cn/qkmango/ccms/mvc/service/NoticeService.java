@@ -39,7 +39,7 @@ public interface NoticeService {
      * @param pagination 分页查询条件
      * @return 分页列表
      */
-    R<List<Notice>> getNoticeList(Pagination<Notice> pagination);
+    R<List<Notice>> list(Pagination<Notice> pagination);
 
     /**
      * 获取公告详情

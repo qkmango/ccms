@@ -7,7 +7,7 @@
         SELECT FOUND_ROWS()
     </select>
 
-    <select id="getNoticeList" resultType="cn.qkmango.ccms.domain.entity.Notice">
+    <select id="list" resultType="cn.qkmango.ccms.domain.entity.Notice">
         SELECT SQL_CALC_FOUND_ROWS
         n.id,
         n.title,

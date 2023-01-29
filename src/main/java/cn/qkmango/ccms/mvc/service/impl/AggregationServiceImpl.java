@@ -54,7 +54,7 @@ public class AggregationServiceImpl implements AggregationService {
         pagination.setPage(1);
         pagination.setLimit(5);
         pagination.setPreview(false);
-        List<Notice> noticeList = noticeDao.getNoticeList(pagination);
+        List<Notice> noticeList = noticeDao.list(pagination);
 
         //每类消费金额饼图
         List<Map<String, Integer>> currMonthConsumeTypePricePie = consumeDao.currMonthConsumeTypePricePie(id);

@@ -41,8 +41,8 @@ public class NoticeServiceImpl implements NoticeService {
      * @return 分页列表
      */
     @Override
-    public R<List<Notice>> getNoticeList(Pagination<Notice> pagination) {
-        List<Notice> noticeList = dao.getNoticeList(pagination);
+    public R<List<Notice>> list(Pagination<Notice> pagination) {
+        List<Notice> noticeList = dao.list(pagination);
         int count = dao.getCount(pagination);
         return R.success(noticeList).setCount(count);
     }

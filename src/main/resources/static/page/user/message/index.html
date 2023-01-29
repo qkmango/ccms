@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="../../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
     <style>
         .timeago{
-            /*color: rgba(250,250,250,.7);*/
             font-size: 12px;
             float: right;
         }
@@ -127,7 +126,8 @@
                 anim: 2,
                 area: ['50%', '100%'],
                 shade: 0.2,
-                content: 'add.html?tableReloadKey='+tableReloadKey,
+                shadeClose: true,
+                content: 'insert.html?tableReloadKey='+tableReloadKey,
                 end:function() {
                     if (sessionStorage.hasOwnProperty(tableReloadKey)) {
                         sessionStorage.removeItem(tableReloadKey);

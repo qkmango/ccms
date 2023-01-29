@@ -61,7 +61,7 @@
                sum(price) as price
         FROM t_consume
         WHERE DATE_FORMAT(createTime, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
-          and user = #{id}
+          and user = #{id} and type not in ('PAYMENT', 'RECHARGE','REFUND')
         GROUP BY type
     </select>
 

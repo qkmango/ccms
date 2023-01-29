@@ -34,7 +34,7 @@ public interface NoticeDao {
      * @param pagination 分页查询条件
      * @return 分页列表
      */
-    List<Notice> getNoticeList(Pagination<Notice> pagination);
+    List<Notice> list(Pagination<Notice> pagination);
 
     /**
      * 获取公告详情

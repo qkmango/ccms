@@ -140,10 +140,12 @@
                 {field: 'payment_id', width: 170, title: '项目ID',templet: d=>{return d.payment.id}},
                 {field: 'payment_title', title: '标题',templet: d=>{return d.payment.title}},
                 {field: 'payment_type', title: '项目类型',align: 'center', templet: d=>{return FieldMapping.payment.type(d.payment.type)}},
-                {field: 'payment_price', title: '金额',templet: d=> {return d.payment.price/100}},
+                {field: 'payment_price', title: '金额',align: 'right',templet: d=> {return d.payment.price/100}},
                 {field: 'payment_description', title: '描述',hide:true,templet: d=> {return d.payment.description}},
                 {field: 'payment_createTime', title: '发布时间',hide:true,templet: d=> {return dateFormat(d.payment.createTime)}},
-                {field: 'payment_time', title: '缴费期限',templet: d=> {return dateFormat(d.payment.startTime) + ' - ' + dateFormat(d.payment.endTime)}},
+                {field: 'payment_time', title: '缴费期限',align: 'center',templet: d=> {
+                        return `<div style="line-height: 1">${dateFormat(d.startTime)} <br/> ${dateFormat(d.endTime)}</div>`;
+                }},
                 {field: 'payment_state', title: '项目状态',width: 115,align:'center',hide:true,templet: d=> {
                         let style = '';
                         let icon = '';

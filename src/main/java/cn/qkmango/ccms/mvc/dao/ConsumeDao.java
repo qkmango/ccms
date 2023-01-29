@@ -60,11 +60,13 @@ public interface ConsumeDao {
 
     /**
      * 每类消费金额饼图
+     * 不包含 缴费PAYMENT,退款REFUND,充值RECHARGE
      *
      * @param id 学生id
      * @return 每类消费金额饼图数据
      */
     List<Map<String, Integer>> currMonthConsumeTypePricePie(String id);
+
     /**
      * 查询消费记录详情
      *

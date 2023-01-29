@@ -23,13 +23,13 @@
         },
         {
             "title": "留言",
-            "icon": "fa fa-comments-o",
+            "icon": "fa fa-comments",
             "href": "page/user/message/index.html",
             "target": "_self"
         },
         {
             "title": "我的缴费",
-            "icon": "fa fa-money",
+            "icon": "fa fa-paypal",
             "target": "_self",
             "href": "page/user/payment.html"
         },

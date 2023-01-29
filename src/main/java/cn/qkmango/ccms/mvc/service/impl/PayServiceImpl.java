@@ -148,8 +148,8 @@ public class PayServiceImpl implements PayService {
         List<String> ids = userDao.getUserIdByClazzIds(clazzIds);
 
         // 2. 将指定班级的用户添加到已缴费表中，缴费状态为未缴费
+        Record record = new Record();
         for (String id : ids) {
-            Record record = new Record();
             record.setUser(id);
             record.setPayment(paymentId);
             record.setState(PayState.UNPAID);
@@ -429,7 +429,6 @@ public class PayServiceImpl implements PayService {
         }
 
         //删除缴费项目
-        // TODO 待解决事务问题
         affectedRows = paymentDao.delete(id);
         if (affectedRows != 1) {
             throw new DeleteException(messageSource.getMessage("db.payment.delete.failure", null, locale));

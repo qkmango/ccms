@@ -79,9 +79,9 @@ public class NoticeController {
      * @return 分页列表
      */
     @Permission({PermissionType.user, PermissionType.admin})
-    @PostMapping("pagination/noticeList.do")
-    public R<List<Notice>> getNoticeList(@RequestBody Pagination<Notice> pagination) {
-        return service.getNoticeList(pagination);
+    @PostMapping("pagination/list.do")
+    public R<List<Notice>> list(@RequestBody Pagination<Notice> pagination) {
+        return service.list(pagination);
     }
 
     /**

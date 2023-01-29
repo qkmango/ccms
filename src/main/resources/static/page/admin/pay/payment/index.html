@@ -111,11 +111,13 @@
             toolbar: '#toolbarDemo',
             defaultToolbar: ['filter', 'exports', 'print'],
             cols: [[
-                {field: 'id', width: 120, title: 'ID'},
+                {field: 'id', title: 'ID'},
                 {field: 'title', title: '标题'},
-                {field: 'type', title: '类型', templet: function (d) {return FieldMapping.payment.type(d.type);}},
-                {field: 'price', title: '金额',templet: function (d) {return d.price/100}},
-                {field: 'time', title: '缴费期限', templet: function (d) {return dateFormat(d.startTime) + ' - ' + dateFormat(d.endTime);}},
+                {field: 'type', title: '类型',align: 'center', templet: function (d) {return FieldMapping.payment.type(d.type);}},
+                {field: 'price', title: '金额',align: 'right',templet: function (d) {return d.price/100}},
+                {field: 'time', title: '缴费期限',align:'center', templet: function (d) {
+                    return `<div style="line-height: 1">${dateFormat(d.startTime)} <br/> ${dateFormat(d.endTime)}</div>`;
+                }},
                 {field: 'state', title: '状态',width: 115,align: 'center', templet: function (d) {
                     let style = '';
                     let icon = '';
@@ -133,7 +135,6 @@
                         return `<div class="layui-btn-group">
                                     <button type="button" class="layui-btn layui-btn-xs layui-btn-green2-tint" lay-event="state"><i class="fa fa-hourglass-end"></i> 状态</button>
                                     <button type="button" class="layui-btn layui-btn-xs layui-btn-green2-tint" lay-event="edit"><i class="fa fa-pencil"></i> 编辑</button>
-                                    <button type="button" class="layui-btn layui-btn-xs layui-btn-green2-tint" lay-event="record-list"><i class="fa fa-list"></i> 缴费情况</button>
                                     <button type="button" class="layui-btn layui-btn-xs layui-btn-red-tint" lay-event="delete"><i class="fa fa-remove"></i> 删除</button>
                                 </div>`;}
                 }

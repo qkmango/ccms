@@ -68,7 +68,7 @@
         },
         {
             "title": "留言管理",
-            "icon": "fa fa-comments-o",
+            "icon": "fa fa-comments",
             "target": "_self",
             "child": [
                 {
@@ -82,7 +82,7 @@
 
         {
             "title": "商家部门",
-            "icon": "fa fa-user",
+            "icon": "fa fa-shopping-cart",
             "target": "_self",
             "child": [
                 {
@@ -216,7 +216,7 @@
         },
         {
             "title": "缴费管理",
-            "icon": "fa fa-money",
+            "icon": "fa fa-paypal",
             "target": "_self",
             "child": [
                 {

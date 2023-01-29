@@ -21,8 +21,8 @@
         name,
         description
         from t_area
-        <where>
-            <if test="param != null">
+        <if test="param != null">
+            <where>
                 <if test="param.id != null">
                     id = #{param.id}
                 </if>
@@ -32,8 +32,8 @@
                 <if test="param.description != null and param.description != ''">
                     and `description` like concat('%',#{param.description},'%')
                 </if>
-            </if>
-        </where>
+            </where>
+        </if>
         order by id desc
         LIMIT #{skipCount},#{limit}
     </select>
