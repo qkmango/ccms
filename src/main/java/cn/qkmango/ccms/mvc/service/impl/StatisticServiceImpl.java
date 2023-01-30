@@ -29,12 +29,11 @@ public class StatisticServiceImpl implements StatisticService {
     /**
      * 统计最近一周消费金额数据
      *
-     * @param startTime 开始时间
-     * @param endTime   结束时间
-     *                  如果不传入时间，则默认统计最近一周的数据
-     *                  如果传入时间，则统计传入时间段的数据
-     *                  如果开始时间为空，则默认设置为结束时间的前一周
-     *                  如果结束时间为空，则默认设置为开始时间的后一周
+     * @param range 开始时间和结束时间范围
+     *              如果不传入时间，则默认统计最近一周的数据
+     *              如果传入时间，则统计传入时间段的数据
+     *              如果开始时间为空，则默认设置为结束时间的前一周
+     *              如果结束时间为空，则默认设置为开始时间的后一周
      * @return 最近一周消费金额和消费次数
      */
     @Override
@@ -50,17 +49,17 @@ public class StatisticServiceImpl implements StatisticService {
         //如果都为空，则默认统计最近一周的数据
         if (startTime == null && endTime == null) {
             Calendar calendar = DateTimeUtil.addDay(null, -6);
-            startTime = calendar.getTime();
+            range.setStartTime(calendar.getTime());
         }
         //如果开始时间为空，则默认设置为结束时间的前一周
         else if (startTime == null) {
             Calendar calendar = DateTimeUtil.addDay(endTime, -6);
-            startTime = calendar.getTime();
+            range.setStartTime(calendar.getTime());
         }
         //如果结束时间为空，则默认设置为开始时间的后一周
         else if (endTime == null) {
             Calendar calendar = DateTimeUtil.addDay(startTime, 6);
-            endTime = calendar.getTime();
+            range.setEndTime(calendar.getTime());
         }
 
         return dao.ConsumeCountPriceOfDay(range);

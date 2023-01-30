@@ -1,25 +1,25 @@
 package cn.qkmango.ccms.domain.vo.statistic;
 
-import java.util.Date;
+import cn.qkmango.ccms.domain.bind.ConsumeType;
 
 /**
- * 描述
- * <p></p>
+ * 消费金额统计
  *
  * @author qkmango
  * @version 1.0
  * @date 2023-01-29 18:02
  */
 public class ConsumePriceCount {
-    private Date date;
+    private String date;
     private int price;
     private int count;
+    private ConsumeType type;
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -39,12 +39,21 @@ public class ConsumePriceCount {
         this.count = count;
     }
 
+    public ConsumeType getType() {
+        return type;
+    }
+
+    public void setType(ConsumeType type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "ConsumePriceCount{" +
-                "date=" + date +
+                "date='" + date + '\'' +
                 ", price=" + price +
                 ", count=" + count +
+                ", type=" + type +
                 '}';
     }
 }

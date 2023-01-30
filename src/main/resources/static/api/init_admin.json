@@ -256,7 +256,7 @@
                 {
                     "title": "消费统计图",
                     "icon": "fa fa-id-card-o",
-                    "href": "page/common/account-info.html",
+                    "href": "page/admin/statistic/consume/index.html",
                     "target": "_self"
                 }
             ]

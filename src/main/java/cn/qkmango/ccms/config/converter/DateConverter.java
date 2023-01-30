@@ -1,6 +1,5 @@
 package cn.qkmango.ccms.config.converter;
 
-import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.converter.Converter;
 
 import java.text.ParseException;
@@ -8,8 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * 描述
- * <p></p>
+ * 字符串转Date转换器
+ * <p>
+ * 可转换的格式
+ * <li>yyyy-MM-dd HH:mm:ss</li>
+ * <li>yyyy-MM-dd</li>
+ * <li>时间戳</li>
  *
  * @author qkmango
  * @version 1.0

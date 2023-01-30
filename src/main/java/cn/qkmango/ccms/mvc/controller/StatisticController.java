@@ -5,6 +5,7 @@ import cn.qkmango.ccms.domain.param.DatetimeRange;
 import cn.qkmango.ccms.domain.vo.statistic.ConsumePriceCount;
 import cn.qkmango.ccms.mvc.service.StatisticService;
 import jakarta.annotation.Resource;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

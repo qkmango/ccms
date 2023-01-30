@@ -14,46 +14,21 @@
 <div class="layuimini-container">
     <div class="layuimini-main">
         <fieldset class="table-search-fieldset">
-            <legend>消费信息</legend>
+            <legend>统计信息</legend>
             <div style="margin: 10px 10px 10px 10px">
                 <form class="layui-form layui-form-pane" lay-filter='consume' id="consume">
-                    <div class="layui-form-item">
+                    <div class="layui-form-item layui-row">
 
-                        <div class="layui-inline">
-                            <label class="layui-form-label">起始时间</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="startCreateTime" id="startCreateTime" autocomplete="off"
-                                       class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label">结束时间</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="endCreateTime" id="endCreateTime" autocomplete="off"
-                                       class="layui-input">
-                            </div>
-                        </div>
-
-                        <div class="layui-inline">
-                            <label class="layui-form-label">类别</label>
-                            <div class="layui-input-inline">
-                                <select name="type" id="type">
-                                    <option value="">全部</option>
-                                    <option value="WATER">水费</option>
-                                    <option value="ELECTRIC">电费</option>
-                                    <option value="MEAL_EXPENSE">餐费</option>
-                                    <option value="DORMITORY_FEE">住宿费</option>
-                                    <option value="RECHARGE">充值</option>
-                                    <option value="PAYMENT">缴费</option>
-                                    <option value="REFUND">退款</option>
-                                    <option value="OTHER">其他</option>
-                                </select>
+                        <div class="layui-form-item layui-col-md4">
+                            <label class="layui-form-label">时间范围</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="range" id="range" class="layui-input" autocomplete="off">
                             </div>
                         </div>
 
                         <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary" lay-submit
-                                    lay-filter="data-search-btn"><i class="fa fa-search"></i> 搜索
+                                    lay-filter="data-search-btn"><i class="fa fa-search"></i> 统计
                             </button>
                         </div>
                     </div>
@@ -67,28 +42,46 @@
 <script src="../../../../lib/util/color.js"></script>
 <script src="../../../../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
 <script src="../../../../js/lay-config.js" charset="utf-8"></script>
+<script src="../../../../lib/echarts/echarts.min.js" charset="utf-8"></script>
+
 <script>
-    layui.use(['layer', 'miniTab', 'echarts'], function () {
-        var $ = layui.jquery,
-            layer = layui.layer,
-            miniTab = layui.miniTab,
-            echarts = layui.echarts;
+    let $;
+    layui.use(['layer', 'laydate', 'form'], function () {
+        $ = layui.jquery;
+        const form = layui.form;
+        const layer = layui.layer;
+        const laydate = layui.laydate;
 
-        miniTab.listen();
+        // echarts 窗口缩放自适应
+        window.onresize = function () {
+            echartsRecords.resize();
+        }
 
-        /**
-         * 报表功能
-         */
-        const echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+        // 日期范围
+        laydate.render({
+            elem: '#range',
+            type: 'datetime',
+            range: true,
+            min: '2000-1-1',
+            max: '2099-12-31'
+        });
+
+        // Echarts 初始化
+        const echartsRecords = echarts.init(document.getElementById('echarts-records'));
+        // Echarts 配置
         const optionRecords = {
             title: {
-                text: '消费信息',
+                text: '消费金额曲线图',
                 left: 'center',
+                top: 30
             },
             xAxis: {
                 type: 'category',
-                name: '日期',
-                data: ['2020-10-10', '2020-10-11', '2020-10-12', '2020-10-13', '2020-10-14', '2020-10-15', '2020-10-16'],
+                name: '日期/天',
+                formatter: function (value) {
+                    console.log(value);
+                    return [10, 10, 10, 20]
+                },
                 axisPointer: {
                     show: true,
                     type: 'shadow',
@@ -96,47 +89,191 @@
                         show: true
                     }
                 },
-                axisLabel: {
-                    // interval: 0,
-                    // rotate: 30
-                }
             },
             yAxis: {
                 type: 'value',
-                name: '金额'
+                name: '金额/元'
             },
-            series: {
-                data: [150, 230, 224, 218, 135, 147, 260],
-                type: 'line',
-                smooth: true,
-                lineStyle: {
-                    color: color.green
-                },
-                itemStyle: {
-                    color: color.green
-                },
-                areaStyle: {
-                    //0.2透明度
-                    color: color.green,
-                    opacity: 0.2
-                }
-            },
+            series: [],
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
                     type: 'cross'
                 }
-            }
-
+            },
+            toolbox: {
+                orient: 'vertical',
+                top: 60,
+                feature: {
+                    dataZoom: {
+                        yAxisIndex: 'none'
+                    },
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            grid: {
+                left: 10,
+                right: 70,
+                bottom: 10,
+                top: 80,
+                containLabel: true
+            },
+            legend: {
+                show: true,
+                top: 30,
+                left: 'right',
+            },
         };
+
+        //获取数据并渲染
+        let transData = transition(getEchartsData());
+        optionRecords.xAxis.data = transData.xAxis;
+        optionRecords.series = transData.series;
         echartsRecords.setOption(optionRecords);
 
-        // echarts 窗口缩放自适应
-        window.onresize = function () {
-            echartsRecords.resize();
-        }
+
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            let range = {};
+            if (data.field.range !== '') {
+                const split = data.field.range.split(' - ');
+                range.startTime = split[0];
+                range.endTime = split[1];
+            }
+            let transData = transition(getEchartsData());
+            optionRecords.xAxis.data = transData.xAxis;
+            optionRecords.series = transData.series;
+            echartsRecords.setOption(optionRecords);
+
+            return false;
+        });
+
+        return false;
 
     });
+
+    /**
+     * 获取数据
+     * @param param
+     * @returns {*}
+     */
+    function getEchartsData(param) {
+        let data;
+        let range = {};
+        if (typeof (param) === 'string') {
+            const split = param.split(' - ');
+            range.startTime = split[0];
+            range.endTime = split[1];
+        }
+        $.ajax({
+            // url: '../../../../statistic/consume/count-price-of-day.do?',
+            url: './index.test.json',
+            data: range,
+            dataType: 'json',
+            async: false,
+            success: function (res) {
+                if (res.success) {
+                    data = res.data;
+                    return;
+                }
+                layer.msg(res.message, {icon: 2});
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                layer.msg(jqXHR.status + '', {icon: 2});
+            }
+        })
+
+        return data;
+    }
+
+    /**
+     * 转换数据
+     * 将后端返回的数据转换为echarts所需的数据
+     * @param data
+     * @returns {{xAxis: *[], series: [{data: *[], name: string, type: string},{data: *[], name: string, type: string},{data: *[], name: string, type: string},{areaStyle: {color: string, opacity: number}, data: *[], lineStyle: {color: string, width: number}, name: string, itemStyle: {color: string}, type: string}]}}
+     */
+    function transition(data) {
+        let xAxis = [];
+        let series = [
+            {
+                name: '水费',
+                data: [],
+                type: 'line',
+                color: '#0969da',
+                smooth: true,
+                areaStyle: {
+                    opacity: 0.05
+                }
+            },
+            {
+                name: '电费',
+                data: [],
+                type: 'line',
+                color: '#FFB800',
+                smooth: true,
+                areaStyle: {
+                    opacity: 0.05
+                }
+            },
+            {
+                name: '餐费',
+                data: [],
+                type: 'line',
+                color: '#ff5722',
+                smooth: true,
+                areaStyle: {
+                    opacity: 0.05
+                }
+            },
+            {
+                name: '总计',
+                data: [],
+                type: 'line',
+                smooth: true,
+                lineStyle: {
+                    color: color.green,
+                    width: 3,
+                },
+                itemStyle: {
+                    color: color.green,
+                },
+                areaStyle: {
+                    // 0.05透明度
+                    color: color.green,
+                    opacity: 0.1,
+                    origin: 'end'
+                }
+            },
+        ];
+        data.forEach(function (item, index) {
+            if (xAxis[xAxis.length - 1] !== item.date) {
+                xAxis.push(item.date);
+                series[0].data.push(0);
+                series[1].data.push(0);
+                series[2].data.push(0);
+                series[3].data.push(0);
+            }
+            series[3].data[series[3].data.length - 1] += item.price / 100;
+            switch (item.type) {
+                case 'WATER':
+                    let s0 = series[0];
+                    s0.data[s0.data.length - 1] += item.price / 100;
+                    break;
+                case 'ELECTRIC':
+                    let s1 = series[1];
+                    s1.data[s1.data.length - 1] += item.price / 100;
+                    break;
+                case 'MEAL_EXPENSE':
+                    let s2 = series[2];
+                    s2.data[s2.data.length - 1] += item.price / 100;
+                    break;
+            }
+        });
+        return {xAxis, series}
+
+    }
 </script>
 </body>
 </html>

@@ -8,19 +8,22 @@
     </select>
 
     <select id="ConsumeCountPriceOfDay" resultType="cn.qkmango.ccms.domain.vo.statistic.ConsumePriceCount">
-        select DATE_FORMAT(createTime, '%Y-%m-%d') AS date,
-               sum(price)                          AS price,
-               count(id)                           AS count
+        select
+        DATE_FORMAT(createTime, '%Y-%m-%d') AS date,
+        sum(price)                          AS price,
+        count(id)                           AS count,
+        type
         from t_consume
         <where>
+            type not in ('PAYMENT','RECHARGE','REFUND')
             <if test="startTime != null">
-                createTime &gt;= #{startTime}
+                and createTime &gt;= #{startTime}
             </if>
             <if test="endTime != null">
                 and createTime &lt;= #{endTime}
             </if>
         </where>
-        group by DAY(createTime)
+        group by DAY(createTime),type
         order by date;
     </select>
 
