@@ -28,6 +28,8 @@ public class StatisticServiceImpl implements StatisticService {
 
     /**
      * 统计最近一周消费金额数据
+     * <p>
+     * 按照一天和消费类型统计消费金额
      *
      * @param range 开始时间和结束时间范围
      *              如果不传入时间，则默认统计最近一周的数据
@@ -37,7 +39,7 @@ public class StatisticServiceImpl implements StatisticService {
      * @return 最近一周消费金额和消费次数
      */
     @Override
-    public List<ConsumePriceCount> ConsumeCountPriceOfDay(DatetimeRange range) {
+    public List<ConsumePriceCount> ConsumeCountPriceByDayAndType(DatetimeRange range) {
         //如果入参为空，则默认统计最近一周的数据
         if (range == null) {
             range = new DatetimeRange();
@@ -62,6 +64,6 @@ public class StatisticServiceImpl implements StatisticService {
             range.setEndTime(calendar.getTime());
         }
 
-        return dao.ConsumeCountPriceOfDay(range);
+        return dao.ConsumeCountPriceByDayAndType(range);
     }
 }

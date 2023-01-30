@@ -7,7 +7,7 @@
         SELECT FOUND_ROWS()
     </select>
 
-    <select id="ConsumeCountPriceOfDay" resultType="cn.qkmango.ccms.domain.vo.statistic.ConsumePriceCount">
+    <select id="ConsumeCountPriceByDayAndType" resultType="cn.qkmango.ccms.domain.vo.statistic.ConsumePriceCount">
         select
         DATE_FORMAT(createTime, '%Y-%m-%d') AS date,
         sum(price)                          AS price,

@@ -4,7 +4,6 @@ import cn.qkmango.ccms.domain.param.DatetimeRange;
 import cn.qkmango.ccms.domain.vo.statistic.ConsumePriceCount;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,10 +20,12 @@ public interface StatisticDao {
 
     /**
      * 统计每天的消费金额和消费次数
+     * <p>
+     * 按照一天和消费类型统计消费金额
      *
      * @param range 开始时间和结束时间范围
      * @return 每天的消费金额和消费次数
      */
-    List<ConsumePriceCount> ConsumeCountPriceOfDay(DatetimeRange range);
+    List<ConsumePriceCount> ConsumeCountPriceByDayAndType(DatetimeRange range);
 
 }
