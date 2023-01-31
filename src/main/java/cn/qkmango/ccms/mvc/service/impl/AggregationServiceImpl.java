@@ -26,8 +26,6 @@ import java.util.Map;
 public class AggregationServiceImpl implements AggregationService {
 
     @Resource
-    private ConsumeDao consumeDao;
-    @Resource
     private NoticeDao noticeDao;
     @Resource
     private StatisticDao statisticDao;
