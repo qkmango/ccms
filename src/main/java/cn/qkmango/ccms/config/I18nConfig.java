@@ -21,7 +21,8 @@ public class I18nConfig {
         ReloadableResourceBundleMessageSource messageBundle = new ReloadableResourceBundleMessageSource();
         messageBundle.setBasenames(
                 "classpath:i18n/db",
-                "classpath:i18n/response"
+                "classpath:i18n/response",
+                "classpath:i18n/valid"
         );
 
         messageBundle.setUseCodeAsDefaultMessage(false);

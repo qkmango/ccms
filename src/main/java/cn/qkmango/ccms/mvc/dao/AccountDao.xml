@@ -18,23 +18,24 @@
         where id = #{id} and password = #{oldPassword}
     </update>
 
-    <select id="login" resultType="cn.qkmango.ccms.domain.entity.Account">
-        select id,name
-        from
-        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">
-            t_user where id=#{id} and password = #{password} and unsubscribe=0;
-        </if>
-        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">
-            t_admin where id=#{id} and password = #{password};
-        </if>
-        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@pos">
-            t_pos where id=#{id} and password = #{password};
-        </if>
+    <select id="loginUser" resultType="cn.qkmango.ccms.domain.entity.Account">
+        select id, name
+        from t_user
+        where id = #{id}
+          and password = #{password}
+          and unsubscribe = 0;
     </select>
 
     <select id="loginPos" resultType="cn.qkmango.ccms.domain.entity.Pos">
         select id, name, type
         from t_pos
+        where id = #{id}
+          and password = #{password};
+    </select>
+
+    <select id="loginAdmin" resultType="cn.qkmango.ccms.domain.entity.Account">
+        select id, name
+        from t_admin
         where id = #{id}
           and password = #{password};
     </select>

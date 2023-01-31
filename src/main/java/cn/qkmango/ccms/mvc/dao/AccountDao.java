@@ -22,7 +22,7 @@ public interface AccountDao {
      * @param account 登陆账户
      * @return 已登陆的账户信息
      */
-    Account login(Account account);
+    Account loginUser(Account account);
 
     /**
      * 修改密码
@@ -39,6 +39,13 @@ public interface AccountDao {
      * @return 已登陆的账户信息
      */
     Pos loginPos(Account account);
+
+    /**
+     * 管理员登陆
+     * @param account 登陆账户
+     * @return 已登陆的账户信息
+     */
+    Account loginAdmin(Account account);
 
     /**
      * 获取用户信息

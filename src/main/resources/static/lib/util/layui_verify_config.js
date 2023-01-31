@@ -61,6 +61,12 @@ const layui_verify_config = {
             return false;
         }
         return /^\d+$/.test(value) ? false : "缴费项目ID必须为数字";
+    },
+    captcha: function (value, item) {
+        if (value === '' || value === null || value === undefined) {
+            return false;
+        }
+        return /^[A-Za-z0-9]{5}$/.test(value) ? false : "验证码为5位数字和字母";
     }
 
 }

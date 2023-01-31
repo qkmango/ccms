@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.Resource;
+
 import java.util.Locale;
 
 /**
@@ -47,11 +48,11 @@ public class AccountServiceImpl implements AccountService {
     public Account login(@Validated(Query.Login.class) Account account, Locale locale) throws LoginException {
         Account loginAccount = null;
 
-        //判断，如果是刷卡机登陆，还需要获取刷卡机的类型
-        if (account.getPermissionType() == PermissionType.pos) {
-            loginAccount = dao.loginPos(account);
-        } else {
-            loginAccount = dao.login(account);
+        //判断用户类型
+        switch (account.getPermissionType()) {
+            case pos -> loginAccount = dao.loginPos(account);
+            case user -> loginAccount = dao.loginUser(account);
+            case admin -> loginAccount = dao.loginAdmin(account);
         }
 
         if (loginAccount == null) {

@@ -22,6 +22,26 @@ spring:
       write-dates-as-timestamps: true
     date-format: java.text.SimpleDateFormat
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
+  mail:
+    host: smtp.qiye.aliyun.com
+    port: 25
+    username: youEmailAddress
+    password: youEmailPassword
+    default-encoding: UTF-8
+    from: nickname<youEmailAddress>
+    properties:
+      mail:
+        smtp:
+          socketFactoryClass: javax.net.ssl.SSLSocketFactory
+        debug: true
+
+
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

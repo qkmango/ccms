@@ -2,7 +2,6 @@ package cn.qkmango.ccms.domain.entity;
 
 
 import cn.qkmango.ccms.common.validate.group.Insert;
-import cn.qkmango.ccms.domain.bind.PermissionType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 
@@ -44,16 +43,12 @@ public class User extends Account {
     @Pattern(groups = {Insert.class}, regexp = "^[1-9]\\d{5}(18|19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$")
     private String idCard;
 
-    public User() {
-    }
+    /**
+     * 邮件
+     */
+    private String email;
 
-    public User(String id, String password, String name, PermissionType permissionType, Integer faculty, Integer specialized, Integer clazz, Boolean unsubscribe, String idCard) {
-        super(id, password, name, permissionType);
-        this.faculty = faculty;
-        this.specialized = specialized;
-        this.clazz = clazz;
-        this.unsubscribe = unsubscribe;
-        this.idCard = idCard;
+    public User() {
     }
 
     public Integer getClazz() {
@@ -96,6 +91,14 @@ public class User extends Account {
         this.unsubscribe = unsubscribe;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -104,6 +107,7 @@ public class User extends Account {
                 ", clazz=" + clazz +
                 ", unsubscribe=" + unsubscribe +
                 ", idCard='" + idCard + '\'' +
+                ", mail='" + email + '\'' +
                 ", id='" + getId() + '\'' +
                 ", password='" + getPassword() + '\'' +
                 ", name='" + getName() + '\'' +
