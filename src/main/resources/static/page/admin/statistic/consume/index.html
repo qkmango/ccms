@@ -136,13 +136,7 @@
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-            let range = {};
-            if (data.field.range !== '') {
-                const split = data.field.range.split(' - ');
-                range.startTime = split[0];
-                range.endTime = split[1];
-            }
-            let transData = transition(getEchartsData());
+            let transData = transition(getEchartsData(data.field.range));
             optionRecords.xAxis.data = transData.xAxis;
             optionRecords.series = transData.series;
             echartsRecords.setOption(optionRecords);

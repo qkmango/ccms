@@ -18,5 +18,5 @@ public interface AggregationService {
      * @param id 用户id
      * @return 用户首页所需的数据
      */
-    R<Map<String, Object>> userWelcome(String id);
+    Map<String, Object> userWelcome(String id);
 }

@@ -44,28 +44,8 @@ public interface ConsumeDao {
      */
     List<Consume> queryConsumePagination(@Param("pagination") Pagination<ConsumeParam> pagination);
 
-    /**
-     * 获取当前月消费信息
-     * 统计学生当前月的消费次数、总额、每次平均消费额
-     * currMonthConsumeCount 消费次数
-     * currMonthConsumeMoney 总额
-     * currMonthConsumeAvg   平均消费额
-     * currMonthConsumeMax 最大消费额
-     *
-     * @param id 学生id
-     * @return 当前月消费信息聚合数据
-     */
-    HashMap<String, Integer> currMonthConsumeInfo(String id);
 
 
-    /**
-     * 每类消费金额饼图
-     * 不包含 缴费PAYMENT,退款REFUND,充值RECHARGE
-     *
-     * @param id 学生id
-     * @return 每类消费金额饼图数据
-     */
-    List<Map<String, Integer>> currMonthConsumeTypePricePie(String id);
 
     /**
      * 查询消费记录详情

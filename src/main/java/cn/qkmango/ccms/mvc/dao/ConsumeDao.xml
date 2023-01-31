@@ -46,25 +46,6 @@
         LIMIT #{pagination.skipCount},#{pagination.limit}
     </select>
 
-    <select id="currMonthConsumeInfo" resultType="java.util.HashMap">
-        SELECT sum(price)       as currMonthConsumeMoney,
-               count(id)        as currMonthConsumeCount,
-               ceil(avg(price)) as currMonthConsumeAvg,
-               max(price)       as currMonthConsumeMax
-        FROM t_consume
-        WHERE DATE_FORMAT(createTime, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
-          and user = #{id};
-    </select>
-
-    <select id="currMonthConsumeTypePricePie" resultType="java.util.Map">
-        SELECT type,
-               sum(price) as price
-        FROM t_consume
-        WHERE DATE_FORMAT(createTime, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
-          and user = #{id} and type not in ('PAYMENT', 'RECHARGE','REFUND')
-        GROUP BY type
-    </select>
-
     <select id="detail" resultMap="ConsumeDetailsVO" parameterType="cn.qkmango.ccms.domain.entity.Consume">
         select
         c.id as consumeId,

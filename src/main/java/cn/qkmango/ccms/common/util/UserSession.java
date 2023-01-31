@@ -42,4 +42,17 @@ public class UserSession {
         }
         return (Account) session.getAttribute("account");
     }
+
+    /**
+     * 获取当前请求的用户账户的id
+     *
+     * @return id 用户账户的id
+     */
+    public static String getAccountId() {
+        Account account = getAccount();
+        if (account == null) {
+            return null;
+        }
+        return account.getId();
+    }
 }
