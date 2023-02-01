@@ -35,9 +35,6 @@ public class CaptchaController {
     @Resource
     private CaptchaService service;
 
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
-
     /**
      * 发送修改邮箱验证码
      *

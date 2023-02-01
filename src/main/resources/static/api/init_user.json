@@ -47,13 +47,13 @@
                 {
                     "title": "修改密码",
                     "icon": "fa fa-key",
-                    "href": "page/common/change-password.html",
+                    "href": "page/common/update-password.html",
                     "target": "_self"
                 },
                 {
                     "title": "修改邮箱",
                     "icon": "fa fa-envelope-o",
-                    "href": "page/common/change-email.html",
+                    "href": "page/common/update-email.html",
                     "target": "_self"
                 }
             ]

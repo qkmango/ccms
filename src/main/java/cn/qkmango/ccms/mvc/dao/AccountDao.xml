@@ -3,7 +3,7 @@
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.AccountDao">
 
-    <update id="changePassword">
+    <update id="updatePassword">
         update
         <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">
             t_user
@@ -18,7 +18,7 @@
         where id = #{id} and password = #{oldPassword}
     </update>
 
-    <select id="loginUser" resultType="cn.qkmango.ccms.domain.entity.Account">
+    <select id="loginUser" resultType="cn.qkmango.ccms.domain.entity.User">
         select id, name
         from t_user
         where id = #{id}
@@ -58,6 +58,13 @@
                  left join t_faculty fa on fa.id = sp.faculty
         where u.id = #{id}
     </select>
+
+    <update id="updateEmail">
+        update t_user
+        set email = #{email}
+        where id = #{account.id}
+    </update>
+
 
     <resultMap id="UserInfoVO" type="cn.qkmango.ccms.domain.vo.UserInfoVO">
         <association property="user">

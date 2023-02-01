@@ -10,14 +10,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 
 /**
- * Email服务实现类
+ * 邮件工具类
  *
  * @author qkmango
  * @version 1.0
- * @date 2022-08-02 14:53
+ * @date 2023-01-31 20:05
  */
 @Component
 public class EmailUtil {
@@ -32,95 +31,44 @@ public class EmailUtil {
     private JavaMailSender mailSender;
 
     /**
-     * 发送纯文本邮件信息
+     * 发送简单邮件
      *
-     * @param to      接收方
+     * @param to      接收者邮箱
      * @param subject 邮件主题
-     * @param content 邮件内容（发送内容）
+     * @param content 邮件内容
+     * @return 发送成功返回true，否则返回false
      */
-    public void sendMessage(String to, String subject, String content) throws MailException {
-        // 创建一个邮件对象
-        SimpleMailMessage msg = new SimpleMailMessage();
-        // 设置发送发
-        msg.setFrom(from);
-        // 设置接收方
-        msg.setTo(to);
-        // 设置邮件主题
-        msg.setSubject(subject);
-        // 设置邮件内容
-        msg.setText(content);
-        // 发送邮件
-        mailSender.send(msg);
+    public void sendSimpleText(String to, String subject, String content) throws MailException {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        // 邮件发送来源,邮件发送目标,设置标题,设置内容
+        simpleMailMessage.setFrom(from);
+        simpleMailMessage.setTo(to);
+        simpleMailMessage.setSubject(subject);
+        simpleMailMessage.setText(content);
+
+        // 发送
+        mailSender.send(simpleMailMessage);
     }
 
     /**
-     * 发送带附件的邮件信息
+     * 发送带HTML样式的邮件
      *
-     * @param to      接收方
+     * @param to      接收者邮箱
      * @param subject 邮件主题
-     * @param content 邮件内容（发送内容）
-     * @param files   文件数组 // 可发送多个附件
+     * @param html    邮件内容
+     * @return 发送成功返回true，否则返回false
      */
-    public void sendMessageCarryFiles(String to, String subject, String content, File[] files) {
+    public void sendWithHtml(String to, String subject, String html) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-            // 设置发送发
-            helper.setFrom(from);
-            // 设置接收方
-            helper.setTo(to);
-            // 设置邮件主题
-            helper.setSubject(subject);
-            // 设置邮件内容
-            helper.setText(content);
-            // 添加附件（多个）
-            if (files != null && files.length > 0) {
-                for (File file : files) {
-                    helper.addAttachment(file.getName(), file);
-                }
-            }
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-        // 发送邮件
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+
+        // 邮件发送来源,邮件发送目标,设置标题,设置内容，并设置内容 html 格式为 true
+        mimeMessageHelper.setFrom(from);
+        mimeMessageHelper.setTo(to);
+        mimeMessageHelper.setSubject(subject);
+        mimeMessageHelper.setText(html, true);
+
+        //发送
         mailSender.send(mimeMessage);
     }
-
-    /**
-     * 发送带附件的邮件信息
-     *
-     * @param to      接收方
-     * @param subject 邮件主题
-     * @param content 邮件内容（发送内容）
-     * @param file    单个文件
-     */
-    public void sendMessageCarryFile(String to, String subject, String content, File file) {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-            // 设置发送发
-            helper.setFrom(from);
-            // 设置接收方
-            helper.setTo(to);
-            // 设置邮件主题
-            helper.setSubject(subject);
-            // 设置邮件内容
-            helper.setText(content);
-            // 单个附件
-            helper.addAttachment(file.getName(), file);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-        // 发送邮件
-        mailSender.send(mimeMessage);
-    }
-
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
 }

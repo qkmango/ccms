@@ -275,7 +275,7 @@
                 {
                     "title": "修改密码",
                     "icon": "fa fa-key",
-                    "href": "page/common/change-password.html",
+                    "href": "page/common/update-password.html",
                     "target": "_self"
                 }
             ]

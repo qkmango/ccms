@@ -2,9 +2,11 @@ package cn.qkmango.ccms.mvc.dao;
 
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Pos;
+import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
 import cn.qkmango.ccms.domain.vo.UserInfoVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 描述
@@ -30,7 +32,7 @@ public interface AccountDao {
      * @param param 新的密码
      * @return 数据库影响的行数
      */
-    int changePassword(ChangePasswordParam param);
+    int updatePassword(ChangePasswordParam param);
 
     /**
      * 刷卡机登陆
@@ -42,6 +44,7 @@ public interface AccountDao {
 
     /**
      * 管理员登陆
+     *
      * @param account 登陆账户
      * @return 已登陆的账户信息
      */
@@ -54,4 +57,14 @@ public interface AccountDao {
      * @return 用户信息
      */
     UserInfoVO userInfo(String id);
+
+    /**
+     * 更新用户email
+     *
+     * @param account 账户
+     * @param email   新的email
+     * @return 数据库影响的行数
+     */
+    int updateEmail(@Param("account") Account account,
+                    @Param("email") String email);
 }

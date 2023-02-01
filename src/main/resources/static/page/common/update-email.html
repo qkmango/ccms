@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>修改邮箱</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <link rel="stylesheet" href="../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <style>
+        .layui-form-item {
+            width: auto;
+            padding-right: 10px;
+            line-height: 38px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                        <div carousel-item>
+                            <!--第1步-->
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">新邮箱</label>
+                                        <div class="layui-input-block">
+                                            <input type="email" name="email" value="2099432021@qq.com"
+                                                   class="layui-input" lay-verify="required|email">
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button id="send-captcha"
+                                                    class="layui-btn layui-btn-primary "
+                                                    lay-submit lay-filter="send-captcha">
+                                                获取验证码
+                                            </button>
+                                            <button class="layui-btn layui-bg-green layui-layout-right"
+                                                    lay-submit lay-filter="formStep">下一步
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!--第2步-->
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">验证码</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="captcha" class="layui-input"
+                                                   lay-verify="required|captcha" value="111"/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button type="button" class="layui-btn layui-btn-primary pre">上一步
+                                            </button>
+                                            <a class="layui-btn layui-bg-green layui-layout-right" id="update"
+                                               lay-submit
+                                               lay-filter="saveBtn"><i class="fa fa-check"></i> 提交</a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!--第3步-->
+                            <div>
+                                <div style="text-align: center;margin-top: 90px;">
+                                    <i class="layui-icon layui-circle layui-bg-green-dark"
+                                       style="font-size:30px;font-weight:bold;padding: 20px;line-height: 80px;">&#xe605;</i>
+                                    <div style="font-size: 24px;color: var(--green);font-weight: 500;margin-top: 30px;">
+                                        邮箱修改成功
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="../../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script src="../../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script src="../../lib/util/layui_verify_config.js"></script>
+<script>
+
+    let send_captcha_btn = document.querySelector("#send-captcha");
+    let countDownNum = 300;
+    let intervalId = null;
+
+    layui.use(['form', 'step'], function () {
+        // let formData = {}
+        let email = null;
+        let captcha = null;
+        const $ = layui.$;
+        const form = layui.form;
+        const step = layui.step;
+        const layer = layui.layer;
+
+        form.verify(layui_verify_config);
+
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%', //设置容器宽度
+            stepWidth: '750px',
+            height: '500px',
+            stepItems: [{
+                title: '填写新的邮箱'
+            }, {
+                title: '填写验证码'
+            }, {
+                title: '完成'
+            }]
+        });
+
+
+        // 页面1 下一步
+        form.on('submit(formStep)', function (data) {
+            email = data.field.email;
+            // console.log(formData)
+            step.next('#stepForm');
+            return false;
+        });
+
+        // 页面2 下一步
+        form.on('submit(formStep2)', function (data) {
+            captcha = data.field.captcha;
+            // console.log(formData)
+            step.next('#formStep2');
+            return false;
+        });
+
+        //获取验证码
+        form.on('submit(send-captcha)', function (data) {
+            email = data.field.email;
+            const index = layer.msg('验证码获取中...', {
+                time: 0,
+                icon: 16,
+                shade: 0.2
+            });
+
+            $.ajax({
+                url: '../../captcha/send/change/email.do',
+                // url: './index.test.json',
+                data: {
+                    email: email
+                },
+                dataType: 'json',
+                success: function (res) {
+                    layer.closeAll();
+                    console.log(res)
+                    if (res.success) {
+                        layer.msg(res.message, {icon: 1});
+                        send_captcha_btn.disabled = true;
+                        if (intervalId == null) {
+                            countDownNum = 300;
+                            intervalId = setInterval(countDown, 1000);
+                        }
+                        return;
+                    }
+                    layer.msg(res.message, {icon: 2});
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    layer.msg(jqXHR.status + '', {icon: 2});
+                }
+            })
+            return false;
+        });
+
+
+        //提交
+        form.on('submit(saveBtn)', function (data) {
+            captcha = data.field.captcha;
+            $.ajax({
+                url: '../../account/user/update/email.do',
+                data: {
+                    email: email,
+                    captcha: captcha,
+                },
+                type: 'post',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success) {
+                        step.next('#stepForm');
+                        layer.msg(res.message, {icon: 1});
+                        return
+                    }
+                    layer.msg(res.message, {icon: 2});
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    layer.msg(jqXHR.status + '', {icon: 2});
+                }
+            })
+            return false;
+        });
+
+        //上一步
+        $('.pre').click(function () {
+            step.pre('#stepForm');
+        });
+
+    })
+
+    /**
+     * 倒计时
+     */
+    function countDown() {
+        countDownNum--;
+        if (countDownNum <= 0) {
+            clearInterval(intervalId);
+            intervalId = null;
+            send_captcha_btn.innerText = "获取验证码";
+            send_captcha_btn.disabled = false;
+            return;
+        }
+        console.log(countDownNum)
+        send_captcha_btn.innerText = countDownNum + "秒后再试"
+    }
+
+</script>
+</body>
+</html>

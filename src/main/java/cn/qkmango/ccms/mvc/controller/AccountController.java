@@ -4,14 +4,19 @@ import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Card;
+import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
 import cn.qkmango.ccms.domain.vo.UserInfoVO;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.mvc.service.UserService;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+
 import java.util.Locale;
 
 /**
@@ -32,6 +38,7 @@ import java.util.Locale;
  * @date 2022-10-22 14:57
  */
 
+@Validated
 @RestController
 @RequestMapping("account")
 public class AccountController {
@@ -83,16 +90,16 @@ public class AccountController {
      * @throws UpdateException 修改失败
      */
 
-    @PostMapping("update/changePassword.do")
-    public R<Object> changePassword(@Validated ChangePasswordParam param, HttpSession session, Locale locale) throws UpdateException {
+    @PostMapping("update/password.do")
+    public R<Object> updatePassword(@Validated ChangePasswordParam param, HttpSession session, Locale locale) throws UpdateException {
 
         Account account = (Account) session.getAttribute("account");
         param.setPermissionType(account.getPermissionType());
         param.setId(account.getId());
 
-        service.changePassword(param, locale);
+        service.updatePassword(param, locale);
 
-        return R.success(messageSource.getMessage("db.changePassword.success", null, locale));
+        return R.success(messageSource.getMessage("db.update.password.success", null, locale));
     }
 
 
@@ -131,16 +138,35 @@ public class AccountController {
     /**
      * 获取用户信息
      *
-     * @param session 会话
      * @return 用户信息
      */
     @Permission({PermissionType.admin, PermissionType.user})
     @GetMapping("one/user/info.do")
-    public R<UserInfoVO> userInfo(HttpSession session) {
-        Account account = (Account) session.getAttribute("account");
-        String id = account.getId();
+    public R<UserInfoVO> userInfo() {
+        String id = UserSession.getAccountId();
         UserInfoVO info = service.userInfo(id);
         return R.success(info);
+    }
+
+    /**
+     * 更新用户email
+     *
+     * @param email  新的email
+     * @param locale 语言环境
+     * @return 修改结果
+     * @throws UpdateException 修改失败
+     */
+    @Permission(PermissionType.user)
+    @PostMapping("user/update/email.do")
+    public R updateEmail(@NotBlank(message = "{valid.email.notBlank}")
+                         @Email(message = "{valid.email.illegal}") String email,
+                         @Pattern(regexp = "^[a-zA-Z0-9]{5}$",message = "{valid.captcha.illegal}") String captcha,
+                         Locale locale) throws UpdateException {
+        User user = (User) UserSession.getAccount();
+        String id = user.getId();
+        // user.setEmail(email);
+        service.updateEmail(user, email, captcha, locale);
+        return R.success(messageSource.getMessage("db.update.email.success", null, locale));
     }
 
 }

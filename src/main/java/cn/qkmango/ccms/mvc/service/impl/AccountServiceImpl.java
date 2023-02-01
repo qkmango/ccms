@@ -3,13 +3,14 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.validate.group.Query;
-import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
 import cn.qkmango.ccms.domain.vo.UserInfoVO;
 import cn.qkmango.ccms.mvc.dao.AccountDao;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Resource
     private AccountDao dao;
+
+    @Resource
+    private StringRedisTemplate srt;
 
     /**
      * 登陆接口
@@ -73,10 +77,10 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void changePassword(ChangePasswordParam param, Locale locale) throws UpdateException {
-        int affectedRows = dao.changePassword(param);
+    public void updatePassword(ChangePasswordParam param, Locale locale) throws UpdateException {
+        int affectedRows = dao.updatePassword(param);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.changePassword.failure", null, locale));
+            throw new UpdateException(messageSource.getMessage("db.update.password.failure", null, locale));
         }
     }
 
@@ -89,5 +93,38 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public UserInfoVO userInfo(String id) {
         return dao.userInfo(id);
+    }
+
+    /**
+     * 更新用户email
+     *
+     * @param user    用户
+     * @param captcha 验证码
+     * @param email   新的email
+     * @param locale  语言环境
+     * @throws UpdateException 更新异常
+     */
+    @Override
+    public void updateEmail(User user, String email, String captcha, Locale locale) throws UpdateException {
+
+        // 生成redis key
+        String key = String.format("captcha:change:email:%s:%s:%s",
+                user.getPermissionType(),
+                user.getId(), email);
+
+        // 获取redis中的验证码
+        String redisCaptcha = srt.opsForValue().get(key);
+        boolean equals = captcha.equals(redisCaptcha);
+        if (!equals) {
+            throw new UpdateException(messageSource.getMessage("response.captcha.valid.failure", null, locale));
+        }
+
+        //更新email
+        int affectedRows = dao.updateEmail(user, email);
+        if (affectedRows != 1) {
+            throw new UpdateException(messageSource.getMessage("db.update.email.failure", null, locale));
+        }
+        // 删除redis中的验证码
+        srt.delete(key);
     }
 }

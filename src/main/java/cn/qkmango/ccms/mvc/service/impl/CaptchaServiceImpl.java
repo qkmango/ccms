@@ -7,6 +7,7 @@ import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.mvc.service.CaptchaService;
 import jakarta.annotation.Resource;
+import jakarta.mail.MessagingException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.MailSendException;
@@ -30,7 +31,10 @@ public class CaptchaServiceImpl implements CaptchaService {
     private ReloadableResourceBundleMessageSource message;
 
     @Resource
-    private EmailUtil emailUtil;
+    private EmailUtil emailUtil2;
+
+    @Resource
+    private String mailCaptchaTemplate;
 
     @Resource
     private StringRedisTemplate srt;
@@ -55,9 +59,12 @@ public class CaptchaServiceImpl implements CaptchaService {
         String key = String.format("captcha:change:email:%s:%s:%s", type, id, email);
 
         //发送验证码到用户邮箱
+        String content = String.format(mailCaptchaTemplate, id, captcha);
+
+        //发送邮件
         try {
-            emailUtil.sendMessage(email, "修改邮箱验证码", "您的验证码为： " + captcha + "，请在5分钟内完成验证。");
-        } catch (Exception e) {
+            emailUtil2.sendWithHtml(email, "修改邮箱验证码", content);
+        } catch (MessagingException e) {
             e.printStackTrace();
             throw new MailSendException(message.getMessage("response.email.send.failure", null, locale));
         }

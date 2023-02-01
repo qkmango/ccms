@@ -3,6 +3,7 @@ package cn.qkmango.ccms.mvc.service;
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
 import cn.qkmango.ccms.domain.vo.UserInfoVO;
 
@@ -33,7 +34,7 @@ public interface AccountService {
      * @param locale 语言环境
      * @throws UpdateException 更新异常
      */
-    void changePassword(ChangePasswordParam param, Locale locale) throws UpdateException;
+    void updatePassword(ChangePasswordParam param, Locale locale) throws UpdateException;
 
     /**
      * 获取用户信息
@@ -42,4 +43,15 @@ public interface AccountService {
      * @return 用户信息
      */
     UserInfoVO userInfo(String id);
+
+    /**
+     * 更新用户email
+     *
+     * @param user      id
+     * @param captcha 验证码
+     * @param email   新的email
+     * @param locale  语言环境
+     * @throws UpdateException 更新异常
+     */
+    void updateEmail(User user, String email, String captcha, Locale locale) throws UpdateException;
 }
