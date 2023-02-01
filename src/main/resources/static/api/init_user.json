@@ -34,6 +34,12 @@
             "href": "page/user/payment.html"
         },
         {
+            "title": "同组成员",
+            "icon": "fa fa-address-book",
+            "target": "_self",
+            "href": "page/user/classmate.html"
+        },
+        {
             "title": "个人中心",
             "icon": "fa fa-user",
             "target": "_self",
@@ -41,7 +47,7 @@
                 {
                     "title": "基本资料",
                     "icon": "fa fa-id-card-o",
-                    "href": "page/common/account-info.html",
+                    "href": "page/user/account-info.html",
                     "target": "_self"
                 },
                 {

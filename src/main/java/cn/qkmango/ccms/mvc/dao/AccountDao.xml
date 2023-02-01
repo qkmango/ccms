@@ -45,6 +45,7 @@
                u.name        as user_name,
                u.idCard      as user_idcard,
                u.unsubscribe as user_unsubscribe,
+               u.email      as user_email,
                ca.balance    as card_balance,
                ca.`lock`     as card_lock,
                cz.name       as clazz_name,
@@ -60,10 +61,22 @@
     </select>
 
     <update id="updateEmail">
-        update t_user
+        update
+        <if test="account.permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">
+            t_user
+        </if>
+        <if test="account.permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">
+            t_admin
+        </if>
         set email = #{email}
         where id = #{account.id}
     </update>
+
+    <select id="clazzmate" resultType="cn.qkmango.ccms.domain.entity.Account">
+        select id, name, email
+        from t_user
+        where clazz = (select clazz from t_user where id = #{id})
+    </select>
 
 
     <resultMap id="UserInfoVO" type="cn.qkmango.ccms.domain.vo.UserInfoVO">
@@ -71,6 +84,7 @@
             <id property="id" column="user_id"/>
             <result property="name" column="user_name"/>
             <result property="idCard" column="user_idcard"/>
+            <result property="email" column="user_email"/>
             <result property="unsubscribe" column="user_unsubscribe"/>
         </association>
         <association property="card">

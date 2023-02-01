@@ -7,6 +7,7 @@ import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
 import cn.qkmango.ccms.domain.vo.UserInfoVO;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -47,11 +48,18 @@ public interface AccountService {
     /**
      * 更新用户email
      *
-     * @param user      id
+     * @param account 账户
      * @param captcha 验证码
      * @param email   新的email
      * @param locale  语言环境
      * @throws UpdateException 更新异常
      */
-    void updateEmail(User user, String email, String captcha, Locale locale) throws UpdateException;
+    void updateEmail(Account account, String email, String captcha, Locale locale) throws UpdateException;
+
+    /**
+     * 同班同学列表
+     *
+     * @return 同班同学列表
+     */
+    List<Account> clazzmate();
 }

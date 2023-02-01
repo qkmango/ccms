@@ -17,19 +17,8 @@
 
         .icon {
             margin-right: 10px;
-            color: var(--blue);
-        }
-
-        .icon-cray {
-            color: #ffb800 !important;
-        }
-
-        .icon-blue {
-            color: var(--blue) !important;
-        }
-
-        .icon-tip {
-            color: #ff5722 !important;
+            /*color: var(--blue);*/
+            color: var(--green);
         }
 
         .layuimini-qiuck-module {
@@ -86,24 +75,6 @@
             color: inherit
         }
 
-        .label {
-            display: inline;
-            padding: .2em .6em .3em;
-            font-size: 75%;
-            font-weight: 700;
-            line-height: 1;
-            color: #fff;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: baseline;
-            border-radius: .25em;
-            margin-top: .3em;
-        }
-
-        .layui-red {
-            color: red
-        }
-
         .main_btn > p {
             height: 40px;
         }
@@ -125,7 +96,7 @@
             transition: background 0.2s ease-in-out;
         }
 
-        .layuimini-notice-title, .layuimini-notice-label {
+        .layuimini-notice-title {
             padding-right: 70px !important;
             text-overflow: ellipsis !important;
             overflow: hidden !important;
@@ -156,7 +127,7 @@
                 <div class="layui-row layui-col-space15">
                     <div class="layui-col-md6">
                         <div class="layui-card">
-                            <div class="layui-card-header"><i class="fa fa-calendar icon-blue"></i> 本月消费情况</div>
+                            <div class="layui-card-header layui-bg-green-tint"><i class="fa fa-calendar icon"></i> 本月消费情况</div>
                             <div class="layui-card-body">
                                 <div class="welcome-module">
                                     <div class="layui-row layui-col-space10">
@@ -219,7 +190,7 @@
                     </div>
                     <div class="layui-col-md6">
                         <div class="layui-card">
-                            <div class="layui-card-header"><i class="fa fa-credit-card icon icon-blue"></i>快捷入口
+                            <div class="layui-card-header layui-bg-green-tint"><i class="fa fa-rocket icon"></i>快捷入口
                             </div>
                             <div class="layui-card-body">
                                 <div class="welcome-module">
@@ -233,9 +204,9 @@
                                         </div>
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:;" layuimini-content-href="page/user/details.html"
-                                               data-title="校园卡信息" data-icon="fa fa-info-circle">
-                                                <i class="fa fa-info-circle"></i>
-                                                <cite>校园卡信息</cite>
+                                               data-title="一卡通信息" data-icon="fa fa-credit-card">
+                                                <i class="fa fa-credit-card"></i>
+                                                <cite>一卡通信息</cite>
                                             </a>
                                         </div>
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
@@ -243,6 +214,13 @@
                                                data-title="留言" data-icon="fa fa-comments-o">
                                                 <i class="fa fa-comments-o"></i>
                                                 <cite>留言</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="javascript:;" layuimini-content-href="page/user/payment.html"
+                                               data-title="我的缴费" data-icon="fa fa-paypal">
+                                                <i class="fa fa-paypal"></i>
+                                                <cite>我的缴费</cite>
                                             </a>
                                         </div>
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
@@ -254,31 +232,25 @@
                                             </a>
                                         </div>
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
-                                            <a href="javascript:;" layuimini-content-href="page/form.html"
-                                               data-title="表单示例" data-icon="fa fa-calendar">
-                                                <i class="fa fa-calendar"></i>
-                                                <cite>表单示例</cite>
+                                            <a href="javascript:;"
+                                               layuimini-content-href="page/common/update-email.html"
+                                               data-title="修改邮箱" data-icon="fa fa-envelope-o">
+                                                <i class="fa fa-envelope-o"></i>
+                                                <cite>修改邮箱</cite>
                                             </a>
                                         </div>
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
-                                            <a href="javascript:;" layuimini-content-href="page/404.html"
-                                               data-title="404页面" data-icon="fa fa-hourglass-end">
-                                                <i class="fa fa-hourglass-end"></i>
-                                                <cite>404页面</cite>
+                                            <a href="javascript:;" layuimini-content-href="page/user/account-info.html"
+                                               data-title="基本资料" data-icon="fa fa-id-card-o">
+                                                <i class="fa fa-id-card-o"></i>
+                                                <cite>基本资料</cite>
                                             </a>
                                         </div>
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
-                                            <a href="javascript:;" layuimini-content-href="page/button.html"
-                                               data-title="按钮示例" data-icon="fa fa-snowflake-o">
-                                                <i class="fa fa-snowflake-o"></i>
-                                                <cite>按钮示例</cite>
-                                            </a>
-                                        </div>
-                                        <div class="layui-col-xs3 layuimini-qiuck-module">
-                                            <a href="javascript:;" layuimini-content-href="https://www.baidu.com"
-                                               data-title="百度搜索" data-icon="fa fa-search">
-                                                <i class="fa fa-search"></i>
-                                                <cite>百度搜索</cite>
+                                            <a href="javascript:;" layuimini-content-href="page/user/classmate.html"
+                                               data-title="同组成员" data-icon="fa fa-address-book-o">
+                                                <i class="fa fa-address-book-o"></i>
+                                                <cite>同组成员</cite>
                                             </a>
                                         </div>
                                     </div>
@@ -289,9 +261,9 @@
                     </div>
                     <div class="layui-col-md12">
                         <div class="layui-card">
-                            <div class="layui-card-header"><i class="fa fa-pie-chart icon"></i>消费类别</div>
+                            <div class="layui-card-header layui-bg-green-tint"><i class="fa fa-pie-chart icon"></i>消费类别</div>
                             <div class="layui-card-body">
-                                <div id="echarts-records" style="width: 100%;min-height:500px"></div>
+                                <div id="echarts-records" style="width: 100%;min-height:450px"></div>
                             </div>
                         </div>
                     </div>
@@ -301,7 +273,7 @@
             <div class="layui-col-md4">
 
                 <div class="layui-card">
-                    <div class="layui-card-header"><i class="fa fa-bullhorn icon icon-blue"></i>系统公告</div>
+                    <div class="layui-card-header layui-bg-green-tint"><i class="fa fa-bullhorn icon"></i>系统公告</div>
                     <div class="layui-card-body layui-text notice-list-box"></div>
                 </div>
             </div>
@@ -325,7 +297,6 @@
             echartsRecords.resize();
         }
 
-
         /**
          * 消费类别
          */
@@ -338,12 +309,12 @@
                 top: '5%',
                 left: 'center'
             },
-            series: [
-                {
+            series: {
                     name: '消费类别饼图',
                     type: 'pie',
                     radius: ['40%', '70%'],
                     avoidLabelOverlap: false,
+                    color: ['#00965e','#0969da','#FFB800','#ff5722'],
                     label: {
                         position: 'inside',
                         fontSize: '16'
@@ -365,7 +336,6 @@
                         {value: 300, name: '充值'}
                     ]
                 }
-            ]
         };
 
         //获取主界面的聚合数据
@@ -379,7 +349,7 @@
                     let consumeInfo = res.data.consumeInfo;
                     let infoList = document.querySelectorAll('.currMonthConsumeInfo');
                     const nodata = '<span style="color: #e2e2e2;font-size:18px;"><i class="fa f"></i>暂无消费哦</span>';
-                    infoList[0].innerHTML = consumeInfo.count == 0 ? nodata : consumeInfo.count;
+                    infoList[0].innerHTML = consumeInfo.count === 0 ? nodata : consumeInfo.count;
                     infoList[1].innerHTML = consumeInfo.sum == null ? nodata : consumeInfo.sum / 100;
                     infoList[2].innerHTML = consumeInfo.avg == null ? nodata : consumeInfo.avg / 100;
                     infoList[3].innerHTML = consumeInfo.max == null ? nodata : consumeInfo.max / 100;
@@ -402,9 +372,8 @@
                     let data = [];
                     res.data.consumeTypePrice.forEach(e => {
                         data.push({value: e.price / 100, name: FieldMapping.consume.type(e.type)});
-
                     });
-                    optionRecords.series[0].data = data;
+                    optionRecords.series.data = data;
                     echartsRecords.setOption(optionRecords);
                 }
             }
@@ -418,21 +387,23 @@
                 noticeTime = $(this).children('.layuimini-notice-extra').text(),
                 content = $(this).children('.layuimini-notice-content').html(),
                 author = $(this).children('.layuimini-notice-author').text();
+
             let html =
                 `<div style="padding:15px 20px; text-align:justify; line-height: 22px;border-bottom:1px solid #e2e2e2;">
-                    <div><h3 class="text-danger" style="font-weight: bold;text-align: center">${title}</h3></div><hr>
-                    <div style="font-size: 14px">${content}</div>
+                    <div style="text-align: center;font-size: 16px;font-weight: bold">${title}</div>
+                    <div style="font-size: 14px;line-height: 2">${content}</div>
                 </div>`;
-            parent.layer.open({
+            layer.open({
                 type: 1,
-                title: `<i class="fa fa-bullhorn icon icon-blue"></i> 系统公告<span style="float: right;right: 1px;color: #b1b3b9;margin-top: 1px">${author} ${noticeTime}</span>`,
+                title: `<i class="fa fa-bullhorn"></i> ${author}<span style="float: right;right: 1px;font-style: italic;font-weight: normal;font-size: 14px">${noticeTime}</span>`,
                 area: '400px;',
                 shade: 0.8,
-                id: 'layuimini-notice',
                 btnAlign: 'c',
+                offset: '100px',
                 moveType: 1,
                 shadeClose: true,
-                content: html
+                skin: 'layui-layer-green-tint',
+                content:html
             });
         });
 

@@ -43,10 +43,6 @@ public class User extends Account {
     @Pattern(groups = {Insert.class}, regexp = "^[1-9]\\d{5}(18|19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$")
     private String idCard;
 
-    /**
-     * 邮件
-     */
-    private String email;
 
     public User() {
     }
@@ -91,13 +87,6 @@ public class User extends Account {
         this.unsubscribe = unsubscribe;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     @Override
     public String toString() {
@@ -107,11 +96,11 @@ public class User extends Account {
                 ", clazz=" + clazz +
                 ", unsubscribe=" + unsubscribe +
                 ", idCard='" + idCard + '\'' +
-                ", mail='" + email + '\'' +
                 ", id='" + getId() + '\'' +
                 ", password='" + getPassword() + '\'' +
                 ", name='" + getName() + '\'' +
                 ", permissionType=" + getPermissionType() +
+                ", email='" + getEmail() + '\'' +
                 '}';
     }
 }

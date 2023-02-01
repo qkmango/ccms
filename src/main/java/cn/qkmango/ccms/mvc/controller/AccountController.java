@@ -28,6 +28,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -156,17 +157,26 @@ public class AccountController {
      * @return 修改结果
      * @throws UpdateException 修改失败
      */
-    @Permission(PermissionType.user)
+    @Permission({PermissionType.admin, PermissionType.user})
     @PostMapping("user/update/email.do")
     public R updateEmail(@NotBlank(message = "{valid.email.notBlank}")
                          @Email(message = "{valid.email.illegal}") String email,
-                         @Pattern(regexp = "^[a-zA-Z0-9]{5}$",message = "{valid.captcha.illegal}") String captcha,
+                         @Pattern(regexp = "^[a-zA-Z0-9]{5}$", message = "{valid.captcha.illegal}") String captcha,
                          Locale locale) throws UpdateException {
-        User user = (User) UserSession.getAccount();
-        String id = user.getId();
-        // user.setEmail(email);
-        service.updateEmail(user, email, captcha, locale);
+        Account account = UserSession.getAccount();
+        service.updateEmail(account, email, captcha, locale);
         return R.success(messageSource.getMessage("db.update.email.success", null, locale));
+    }
+
+    /**
+     * 同班同学列表
+     *
+     * @return 同班同学列表
+     */
+    @GetMapping("clazzmate/all/list.do")
+    public R<List> clazzmate() {
+        List<Account> data = service.clazzmate();
+        return R.success(data);
     }
 
 }

@@ -8,6 +8,8 @@ import cn.qkmango.ccms.domain.vo.UserInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 描述
  *
@@ -67,4 +69,11 @@ public interface AccountDao {
      */
     int updateEmail(@Param("account") Account account,
                     @Param("email") String email);
+
+    /**
+     * 同班同学列表
+     *
+     * @return 同班同学列表
+     */
+    List<Account> clazzmate(String id);
 }

@@ -27,13 +27,6 @@ public class Pos extends Account {
     public Pos() {
     }
 
-    public Pos(String id, String password, String name, PermissionType permissionType, String address, ConsumeType type, String store) {
-        super(id, password, name, permissionType);
-        this.address = address;
-        this.type = type;
-        this.store = store;
-    }
-
     public String getAddress() {
         return address;
     }

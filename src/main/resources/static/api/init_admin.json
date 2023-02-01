@@ -277,6 +277,12 @@
                     "icon": "fa fa-key",
                     "href": "page/common/update-password.html",
                     "target": "_self"
+                },
+                {
+                    "title": "修改邮箱",
+                    "icon": "fa fa-envelope-o",
+                    "href": "page/common/update-email.html",
+                    "target": "_self"
                 }
             ]
         }

@@ -2,6 +2,7 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.User;
@@ -18,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.Resource;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -98,19 +100,18 @@ public class AccountServiceImpl implements AccountService {
     /**
      * 更新用户email
      *
-     * @param user    用户
+     * @param account 账户
      * @param captcha 验证码
      * @param email   新的email
      * @param locale  语言环境
      * @throws UpdateException 更新异常
      */
     @Override
-    public void updateEmail(User user, String email, String captcha, Locale locale) throws UpdateException {
-
+    public void updateEmail(Account account, String email, String captcha, Locale locale) throws UpdateException {
         // 生成redis key
         String key = String.format("captcha:change:email:%s:%s:%s",
-                user.getPermissionType(),
-                user.getId(), email);
+                account.getPermissionType(),
+                account.getId(), email);
 
         // 获取redis中的验证码
         String redisCaptcha = srt.opsForValue().get(key);
@@ -120,11 +121,22 @@ public class AccountServiceImpl implements AccountService {
         }
 
         //更新email
-        int affectedRows = dao.updateEmail(user, email);
+        int affectedRows = dao.updateEmail(account, email);
         if (affectedRows != 1) {
             throw new UpdateException(messageSource.getMessage("db.update.email.failure", null, locale));
         }
         // 删除redis中的验证码
         srt.delete(key);
+    }
+
+    /**
+     * 同班同学列表
+     *
+     * @return 同班同学列表
+     */
+    @Override
+    public List<Account> clazzmate() {
+        String id = UserSession.getAccountId();
+        return dao.clazzmate(id);
     }
 }

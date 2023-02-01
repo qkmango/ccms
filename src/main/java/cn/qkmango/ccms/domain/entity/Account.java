@@ -33,14 +33,17 @@ public class Account implements Serializable {
     @NotNull(groups = Login.class)
     private PermissionType permissionType;
 
+    private String email;
+
     public Account() {
     }
 
-    public Account(String id, String password, String name, PermissionType permissionType) {
+    public Account(String id, String password, String name, PermissionType permissionType, String email) {
         this.id = id;
         this.password = password;
         this.name = name;
         this.permissionType = permissionType;
+        this.email = email;
     }
 
     public String getId() {
@@ -75,13 +78,23 @@ public class Account implements Serializable {
         this.permissionType = permissionType;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
     @Override
     public String toString() {
         return "Account{" +
-                "id=" + id +
+                "id='" + id + '\'' +
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", permissionType=" + permissionType +
+                ", email='" + email + '\'' +
                 '}';
     }
 }
