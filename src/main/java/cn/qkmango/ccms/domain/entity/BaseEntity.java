@@ -10,5 +10,5 @@ import java.io.Serializable;
  * @date 2023-01-18 18:56
  */
 public interface BaseEntity extends Serializable {
-    public String redisKey();
+    String redisKey();
 }

@@ -252,9 +252,7 @@ public class PayServiceImpl implements PayService {
                 record.setPayment(payment.getId());
                 record.setState(PayState.PAID);
                 int countBy = recordDao.countBy(record);
-                if (countBy > 0) {
-                    return false;
-                }
+                return countBy <= 0;
             }
         }
 

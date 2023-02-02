@@ -14,11 +14,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
  */
 public class LoginInterceptor implements HandlerInterceptor {
 
-    private String LOGIN_API;
-    private String NO_LOGIN_JSON;
+    private final String LOGIN_API;
+    private final String NO_LOGIN_JSON;
 
-    public LoginInterceptor(String loginApi, String NO_LOGIN_JSON) {
-        this.LOGIN_API = loginApi;
+    public LoginInterceptor(String LOGIN_API, String NO_LOGIN_JSON) {
+        this.LOGIN_API = LOGIN_API;
         this.NO_LOGIN_JSON = NO_LOGIN_JSON;
     }
 

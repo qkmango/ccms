@@ -24,8 +24,8 @@ import java.lang.reflect.Method;
  */
 public class PermissionsInterceptor implements HandlerInterceptor {
 
-    private String loginApi;
-    private String OPERATION_WITHOUT_PERMISSION_JSON;
+    private final String loginApi;
+    private final String OPERATION_WITHOUT_PERMISSION_JSON;
 
     public PermissionsInterceptor(String loginApi,String OPERATION_WITHOUT_PERMISSION_JSON) {
         this.loginApi = loginApi;

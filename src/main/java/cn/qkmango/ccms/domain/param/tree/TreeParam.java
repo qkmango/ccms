@@ -21,14 +21,14 @@ public interface TreeParam extends Serializable {
      *
      * @param ids id列表
      */
-    public void setIds(List<String> ids);
+    void setIds(List<String> ids);
 
     /**
      * 获取自己的 id列表
      *
      * @return id列表
      */
-    public List<String> getIds();
+    List<String> getIds();
 
     /**
      * 设置父层的 id列表
@@ -36,12 +36,12 @@ public interface TreeParam extends Serializable {
      *
      * @param parentIds 父层id列表
      */
-    public void setParentIds(List<String> parentIds);
+    void setParentIds(List<String> parentIds);
 
     /**
      * 获取父层的 id列表
      *
      * @return 父层id列表
      */
-    public List<String> getParentIds();
+    List<String> getParentIds();
 }

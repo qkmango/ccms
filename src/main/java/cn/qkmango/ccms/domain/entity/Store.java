@@ -48,7 +48,7 @@ public class Store implements Serializable {
      * 管理者电话
      */
     @NotNull(groups = {Insert.class})
-    @Pattern(regexp = "^1(3|4|5|6|7|8|9)\\d{9}$", groups = {Insert.class})
+    @Pattern(regexp = "^1([3456789])\\d{9}$", groups = {Insert.class})
     private String phone;
 
 

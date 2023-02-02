@@ -164,8 +164,8 @@
             <result column="state" property="state"/>
         </association>
         <association property="author">
-            <result column="authorId" property="id"></result>
-            <result column="authorName" property="name"></result>
+            <result column="authorId" property="id"/>
+            <result column="authorName" property="name"/>
         </association>
     </resultMap>
 
