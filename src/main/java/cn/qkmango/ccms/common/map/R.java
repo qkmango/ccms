@@ -1,5 +1,7 @@
 package cn.qkmango.ccms.common.map;
 
+import java.io.Serializable;
+
 /**
  * 响应 Map
  *
@@ -7,7 +9,7 @@ package cn.qkmango.ccms.common.map;
  * @version 1.0
  * @date 2022-10-23 17:04
  */
-public class R<T> {
+public class R<T> implements Serializable {
     /**
      * 响应状态
      * <li>默认为 false

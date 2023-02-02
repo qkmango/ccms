@@ -4,19 +4,19 @@ import cn.qkmango.ccms.common.exception.DeleteException;
 import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.domain.constant.Constant;
 import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.param.PosParam;
 import cn.qkmango.ccms.domain.vo.PosVO;
 import cn.qkmango.ccms.mvc.dao.PosDao;
 import cn.qkmango.ccms.mvc.service.PosService;
+import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,6 +36,9 @@ public class PosServiceImpl implements PosService {
     @Resource
     private PosDao dao;
 
+    @Value("${ccms.pos.default.password}")
+    private String POS_DEFAULT_PASSWORD;
+
     /**
      * 添加刷卡机
      *
@@ -48,7 +51,7 @@ public class PosServiceImpl implements PosService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public String add(Pos pos, Locale locale) throws InsertException {
         //设置默认密码
-        pos.setPassword(Constant.POS_DEFAULT_PASSWORD);
+        pos.setPassword(POS_DEFAULT_PASSWORD);
         int affectedRows = dao.add(pos);
         if (affectedRows != 1) {
             throw new InsertException(messageSource.getMessage("db.pos.add.failure", null, locale));

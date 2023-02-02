@@ -8,7 +8,6 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Update;
 import cn.qkmango.ccms.domain.bind.PermissionType;
-import cn.qkmango.ccms.domain.constant.Constant;
 import cn.qkmango.ccms.domain.entity.Area;
 import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.entity.Store;
@@ -19,11 +18,12 @@ import cn.qkmango.ccms.domain.vo.StoreAndAreaVO;
 import cn.qkmango.ccms.mvc.service.AreaService;
 import cn.qkmango.ccms.mvc.service.PosService;
 import cn.qkmango.ccms.mvc.service.StoreService;
+import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,6 +51,9 @@ public class MerchantController {
 
     @Resource
     private PosService posService;
+
+    @Value("${ccms.pos.default.password}")
+    private String POS_DEFAULT_PASSWORD;
 
 
     // ================================ 以下为区域管理 ================================
@@ -201,7 +204,7 @@ public class MerchantController {
     @PostMapping("pos/one/insert.do")
     public R insertPos(@Validated(Insert.class) Pos pos, Locale locale) throws InsertException {
         String id = posService.add(pos, locale);
-        String[] args = {id, Constant.POS_DEFAULT_PASSWORD};
+        String[] args = {id, POS_DEFAULT_PASSWORD};
         return R.success(id,messageSource.getMessage("db.pos.add.success", args, locale));
     }
 

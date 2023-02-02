@@ -3,13 +3,12 @@ package cn.qkmango.ccms.web.interceptor;
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.util.ResponseUtil;
 import cn.qkmango.ccms.domain.bind.PermissionType;
-import cn.qkmango.ccms.domain.constant.Constant;
 import cn.qkmango.ccms.domain.entity.Account;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
 
@@ -25,12 +24,20 @@ import java.lang.reflect.Method;
  */
 public class PermissionsInterceptor implements HandlerInterceptor {
 
+    private String loginApi;
+    private String OPERATION_WITHOUT_PERMISSION_JSON;
+
+    public PermissionsInterceptor(String loginApi,String OPERATION_WITHOUT_PERMISSION_JSON) {
+        this.loginApi = loginApi;
+        this.OPERATION_WITHOUT_PERMISSION_JSON = OPERATION_WITHOUT_PERMISSION_JSON;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         //如果如果是登陆接口则放行
         String path = request.getServletPath();
-        if (Constant.LOGIN_URL.equals(path)) {
+        if (loginApi.equals(path)) {
             return true;
         }
 
@@ -52,7 +59,7 @@ public class PermissionsInterceptor implements HandlerInterceptor {
                 return true;
             }
             response.setStatus(401);
-            ResponseUtil.responseJson(response, Constant.OPERATION_WITHOUT_PERMISSION_JSON);
+            ResponseUtil.responseJson(response, OPERATION_WITHOUT_PERMISSION_JSON);
             return false;
         }
 
@@ -63,7 +70,7 @@ public class PermissionsInterceptor implements HandlerInterceptor {
                 return true;
             }
             response.setStatus(401);
-            ResponseUtil.responseJson(response, Constant.OPERATION_WITHOUT_PERMISSION_JSON);
+            ResponseUtil.responseJson(response, OPERATION_WITHOUT_PERMISSION_JSON);
             return false;
         }
 

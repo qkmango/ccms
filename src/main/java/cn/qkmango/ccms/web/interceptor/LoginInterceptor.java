@@ -1,14 +1,10 @@
 package cn.qkmango.ccms.web.interceptor;
 
 import cn.qkmango.ccms.common.util.ResponseUtil;
-import cn.qkmango.ccms.domain.constant.Constant;
-import org.springframework.web.servlet.AsyncHandlerInterceptor;
-import org.springframework.web.servlet.HandlerInterceptor;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * 登录拦截器
@@ -18,6 +14,14 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class LoginInterceptor implements HandlerInterceptor {
 
+    private String LOGIN_API;
+    private String NO_LOGIN_JSON;
+
+    public LoginInterceptor(String loginApi, String NO_LOGIN_JSON) {
+        this.LOGIN_API = loginApi;
+        this.NO_LOGIN_JSON = NO_LOGIN_JSON;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
@@ -25,7 +29,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         String path = request.getServletPath();
 
         //如果是登陆请求，则放行
-        if (Constant.LOGIN_URL.equals(path)) {
+        if (LOGIN_API.equals(path)) {
             return true;
         }
 
@@ -36,7 +40,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         response.setStatus(401);
-        ResponseUtil.responseJson(response, Constant.NOT_LOGIN_JSON);
+        ResponseUtil.responseJson(response, NO_LOGIN_JSON);
         return false;
 
     }

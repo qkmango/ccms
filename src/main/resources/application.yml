@@ -27,6 +27,14 @@ spring:
       host: localhost
       port: 6379
       database: 0
+      connect-timeout: 5000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 3
+          min-idle: 1
+          max-wait: 5000
+
 
   mail:
     host: smtp.qiye.aliyun.com
@@ -50,3 +58,15 @@ mybatis:
 logging:
   level:
     root: info
+
+# 以下是自定义配置
+ccms:
+  login:
+    api: /account/login.do
+  pos:
+    default:
+      password: 888888
+  response:
+    NO_LOGIN_JSON: "{\"success\":false,\"message\":\"未登录\"}"
+    OPERATION_WITHOUT_PERMISSION_JSON: "{\"success\":false,\"message\":\"无权操作\"}"
+
