@@ -27,8 +27,6 @@ public interface PaymentDao {
 
     List<Payment> listUser(Pagination<PaymentParam> pagination);
 
-    int updateState(Payment payment);
-
     PaymentVO detail(String id);
 
     int update(Payment payment);

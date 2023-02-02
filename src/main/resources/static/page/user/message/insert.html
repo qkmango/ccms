@@ -60,14 +60,14 @@
 				type:'post',
 				dataType:'json',
 				success:function(res) {
-					if(!res.success) {
-                        parent.layer.msg(res.message, {icon: 2});
+                    if (res.success) {
+                        sessionStorage.setItem(tableReloadKey, 'true');
+                        const iframeIndex = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(iframeIndex);
+                        window.top.layer.msg(res.message, {icon: 1});
                         return;
-					}
-                    sessionStorage.setItem(tableReloadKey, 'true');
-                    const iframeIndex = parent.layer.getFrameIndex(window.name);
-                    parent.layer.close(iframeIndex);
-                    window.top.layer.msg(res.message, {icon: 1});
+                    }
+                    parent.layer.msg(res.message, {icon: 2});
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
                     window.top.layer.msg(jqXHR.status+'', {icon: 2});

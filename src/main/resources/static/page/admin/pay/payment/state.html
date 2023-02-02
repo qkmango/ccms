@@ -66,7 +66,7 @@
                 return false;
             }
             $.ajax({
-                url: '../../../../pay/payment/one/update/state.do',
+                url: '../../../../pay/payment/one/update.do',
                 data: {
                     id,
                     state:data.field.state
@@ -75,7 +75,8 @@
                 dataType: 'json',
                 success: function (res) {
                     if (res.success) {
-                        layer.msg(res.message, {icon: 1,end:()=>{sessionStorage.setItem(tableReloadKey, 'true');}});
+                        sessionStorage.setItem(tableReloadKey, 'true');
+                        layer.msg(res.message, {icon: 1});
                         return;
                     }
                     layer.msg(res.message, {icon: 2});

@@ -79,12 +79,6 @@
         LIMIT #{skipCount},#{limit}
     </select>
 
-    <update id="updateState">
-        UPDATE t_payment
-        SET state = #{state}
-        WHERE id = #{id}
-    </update>
-
     <select id="detail" resultMap="PaymentVO">
         select p.id,
                p.title,

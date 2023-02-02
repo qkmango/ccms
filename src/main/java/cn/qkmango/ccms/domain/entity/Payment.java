@@ -22,8 +22,8 @@ import java.util.Date;
  */
 public class Payment implements Serializable {
 
-    @NotEmpty(groups = {Update.PaymentState.class, Update.class})
-    @Pattern(regexp = "^\\d+$", groups = {Update.PaymentState.class, Update.class, Query.class})
+    @NotEmpty(groups = {Update.class})
+    @Pattern(regexp = "^\\d+$", groups = {Update.class, Query.class})
     private String id;
 
     /**
@@ -73,7 +73,6 @@ public class Payment implements Serializable {
     /**
      * 项目状态
      */
-    @NotNull(groups = {Insert.class,Update.PaymentState.class})
     private PaymentState state;
 
     public String getId() {

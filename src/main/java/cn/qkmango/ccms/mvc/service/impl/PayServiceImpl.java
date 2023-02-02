@@ -189,22 +189,6 @@ public class PayServiceImpl implements PayService {
     }
 
     /**
-     * 修改缴费项目状态
-     *
-     * @param payment 缴费项目对象
-     * @param locale  语言环境
-     * @throws UpdateException 修改失败
-     */
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void updatePaymentState(Payment payment, Locale locale) throws UpdateException {
-        int affectedRows = paymentDao.updateState(payment);
-        if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.payment.update.state.failure", null, locale));
-        }
-    }
-
-    /**
      * 获取缴费项目详情
      *
      * @param id 缴费项目ID

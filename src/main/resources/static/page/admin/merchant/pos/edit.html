@@ -82,7 +82,6 @@
         //获取刷卡机信息
         $.ajax({
             url: '../../../../merchant/pos/one/detail.do',
-            // url: './detail.test.json',
             data: {'id': id},
             type: 'get',
             dataType: 'json',
@@ -134,7 +133,8 @@
                 dataType:'json',
                 success:function(res) {
                     if (res.success) {
-                        layer.msg(res.message, {icon: 1,end:()=>{sessionStorage.setItem(tableReloadKey, 'true');}});
+                        sessionStorage.setItem(tableReloadKey, 'true');
+                        layer.msg(res.message, {icon: 1});
                         return;
                     }
                     layer.msg(res.message, {icon: 2});

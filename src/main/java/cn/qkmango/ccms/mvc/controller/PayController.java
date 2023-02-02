@@ -80,20 +80,6 @@ public class PayController {
 
 
     /**
-     * 修改缴费项目状态
-     *
-     * @param payment 缴费项目对象
-     * @param locale  语言环境
-     * @return 修改状态
-     * @throws UpdateException 修改失败
-     */
-    @PostMapping("/payment/one/update/state.do")
-    public R updatePaymentState(@Validated({Update.class, Update.PaymentState.class}) Payment payment, Locale locale) throws UpdateException {
-        service.updatePaymentState(payment, locale);
-        return R.success(messageSource.getMessage("db.payment.update.state.success", null, locale));
-    }
-
-    /**
      * 获取缴费项目详情
      *
      * @param id 缴费项目ID

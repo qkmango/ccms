@@ -52,16 +52,6 @@ public interface PayService {
     R listUserPayment(Pagination<PaymentParam> pagination);
 
     /**
-     * 修改缴费项目状态
-     *
-     * @param payment 缴费项目对象
-     * @param locale  语言环境
-     * @throws UpdateException 修改失败
-     */
-    void updatePaymentState(Payment payment, Locale locale) throws UpdateException;
-
-
-    /**
      * 获取缴费项目详情
      *
      * @param id 缴费项目ID

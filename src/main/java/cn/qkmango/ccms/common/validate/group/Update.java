@@ -9,5 +9,4 @@ package cn.qkmango.ccms.common.validate.group;
  * @date 2021-07-07 17:21
  */
 public interface Update {
-    interface PaymentState {}
 }
