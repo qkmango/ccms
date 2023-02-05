@@ -1,16 +1,21 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
+import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.util.DateTimeUtil;
+import cn.qkmango.ccms.domain.entity.ConsumeStatistic;
 import cn.qkmango.ccms.domain.param.DatetimeRange;
-import cn.qkmango.ccms.domain.vo.statistic.ConsumePriceCount;
 import cn.qkmango.ccms.mvc.dao.StatisticDao;
 import cn.qkmango.ccms.mvc.service.StatisticService;
 import jakarta.annotation.Resource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 统计分析
@@ -26,6 +31,9 @@ public class StatisticServiceImpl implements StatisticService {
     @Resource
     private StatisticDao dao;
 
+    @Resource
+    private ReloadableResourceBundleMessageSource messageSource;
+
     /**
      * 统计最近一周消费金额数据
      * <p>
@@ -39,7 +47,7 @@ public class StatisticServiceImpl implements StatisticService {
      * @return 最近一周消费金额和消费次数
      */
     @Override
-    public List<ConsumePriceCount> ConsumeCountPriceByDayAndType(DatetimeRange range) {
+    public List<ConsumeStatistic> ConsumeCountPriceByDayAndType(DatetimeRange range) {
         //如果入参为空，则默认统计最近一周的数据
         if (range == null) {
             range = new DatetimeRange();
@@ -50,7 +58,7 @@ public class StatisticServiceImpl implements StatisticService {
 
         //如果都为空，则默认统计最近一周的数据
         if (startTime == null && endTime == null) {
-            Calendar calendar = DateTimeUtil.addDay(null, -6);
+            Calendar calendar = DateTimeUtil.addDay(Calendar.getInstance(), -6);
             range.setStartTime(calendar.getTime());
         }
         //如果开始时间为空，则默认设置为结束时间的前一周
@@ -65,5 +73,19 @@ public class StatisticServiceImpl implements StatisticService {
         }
 
         return dao.ConsumeCountPriceByDayAndType(range);
+    }
+
+    /**
+     * 插入消费统计数据
+     *
+     * @param list 消费统计数据
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void insertConsumeStatistics(List<ConsumeStatistic> list) throws InsertException {
+        int affectedRows = dao.insertConsumeStatistics(list);
+        if (affectedRows != list.size()) {
+            throw new InsertException(messageSource.getMessage("db.insert.consume.statistic.success", null, Locale.getDefault()));
+        }
     }
 }

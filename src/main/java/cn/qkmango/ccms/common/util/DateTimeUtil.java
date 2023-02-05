@@ -17,17 +17,6 @@ public class DateTimeUtil {
     public static final SimpleDateFormat SIMPLE_DATE_WITH_MILLISECOND_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     /**
-     * @param timestamp 时间戳
-     * @param day       前/后几天，正数为后，负数为前
-     * @return 日期
-     */
-    public static Calendar addDay(long timestamp, int day) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestamp);
-        return transition(calendar, day, false);
-    }
-
-    /**
      * @param date 日期
      * @param day  前/后几天，正数为后，负数为前
      * @return 日期
@@ -37,19 +26,16 @@ public class DateTimeUtil {
         if (date != null) {
             calendar.setTime(date);
         }
-        return transition(calendar, day, false);
+        return addDay(calendar, day, false);
     }
 
     /**
-     * @param timestamp 时间戳
-     * @param day       前/后几天，正数为后，负数为前
-     * @param start     是否为当天的开始时间
+     * @param calendar 日期
+     * @param day      前/后几天，正数为后，负数为前
      * @return 日期
      */
-    public static Calendar addDay(long timestamp, int day, boolean start) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestamp);
-        return transition(calendar, day, start);
+    public static Calendar addDay(Calendar calendar, int day) {
+        return addDay(calendar, day, false);
     }
 
     /**
@@ -63,7 +49,24 @@ public class DateTimeUtil {
         if (date != null) {
             calendar.setTime(date);
         }
-        return transition(calendar, day, start);
+        return addDay(calendar, day, start);
+    }
+
+    /**
+     * 转换
+     *
+     * @param calendar 日期
+     * @param day      前/后几天，正数为后，负数为前
+     * @param start    是否为那天的开始时间
+     * @return 日期
+     */
+    public static Calendar addDay(Calendar calendar, int day, boolean start) {
+        calendar.add(Calendar.DATE, day);
+        //设置为那天的开始时间
+        if (start) {
+            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 0, 0, 0);
+        }
+        return calendar;
     }
 
     /**
@@ -93,21 +96,74 @@ public class DateTimeUtil {
     }
 
 
-
     /**
-     * 转换
+     * 获取当前周起始时间
      *
      * @param calendar 日期
-     * @param day      前/后几天，正数为后，负数为前
-     * @param start    是否为那天的开始时间
      * @return 日期
      */
-    private static Calendar transition(Calendar calendar, int day, boolean start) {
-        calendar.add(Calendar.DATE, day);
-        //设置为那天的开始时间
-        if (start) {
-            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 0, 0, 0);
+    public static Calendar getWeekStart(Calendar calendar) {
+        if (calendar == null) {
+            calendar = Calendar.getInstance();
         }
+        calendar.set(Calendar.DAY_OF_WEEK, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+
+    /**
+     * 获取当前周结束时间
+     *
+     * @param calendar 日期
+     * @return 日期
+     */
+    public static Calendar getWeekEnd(Calendar calendar) {
+        if (calendar == null) {
+            calendar = Calendar.getInstance();
+        }
+        calendar.set(Calendar.DAY_OF_WEEK, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar;
+    }
+
+    /**
+     * 获取当前天起始时间
+     *
+     * @param calendar 日期 如果传入的日期为null，则默认当前时间入参
+     * @return 日期，如果有入参，则返回入参对象
+     */
+    public static Calendar getDayStart(Calendar calendar) {
+        if (calendar == null) {
+            calendar = Calendar.getInstance();
+        }
+
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+
+    /**
+     * 获取当前天结束时间
+     *
+     * @param calendar 日期
+     * @return 日期
+     */
+    public static Calendar getDayEnd(Calendar calendar) {
+        if (calendar == null) {
+            calendar = Calendar.getInstance();
+        }
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
         return calendar;
     }
 }

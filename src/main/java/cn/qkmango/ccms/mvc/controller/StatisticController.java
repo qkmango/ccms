@@ -2,10 +2,9 @@ package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.entity.ConsumeStatistic;
 import cn.qkmango.ccms.domain.param.DatetimeRange;
-import cn.qkmango.ccms.domain.vo.statistic.ConsumePriceCount;
 import cn.qkmango.ccms.mvc.service.StatisticService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 统计分析控制器
@@ -42,7 +40,7 @@ public class StatisticController {
     @Permission(PermissionType.admin)
     @GetMapping("/consume/count-price-by-day-and-type.do")
     public R<List> ConsumeCountPriceByDayAndType(DatetimeRange range) {
-        List<ConsumePriceCount> date = service.ConsumeCountPriceByDayAndType(range);
+        List<ConsumeStatistic> date = service.ConsumeCountPriceByDayAndType(range);
         return R.success(date);
     }
 

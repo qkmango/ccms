@@ -1,8 +1,7 @@
 package cn.qkmango.ccms.mvc.dao;
 
-import cn.qkmango.ccms.common.util.DateTimeUtil;
+import cn.qkmango.ccms.domain.entity.ConsumeStatistic;
 import cn.qkmango.ccms.domain.param.DatetimeRange;
-import cn.qkmango.ccms.domain.vo.statistic.ConsumePriceCount;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,7 +28,7 @@ public interface StatisticDao {
      * @param range 开始时间和结束时间范围
      * @return 每天的消费金额和消费次数
      */
-    List<ConsumePriceCount> ConsumeCountPriceByDayAndType(DatetimeRange range);
+    List<ConsumeStatistic> ConsumeCountPriceByDayAndType(DatetimeRange range);
 
     /**
      * 获取指定时间范围内的消费信息
@@ -61,4 +60,13 @@ public interface StatisticDao {
     List<Map<String, Integer>> consumeTypePrice(@Param("id") String id,
                                                 @Param("start") String start,
                                                 @Param("end") String end);
+
+    /**
+     * 消费统计数据
+     * 按每天和消费类型统计消费金额和消费次数
+     *
+     * @param list 消费统计数据
+     * @return int 影响的记录数
+     */
+    int insertConsumeStatistics(List<ConsumeStatistic> list);
 }

@@ -7,12 +7,12 @@
         SELECT FOUND_ROWS()
     </select>
 
-    <select id="ConsumeCountPriceByDayAndType" resultType="cn.qkmango.ccms.domain.vo.statistic.ConsumePriceCount">
+    <select id="ConsumeCountPriceByDayAndType" resultType="cn.qkmango.ccms.domain.entity.ConsumeStatistic">
         select
         DATE_FORMAT(createTime, '%Y-%m-%d') AS date,
         sum(price)                          AS price,
         count(id)                           AS count,
-        type
+        type                                AS consumeType
         from t_consume
         <where>
             type not in ('PAYMENT','RECHARGE','REFUND')
@@ -48,5 +48,20 @@
           and type not in ('PAYMENT', 'RECHARGE', 'REFUND')
         GROUP BY type
     </select>
+
+    <insert id="insertConsumeStatistics">
+        INSERT INTO t_consume_statistic (consume_type, price, date, count, type)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.consumeType},
+            #{item.price},
+            #{item.date},
+            #{item.count},
+            #{item.type}
+            )
+        </foreach>
+    </insert>
+
 
 </mapper>

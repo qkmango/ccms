@@ -3,7 +3,6 @@ package cn.qkmango.ccms.config;
 import cn.qkmango.ccms.web.interceptor.LoginInterceptor;
 import cn.qkmango.ccms.web.interceptor.PermissionsInterceptor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -14,7 +13,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
  * @version 1.0
  * @date 2022-07-31 20:57
  */
-@Configuration
+// @Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
 
     @Value("${ccms.login.api}")
