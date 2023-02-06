@@ -28,7 +28,7 @@ public interface StatisticDao {
      * @param range 开始时间和结束时间范围
      * @return 每天的消费金额和消费次数
      */
-    List<ConsumeStatistic> ConsumeCountPriceByDayAndType(DatetimeRange range);
+    List<ConsumeStatistic> consumeCountPriceByDayAndType(DatetimeRange range);
 
     /**
      * 获取指定时间范围内的消费信息
@@ -39,27 +39,23 @@ public interface StatisticDao {
      * max      最大消费额
      *
      * @param id    学生id
-     * @param start 开始时间
-     * @param end   结束时间
+     * @param range 时间范围
      * @return 当前月消费信息聚合数据
      */
     // @MapKey("id")
     Map<String, Integer> consumeInfo(@Param("id") String id,
-                                     @Param("start") String start,
-                                     @Param("end") String end);
+                                     @Param("range") DatetimeRange range);
 
     /**
-     * 每类消费金额饼图
+     * 用户每类消费金额饼图
      * 不包含 缴费PAYMENT,退款REFUND,充值RECHARGE
      *
      * @param id    学生id
-     * @param start 开始时间
-     * @param end   结束时间
+     * @param range 开始时间和结束时间范围
      * @return 一个月每类消费金额数据
      */
-    List<Map<String, Integer>> consumeTypePrice(@Param("id") String id,
-                                                @Param("start") String start,
-                                                @Param("end") String end);
+    List<Map<String, Integer>> consumePriceByType(@Param("id") String id,
+                                                  @Param("range") DatetimeRange range);
 
     /**
      * 消费统计数据
@@ -69,4 +65,12 @@ public interface StatisticDao {
      * @return int 影响的记录数
      */
     int insertConsumeStatistics(List<ConsumeStatistic> list);
+
+    /**
+     * 消费统计数据
+     *
+     * @param range 开始时间和结束时间范围
+     * @return 消费统计数据
+     */
+    List<ConsumeStatistic> consumeStatistic(DatetimeRange range);
 }

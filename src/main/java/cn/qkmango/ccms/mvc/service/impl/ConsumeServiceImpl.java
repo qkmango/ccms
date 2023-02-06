@@ -12,12 +12,12 @@ import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.ConsumeDao;
 import cn.qkmango.ccms.mvc.dao.UserDao;
 import cn.qkmango.ccms.mvc.service.ConsumeService;
+import jakarta.annotation.Resource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -105,8 +105,8 @@ public class ConsumeServiceImpl implements ConsumeService {
      */
     @Override
     public R<List<Consume>> list(Pagination<ConsumeParam> pagination) {
-        List<Consume> consumeList = consumeDao.queryConsumePagination(pagination);
-        int count = consumeDao.getCount();
+        List<Consume> consumeList = consumeDao.list(pagination);
+        int count = consumeDao.count();
         return R.success(consumeList).setCount(count);
     }
 

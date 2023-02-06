@@ -3,11 +3,11 @@
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.ConsumeDao">
     <!-- 获取未分页的总记录条数 -->
-    <select id="getCount" resultType="int">
+    <select id="count" resultType="int">
         SELECT FOUND_ROWS()
     </select>
 
-    <select id="queryConsumePagination" resultType="cn.qkmango.ccms.domain.param.ConsumeParam">
+    <select id="list" resultType="cn.qkmango.ccms.domain.param.ConsumeParam">
         select SQL_CALC_FOUND_ROWS
         c.id,
         c.user,

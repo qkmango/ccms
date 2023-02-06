@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 统计分析控制器
@@ -38,9 +39,9 @@ public class StatisticController {
      * @return 最近一周消费金额和消费次数
      */
     @Permission(PermissionType.admin)
-    @GetMapping("/consume/count-price-by-day-and-type.do")
-    public R<List> ConsumeCountPriceByDayAndType(DatetimeRange range) {
-        List<ConsumeStatistic> date = service.ConsumeCountPriceByDayAndType(range);
+    @GetMapping("/consume/statistic-price-by-day-and-type.do")
+    public R<Map> consumeStatistic(DatetimeRange range) {
+        Map<Long, List<ConsumeStatistic>> date = service.consumeStatistic(range);
         return R.success(date);
     }
 

@@ -7,9 +7,7 @@ import cn.qkmango.ccms.domain.vo.ConsumeDetailsVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 消费表 ConsumeDao
@@ -33,7 +31,7 @@ public interface ConsumeDao {
      *
      * @return 总条数
      */
-    int getCount();
+    int count();
 
 
     /**
@@ -42,7 +40,7 @@ public interface ConsumeDao {
      * @param pagination 分页查询条件
      * @return
      */
-    List<Consume> queryConsumePagination(@Param("pagination") Pagination<ConsumeParam> pagination);
+    List<Consume> list(@Param("pagination") Pagination<ConsumeParam> pagination);
 
 
 

@@ -78,10 +78,6 @@
             xAxis: {
                 type: 'category',
                 name: '日期/天',
-                formatter: function (value) {
-                    console.log(value);
-                    return [10, 10, 10, 20]
-                },
                 axisPointer: {
                     show: true,
                     type: 'shadow',
@@ -127,16 +123,15 @@
         };
 
         //获取数据并渲染
-        let transData = transition(getEchartsData());
+        let transData = getEchartsData();
         optionRecords.xAxis.data = transData.xAxis;
         optionRecords.series = transData.series;
         echartsRecords.setOption(optionRecords);
 
 
-
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-            let transData = transition(getEchartsData(data.field.range));
+            let transData = getEchartsData(data.field.range);
             optionRecords.xAxis.data = transData.xAxis;
             optionRecords.series = transData.series;
             echartsRecords.setOption(optionRecords);
@@ -162,14 +157,14 @@
             range.endTime = split[1];
         }
         $.ajax({
-            url: '../../../../statistic/consume/count-price-by-day-and-type.do?',
+            url: '../../../../statistic/consume/statistic-price-by-day-and-type.do?',
             // url: './index.test.json',
             data: range,
             dataType: 'json',
             async: false,
             success: function (res) {
                 if (res.success) {
-                    data = res.data;
+                    data = transition(res.data);
                     return;
                 }
                 layer.msg(res.message, {icon: 2});
@@ -178,7 +173,6 @@
                 layer.msg(jqXHR.status + '', {icon: 2});
             }
         })
-
         return data;
     }
 
@@ -186,7 +180,7 @@
      * 转换数据
      * 将后端返回的数据转换为echarts所需的数据
      * @param data
-     * @returns {{xAxis: *[], series: [{data: *[], name: string, type: string},{data: *[], name: string, type: string},{data: *[], name: string, type: string},{areaStyle: {color: string, opacity: number}, data: *[], lineStyle: {color: string, width: number}, name: string, itemStyle: {color: string}, type: string}]}}
+     * @returns {{xAxis: *[], series: [{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {color: string, origin: string, opacity: number}, data: *[], lineStyle: {color: string, width: number}, name: string, itemStyle: {color: string}, type: string, smooth: boolean}]}}
      */
     function transition(data) {
         let xAxis = [];
@@ -222,6 +216,16 @@
                 }
             },
             {
+                name: '其他',
+                data: [],
+                type: 'line',
+                color: '#C2C2C2',
+                smooth: true,
+                areaStyle: {
+                    opacity: 0.05
+                }
+            },
+            {
                 name: '总计',
                 data: [],
                 type: 'line',
@@ -241,32 +245,48 @@
                 }
             },
         ];
-        data.forEach(function (item, index) {
-            if (xAxis[xAxis.length - 1] !== item.date) {
-                xAxis.push(item.date);
-                series[0].data.push(0);
-                series[1].data.push(0);
-                series[2].data.push(0);
-                series[3].data.push(0);
-            }
-            series[3].data[series[3].data.length - 1] += item.price / 100;
-            switch (item.type) {
-                case 'WATER':
-                    let s0 = series[0];
-                    s0.data[s0.data.length - 1] += item.price / 100;
-                    break;
-                case 'ELECTRIC':
-                    let s1 = series[1];
-                    s1.data[s1.data.length - 1] += item.price / 100;
-                    break;
-                case 'MEAL_EXPENSE':
-                    let s2 = series[2];
-                    s2.data[s2.data.length - 1] += item.price / 100;
-                    break;
-            }
+
+        let dateList = Object.keys(data).sort();
+        dateList.forEach(item => {
+            xAxis.push(layui.util.toDateString(Number.parseInt(item), 'yyyy-MM-dd'));
+        });
+
+        //填充空数据
+        for (let i = 0; i < dateList.length; i++) {
+            series[0].data[i] = 0;
+            series[1].data[i] = 0;
+            series[2].data[i] = 0;
+            series[3].data[i] = 0;
+            series[4].data[i] = 0;
+        }
+
+        //循环填充数据
+        dateList.forEach((item, index) => {
+            let itemData = data[item];
+            itemData.forEach(item => {
+                console.log(item.consumeType);
+                if (item.type === 'ALL') {
+                    series[4].data[index] += item.price / 100;
+                    return;
+                }
+                switch (item.consumeType) {
+                    case 'WATER':
+                        series[0].data[index] = item.price / 100;
+                        break;
+                    case 'ELECTRIC':
+                        series[1].data[index] = item.price / 100;
+                        break;
+                    case 'MEAL_EXPENSE':
+                        series[2].data[index] = item.price / 100;
+                        break;
+                    case 'OTHER':
+                        series[3].data[index] += item.price / 100;
+                        break;
+                }
+
+            });
         });
         return {xAxis, series}
-
     }
 </script>
 </body>

@@ -12,10 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 统计分析
@@ -47,7 +45,7 @@ public class StatisticServiceImpl implements StatisticService {
      * @return 最近一周消费金额和消费次数
      */
     @Override
-    public List<ConsumeStatistic> ConsumeCountPriceByDayAndType(DatetimeRange range) {
+    public Map<Long, List<ConsumeStatistic>> consumeStatistic(DatetimeRange range) {
         //如果入参为空，则默认统计最近一周的数据
         if (range == null) {
             range = new DatetimeRange();
@@ -72,7 +70,11 @@ public class StatisticServiceImpl implements StatisticService {
             range.setEndTime(calendar.getTime());
         }
 
-        return dao.ConsumeCountPriceByDayAndType(range);
+        List<ConsumeStatistic> list = dao.consumeStatistic(range);
+
+        Map<Long, List<ConsumeStatistic>> map = list.stream().collect(Collectors.groupingBy(item -> item.getDate().getTime()));
+
+        return map;
     }
 
     /**
@@ -87,5 +89,18 @@ public class StatisticServiceImpl implements StatisticService {
         if (affectedRows != list.size()) {
             throw new InsertException(messageSource.getMessage("db.insert.consume.statistic.success", null, Locale.getDefault()));
         }
+    }
+
+    /**
+     * 统计每天的消费金额和消费次数
+     * <p>
+     * 按照一天和消费类型统计消费金额
+     *
+     * @param range 开始时间和结束时间范围
+     * @return 每天的消费金额和消费次数
+     */
+    @Override
+    public List<ConsumeStatistic> consumeCountPriceByDayAndType(DatetimeRange range) {
+        return dao.consumeCountPriceByDayAndType(range);
     }
 }

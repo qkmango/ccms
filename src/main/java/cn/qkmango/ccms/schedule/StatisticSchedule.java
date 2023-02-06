@@ -50,7 +50,7 @@ public class StatisticSchedule {
         range.setEndTime(end.getTime());
 
         //统计前一天的消费数据
-        List<ConsumeStatistic> list = statisticService.ConsumeCountPriceByDayAndType(range);
+        List<ConsumeStatistic> list = statisticService.consumeCountPriceByDayAndType(range);
 
         if (list == null || list.size() == 0) {
             logger.info("前一天无消费数据");
