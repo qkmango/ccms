@@ -113,5 +113,20 @@ var utils = {
             return true;
         }
         return diff;
+    },
+    /**
+     * 数组按照某个属性分组，属性值为key，数组为value
+     * @param arr
+     * @param fun
+     * @returns {{}}
+     */
+    groupBy: function (arr, fun) {
+        const groups = {}
+        arr.forEach((el) => {
+            const group = fun(el)
+            groups[group] = groups[group] || []
+            groups[group].push(el)
+        })
+        return groups
     }
 }

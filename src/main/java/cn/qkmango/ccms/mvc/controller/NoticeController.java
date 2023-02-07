@@ -12,12 +12,12 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Notice;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.service.NoticeService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -48,7 +48,7 @@ public class NoticeController {
      * @return 插入结果
      */
     @Permission(PermissionType.admin)
-    @PostMapping("/one/insert.do")
+    @PostMapping("one/insert.do")
     public R<Object> insert(@Validated(Insert.class) Notice notice, HttpSession session, Locale locale) throws InsertException {
         Account account = (Account) session.getAttribute("account");
         notice.setAuthor(account.getId());
@@ -65,7 +65,7 @@ public class NoticeController {
      * @param locale 语言环境
      */
     @Permission(PermissionType.admin)
-    @PostMapping("/one/delete.do")
+    @PostMapping("one/delete.do")
     public R<Object> delete(@Validated(Delete.class) Notice notice, Locale locale) throws DeleteException {
         service.delete(notice, locale);
 

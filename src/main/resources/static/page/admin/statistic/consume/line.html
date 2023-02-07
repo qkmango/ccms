@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="utf-8">
-    <title>欢迎</title>
+    <title>消费曲线图</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -40,6 +40,7 @@
     </div>
 </div>
 <script src="../../../../lib/util/color.js"></script>
+<script src="../../../../lib/util/utils.js"></script>
 <script src="../../../../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
 <script src="../../../../js/lay-config.js" charset="utf-8"></script>
 <script src="../../../../lib/echarts/echarts.min.js" charset="utf-8"></script>
@@ -60,7 +61,7 @@
         // 日期范围
         laydate.render({
             elem: '#range',
-            type: 'datetime',
+            type: 'date',
             range: true,
             min: '2000-1-1',
             max: '2099-12-31'
@@ -128,7 +129,6 @@
         optionRecords.series = transData.series;
         echartsRecords.setOption(optionRecords);
 
-
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
             let transData = getEchartsData(data.field.range);
@@ -142,7 +142,8 @@
         return false;
 
     });
-
+</script>
+<script>
     /**
      * 获取数据
      * @param param
@@ -157,8 +158,8 @@
             range.endTime = split[1];
         }
         $.ajax({
-            url: '../../../../statistic/consume/statistic-price-by-day-and-type.do?',
-            // url: './index.test.json',
+            // url: '../../../../statistic/consume/statistic-price-by-day-and-type.do?',
+            url: './index.test.json',
             data: range,
             dataType: 'json',
             async: false,
@@ -183,6 +184,8 @@
      * @returns {{xAxis: *[], series: [{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {color: string, origin: string, opacity: number}, data: *[], lineStyle: {color: string, width: number}, name: string, itemStyle: {color: string}, type: string, smooth: boolean}]}}
      */
     function transition(data) {
+        //按照日期分组
+        data = utils.groupBy(data, item => item.date);
         let xAxis = [];
         let series = [
             {
@@ -264,7 +267,6 @@
         dateList.forEach((item, index) => {
             let itemData = data[item];
             itemData.forEach(item => {
-                console.log(item.consumeType);
                 if (item.type === 'ALL') {
                     series[4].data[index] += item.price / 100;
                     return;

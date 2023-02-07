@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 统计分析控制器
@@ -23,7 +22,7 @@ import java.util.Map;
  * @date 2023-01-29 17:54
  */
 @RestController
-@RequestMapping("/statistic")
+@RequestMapping("statistic")
 public class StatisticController {
 
     @Resource
@@ -39,9 +38,9 @@ public class StatisticController {
      * @return 最近一周消费金额和消费次数
      */
     @Permission(PermissionType.admin)
-    @GetMapping("/consume/statistic-price-by-day-and-type.do")
-    public R<Map> consumeStatistic(DatetimeRange range) {
-        Map<Long, List<ConsumeStatistic>> date = service.consumeStatistic(range);
+    @GetMapping("consume/statistic-price-by-day-and-type.do")
+    public R<List> consumeStatistic(DatetimeRange range) {
+        List<ConsumeStatistic> date = service.consumeStatistic(range);
         return R.success(date);
     }
 

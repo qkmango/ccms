@@ -175,7 +175,6 @@
 						window.location.href = 'page/login/';
 						return;
 					}
-
                     sessionStorage.account = JSON.stringify(res.data)
                     document.querySelector('#name').innerText = res.data.name;
 					let iniUrl = `api/init_${res.data.permissionType}.json`;

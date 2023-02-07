@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 统计分析
@@ -45,7 +47,7 @@ public class StatisticServiceImpl implements StatisticService {
      * @return 最近一周消费金额和消费次数
      */
     @Override
-    public Map<Long, List<ConsumeStatistic>> consumeStatistic(DatetimeRange range) {
+    public List<ConsumeStatistic> consumeStatistic(DatetimeRange range) {
         //如果入参为空，则默认统计最近一周的数据
         if (range == null) {
             range = new DatetimeRange();
@@ -56,7 +58,9 @@ public class StatisticServiceImpl implements StatisticService {
 
         //如果都为空，则默认统计最近一周的数据
         if (startTime == null && endTime == null) {
-            Calendar calendar = DateTimeUtil.addDay(Calendar.getInstance(), -6);
+            //设置起始时间为当天的开始时间
+            Calendar calendar = DateTimeUtil.getDayStart(null);
+            DateTimeUtil.addDay(calendar, -6);
             range.setStartTime(calendar.getTime());
         }
         //如果开始时间为空，则默认设置为结束时间的前一周
@@ -72,9 +76,9 @@ public class StatisticServiceImpl implements StatisticService {
 
         List<ConsumeStatistic> list = dao.consumeStatistic(range);
 
-        Map<Long, List<ConsumeStatistic>> map = list.stream().collect(Collectors.groupingBy(item -> item.getDate().getTime()));
+        // Map<Long, List<ConsumeStatistic>> map = list.stream().collect(Collectors.groupingBy(item -> item.getDate().getTime()));
 
-        return map;
+        return list;
     }
 
     /**

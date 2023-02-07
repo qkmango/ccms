@@ -8,11 +8,9 @@ import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Locale;
@@ -26,7 +24,7 @@ import java.util.Locale;
  */
 @Validated
 @RestController
-@RequestMapping("/captcha")
+@RequestMapping("captcha")
 public class CaptchaController {
 
     @Resource

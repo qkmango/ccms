@@ -254,9 +254,15 @@
             "target": "_self",
             "child": [
                 {
-                    "title": "消费统计图",
+                    "title": "消费曲线图",
                     "icon": "fa fa-id-card-o",
-                    "href": "page/admin/statistic/consume/index.html",
+                    "href": "page/admin/statistic/consume/line.html",
+                    "target": "_self"
+                },
+                {
+                    "title": "消费热烈力图",
+                    "icon": "fa fa-id-card-o",
+                    "href": "page/admin/statistic/consume/heatmap.html",
                     "target": "_self"
                 }
             ]

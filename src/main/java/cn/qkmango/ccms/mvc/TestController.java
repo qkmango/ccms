@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2023-01-25 14:24
  */
 @RestController
-@RequestMapping("/test")
+@RequestMapping("test")
 public class TestController {
 
-        @RequestMapping("/hello")
+        @RequestMapping("hello")
         public String hello() {
             return "hello";
         }

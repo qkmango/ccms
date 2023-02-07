@@ -5,7 +5,6 @@ import cn.qkmango.ccms.domain.entity.ConsumeStatistic;
 import cn.qkmango.ccms.domain.param.DatetimeRange;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 统计分析
@@ -36,7 +35,7 @@ public interface StatisticService {
      *              如果不传入时间，则默认统计最近一周的数据
      * @return 最近一周消费金额和消费次数
      */
-    Map<Long, List<ConsumeStatistic>> consumeStatistic(DatetimeRange range);
+    List<ConsumeStatistic> consumeStatistic(DatetimeRange range);
 
 
     /**
