@@ -1,7 +1,10 @@
 package cn.qkmango.ccms.mvc;
 
+import cn.qkmango.ccms.domain.param.DatetimeRange;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
 
 /**
  * 描述
@@ -19,4 +22,14 @@ public class TestController {
         public String hello() {
             return "hello";
         }
+
+        @RequestMapping("hello2.do")
+        public DatetimeRange hello2(DatetimeRange range) {
+            return range;
+        }
+
+    @RequestMapping("hello3.do")
+    public Date hello2(Date date1) {
+        return date1;
+    }
 }

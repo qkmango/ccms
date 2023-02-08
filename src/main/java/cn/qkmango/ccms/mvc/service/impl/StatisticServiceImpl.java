@@ -76,8 +76,6 @@ public class StatisticServiceImpl implements StatisticService {
 
         List<ConsumeStatistic> list = dao.consumeStatistic(range);
 
-        // Map<Long, List<ConsumeStatistic>> map = list.stream().collect(Collectors.groupingBy(item -> item.getDate().getTime()));
-
         return list;
     }
 

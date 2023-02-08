@@ -9,6 +9,7 @@ import cn.qkmango.ccms.mvc.service.StatisticService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class StatisticController {
      */
     @Permission(PermissionType.admin)
     @GetMapping("consume/statistic-price-by-day-and-type.do")
-    public R<List> consumeStatistic(DatetimeRange range) {
+    public R<List> consumeStatistic(@RequestParam("range") DatetimeRange range) {
         List<ConsumeStatistic> date = service.consumeStatistic(range);
         return R.success(date);
     }

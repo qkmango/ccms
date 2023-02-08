@@ -40,18 +40,24 @@
     </div>
 </div>
 <script src="../../../../lib/util/color.js"></script>
-<script src="../../../../lib/util/utils.js"></script>
+<script src="../../../../lib/util/stream.js"></script>
 <script src="../../../../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
 <script src="../../../../js/lay-config.js" charset="utf-8"></script>
 <script src="../../../../lib/echarts/echarts.min.js" charset="utf-8"></script>
 
 <script>
     let $;
-    layui.use(['layer', 'laydate', 'form'], function () {
+    layui.use(['layer', 'laydate', 'form', 'util'], function () {
         $ = layui.jquery;
         const form = layui.form;
         const layer = layui.layer;
         const laydate = layui.laydate;
+        const util = layui.util;
+
+        //默认日期范围是最近7天
+        let defaultRange =
+            util.toDateString(new Date(new Date().getTime() - 6 * 24 * 3600 * 1000), 'yyyy-MM-dd') + ' - ' +
+            util.toDateString(new Date(), 'yyyy-MM-dd')
 
         // echarts 窗口缩放自适应
         window.onresize = function () {
@@ -70,7 +76,7 @@
         // Echarts 初始化
         const echartsRecords = echarts.init(document.getElementById('echarts-records'));
         // Echarts 配置
-        const optionRecords = {
+        let optionRecords = {
             title: {
                 text: '消费金额曲线图',
                 left: 'center',
@@ -91,7 +97,14 @@
                 type: 'value',
                 name: '金额/元'
             },
-            series: [],
+            series: [
+                {
+                    itemStyle: {
+                        type: 'dashed',
+                        borderColor: '#000',
+                    }
+                },
+            ],
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -107,8 +120,15 @@
                     },
                     restore: {},
                     saveAsImage: {}
-                }
+                },
             },
+            dataZoom: [{
+                type: 'slider',
+                xAxisIndex: 0,
+            },{
+                type: 'slider',
+                yAxisIndex: 0,
+            }],
             grid: {
                 left: 10,
                 right: 70,
@@ -124,16 +144,17 @@
         };
 
         //获取数据并渲染
-        let transData = getEchartsData();
-        optionRecords.xAxis.data = transData.xAxis;
-        optionRecords.series = transData.series;
+        optionRecords = getDataAndSetOption(optionRecords, defaultRange);
+        console.log(optionRecords);
         echartsRecords.setOption(optionRecords);
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-            let transData = getEchartsData(data.field.range);
-            optionRecords.xAxis.data = transData.xAxis;
-            optionRecords.series = transData.series;
+            let range = defaultRange;
+            if (data.field.range !== '') {
+                range = data.field.range;
+            }
+            optionRecords = getDataAndSetOption(optionRecords, range);
             echartsRecords.setOption(optionRecords);
 
             return false;
@@ -144,28 +165,37 @@
     });
 </script>
 <script>
+
     /**
-     * 获取数据
-     * @param param
+     * 获取数据并设置
+     * @param option
+     * @param dateRange
      * @returns {*}
      */
-    function getEchartsData(param) {
-        let data;
-        let range = {};
-        if (typeof (param) === 'string') {
-            const split = param.split(' - ');
-            range.startTime = split[0];
-            range.endTime = split[1];
-        }
+    function getDataAndSetOption(option, dateRange) {
+        let res = getEchartsData(dateRange);
+        let transData = transition(res);
+        return setData(option, transData);
+    }
+
+    /**
+     * 获取数据
+     * @param dateRange {String} 日期范围
+     * @returns {*}
+     */
+    function getEchartsData(dateRange) {
+        let data = null;
         $.ajax({
-            // url: '../../../../statistic/consume/statistic-price-by-day-and-type.do?',
-            url: './index.test.json',
-            data: range,
+            url: '../../../../statistic/consume/statistic-price-by-day-and-type.do',
+            // url: './index.test.json',
+            data: {
+                range: dateRange
+            },
             dataType: 'json',
             async: false,
             success: function (res) {
                 if (res.success) {
-                    data = transition(res.data);
+                    data = res.data;
                     return;
                 }
                 layer.msg(res.message, {icon: 2});
@@ -181,68 +211,55 @@
      * 转换数据
      * 将后端返回的数据转换为echarts所需的数据
      * @param data
-     * @returns {{xAxis: *[], series: [{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {opacity: number}, data: *[], color: string, name: string, type: string, smooth: boolean},{areaStyle: {color: string, origin: string, opacity: number}, data: *[], lineStyle: {color: string, width: number}, name: string, itemStyle: {color: string}, type: string, smooth: boolean}]}}
+     * @returns Object
      */
     function transition(data) {
+        console.log(data);
         //按照日期分组
-        data = utils.groupBy(data, item => item.date);
-        let xAxis = [];
+        data = stream.groupBy(data, item => item.date);
+        let xAxisData = [];
         let series = [
             {
                 name: '水费',
                 data: [],
                 type: 'line',
                 color: '#0969da',
-                smooth: true,
-                areaStyle: {
-                    opacity: 0.05
-                }
+                symbol: 'circle'
             },
             {
                 name: '电费',
                 data: [],
                 type: 'line',
                 color: '#FFB800',
-                smooth: true,
-                areaStyle: {
-                    opacity: 0.05
-                }
+                symbol: 'circle'
             },
             {
                 name: '餐费',
                 data: [],
                 type: 'line',
                 color: '#ff5722',
-                smooth: true,
-                areaStyle: {
-                    opacity: 0.05
-                }
+                symbol: 'circle'
             },
             {
                 name: '其他',
                 data: [],
                 type: 'line',
                 color: '#C2C2C2',
-                smooth: true,
-                areaStyle: {
-                    opacity: 0.05
-                }
+                symbol: 'circle'
             },
             {
                 name: '总计',
                 data: [],
                 type: 'line',
-                smooth: true,
+                symbol: 'circle',
                 lineStyle: {
-                    color: color.green,
-                    width: 3,
+                    color: '#00965e',
                 },
                 itemStyle: {
-                    color: color.green,
+                    color: '#00965e',
                 },
                 areaStyle: {
                     // 0.05透明度
-                    color: color.green,
                     opacity: 0.1,
                     origin: 'end'
                 }
@@ -251,7 +268,7 @@
 
         let dateList = Object.keys(data).sort();
         dateList.forEach(item => {
-            xAxis.push(layui.util.toDateString(Number.parseInt(item), 'yyyy-MM-dd'));
+            xAxisData.push(layui.util.toDateString(Number.parseInt(item), 'yyyy-MM-dd'));
         });
 
         //填充空数据
@@ -288,7 +305,19 @@
 
             });
         });
-        return {xAxis, series}
+        return {xAxisData, series}
+    }
+
+    /**
+     * 设置数据
+     * @param option
+     * @param data
+     * @returns {*}
+     */
+    function setData(option, data) {
+        option.xAxis.data = data.xAxisData;
+        option.series = data.series;
+        return option;
     }
 </script>
 </body>

@@ -255,13 +255,13 @@
             "child": [
                 {
                     "title": "消费曲线图",
-                    "icon": "fa fa-id-card-o",
+                    "icon": "fa fa-area-chart",
                     "href": "page/admin/statistic/consume/line.html",
                     "target": "_self"
                 },
                 {
-                    "title": "消费热烈力图",
-                    "icon": "fa fa-id-card-o",
+                    "title": "消费分类力图",
+                    "icon": "fa fa-calendar",
                     "href": "page/admin/statistic/consume/heatmap.html",
                     "target": "_self"
                 }
