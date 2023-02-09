@@ -18,13 +18,6 @@ public class CardInfoParam implements Serializable {
     public CardInfoParam() {
     }
 
-    public CardInfoParam(String id, String name, String idCard, Boolean lock) {
-        this.id = id;
-        this.name = name;
-        this.idCard = idCard;
-        this.lock = lock;
-    }
-
     public String getId() {
         return id;
     }

@@ -47,7 +47,7 @@ public class CardServiceImpl implements CardService {
     @Resource
     private ReloadableResourceBundleMessageSource messageSource;
     @Resource
-    private JsonUtil jsonUtil;
+    private JsonUtil ju;
     @Resource(name = "redisTemplate")
     private RedisTemplate<String, Object> rt;
 
@@ -94,7 +94,7 @@ public class CardServiceImpl implements CardService {
     public R<List<UserAndCardVO>> list(Pagination<CardInfoParam> pagination) {
 
         // 从缓存中获取数据
-        String key = jsonUtil.toJson(pagination) + "[@user@card]";
+        String key = ju.toJSONString(pagination) + "[@user@card]";
         Object cache = rt.opsForValue().get(key);
         if (cache instanceof R) return (R) cache;
 

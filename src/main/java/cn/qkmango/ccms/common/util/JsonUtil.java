@@ -23,7 +23,7 @@ public class JsonUtil {
      * @param obj 对象
      * @return json字符串
      */
-    public String toJson(Object obj) {
+    public String toJSONString(Object obj) {
         try {
             return objectMapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {

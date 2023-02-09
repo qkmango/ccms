@@ -3,6 +3,8 @@ package cn.qkmango.ccms.config;
 import cn.qkmango.ccms.common.util.JsonUtil;
 import cn.qkmango.ccms.common.util.SnowFlake;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.annotation.Resource;
@@ -11,7 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,14 +35,20 @@ public class Beans {
      *
      * @return ObjectMapper
      */
-    @Bean
+    @Bean(name = "objectMapper")
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
+
+
         return objectMapper;
     }
 
@@ -81,12 +88,12 @@ public class Beans {
      *
      * @return RedisTemplate
      */
-    @Bean(name = "redisTemplate")
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory);
-        return redisTemplate;
-    }
+    // @Bean(name = "redisTemplate")
+    // public RedisTemplate<String, Object> redisTemplate() {
+    //     RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+    //     redisTemplate.setConnectionFactory(redisConnectionFactory);
+    //     return redisTemplate;
+    // }
 
 
 }

@@ -172,7 +172,7 @@
 				dataType:"json",
 				success:function (res) {
 					if (!res.success) {
-						window.location.href = 'page/login/';
+						window.location.href = 'page/login/index.html';
 						return;
 					}
                     sessionStorage.account = JSON.stringify(res.data)
