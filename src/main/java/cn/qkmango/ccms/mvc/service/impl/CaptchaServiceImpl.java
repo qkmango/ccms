@@ -2,6 +2,7 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.util.CaptchaUtil;
 import cn.qkmango.ccms.common.util.EmailUtil;
+import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.entity.Account;
@@ -9,12 +10,10 @@ import cn.qkmango.ccms.mvc.service.CaptchaService;
 import jakarta.annotation.Resource;
 import jakarta.mail.MessagingException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 验证码服务接口
@@ -36,8 +35,8 @@ public class CaptchaServiceImpl implements CaptchaService {
     @Resource
     private String mailCaptchaTemplate;
 
-    @Resource
-    private StringRedisTemplate srt;
+    @Resource(name = "redisUtil")
+    private RedisUtil redis;
 
     /**
      * 发送修改邮箱验证码
@@ -69,6 +68,6 @@ public class CaptchaServiceImpl implements CaptchaService {
             throw new MailSendException(message.getMessage("response.email.send.failure", null, locale));
         }
         //将验证码存入redis,并设置过期时间5分钟
-        srt.opsForValue().set(key, captcha, 5, TimeUnit.MINUTES);
+        redis.set(key, captcha, 5 * 60);
     }
 }

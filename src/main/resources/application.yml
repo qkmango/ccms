@@ -70,4 +70,7 @@ ccms:
   response:
     NO_LOGIN_JSON: "{\"success\":false,\"message\":\"未登录\"}"
     OPERATION_WITHOUT_PERMISSION_JSON: "{\"success\":false,\"message\":\"无权操作\"}"
+  snowflake:
+    machine-id: 0
+    data-center-id: 0
 

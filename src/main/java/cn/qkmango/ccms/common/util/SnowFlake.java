@@ -1,12 +1,21 @@
 package cn.qkmango.ccms.common.util;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 /**
  * twitter的snowflake算法 -- java实现
  *
  * @author beyond
  * @date 2016/11/26
  */
+@Component("snowFlake")
 public class SnowFlake {
+
+    @Value(value = "${ccms.snowflake.data-center-id}")
+    private long datacenterId;  //数据中心
+    @Value(value = "${ccms.snowflake.machine-id}")
+    private long machineId;     //机器标识
 
     /**
      * 起始的时间戳
@@ -35,22 +44,10 @@ public class SnowFlake {
     private final static long DATACENTER_LEFT = SEQUENCE_BIT + MACHINE_BIT;
     private final static long TIMESTAMP_LEFT = DATACENTER_LEFT + DATACENTER_BIT;
 
-    private long datacenterId;  //数据中心
-    private long machineId;     //机器标识
     private long sequence = 0L; //序列号
     private long lastStamp = -1L;//上一次时间戳
 
-    public SnowFlake() {}
-
-    public SnowFlake(long datacenterId, long machineId) {
-        if (datacenterId > MAX_DATACENTER_NUM || datacenterId < 0) {
-            throw new IllegalArgumentException("datacenterId can't be greater than MAX_DATACENTER_NUM or less than 0");
-        }
-        if (machineId > MAX_MACHINE_NUM || machineId < 0) {
-            throw new IllegalArgumentException("machineId can't be greater than MAX_MACHINE_NUM or less than 0");
-        }
-        this.datacenterId = datacenterId;
-        this.machineId = machineId;
+    public SnowFlake() {
     }
 
     /**

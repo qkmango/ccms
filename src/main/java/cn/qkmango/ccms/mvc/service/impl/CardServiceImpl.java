@@ -3,7 +3,7 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.common.util.JsonUtil;
+import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.domain.bind.ConsumeType;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.Consume;
@@ -17,7 +17,6 @@ import cn.qkmango.ccms.mvc.dao.UserDao;
 import cn.qkmango.ccms.mvc.service.CardService;
 import jakarta.annotation.Resource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 描述
@@ -46,10 +44,8 @@ public class CardServiceImpl implements CardService {
     private ConsumeDao consumeDao;
     @Resource
     private ReloadableResourceBundleMessageSource messageSource;
-    @Resource
-    private JsonUtil ju;
-    @Resource(name = "redisTemplate")
-    private RedisTemplate<String, Object> rt;
+    @Resource(name = "redisUtil")
+    private RedisUtil redis;
 
     /**
      * 更新卡状态
@@ -93,18 +89,18 @@ public class CardServiceImpl implements CardService {
     @Override
     public R<List<UserAndCardVO>> list(Pagination<CardInfoParam> pagination) {
 
-        // 从缓存中获取数据
-        String key = ju.toJSONString(pagination) + "[@user@card]";
-        Object cache = rt.opsForValue().get(key);
-        if (cache instanceof R) return (R) cache;
+        R r = null;
 
-        // 如果缓存中没有数据, 就从数据库中查询
-        List<UserAndCardVO> cardList = cardDao.list(pagination);
-        int count = cardDao.count();
-        R<List<UserAndCardVO>> r = R.success(cardList).setCount(count);
+        String key = redis.key("card_pagination", pagination, "@user@card");
+        r = redis.get(key, R.class);
 
-        // 将查询结果存入缓存, 设置过期时间5分钟
-        rt.opsForValue().set(key, r, 5, TimeUnit.MINUTES);
+        if (r == null) {
+            // 如果缓存中没有数据, 就从数据库中查询
+            List<UserAndCardVO> cardList = cardDao.list(pagination);
+            int count = cardDao.count();
+            r = R.success(cardList).setCount(count);
+            redis.set(key, r, 5 * 60);
+        }
         return r;
     }
 
@@ -137,7 +133,7 @@ public class CardServiceImpl implements CardService {
             throw new InsertException(messageSource.getMessage("db.card.insert.failure", null, locale));
         }
 
-        rt.delete("*@user*");
+        redis.delete("*@user*");
 
         return card;
     }
