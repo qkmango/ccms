@@ -14,6 +14,7 @@
 
     /*浅色*/
     --green-tint: rgba(0, 150, 94, 0.1);
+    --green-tint-solid: #e5f4ef;
     --green2-tint: rgba(45, 164, 78, 0.1);
     --blue-tint: rgba(9, 105, 218, 0.1);
     --orange-tint: rgba(255, 184, 0, 0.1);
