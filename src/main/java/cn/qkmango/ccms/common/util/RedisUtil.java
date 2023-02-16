@@ -6,6 +6,7 @@ import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,9 +25,13 @@ public class RedisUtil {
     @Resource(name = "objectMapper")
     private ObjectMapper objectMapper;
 
-    public String key(String name, Object param, String table) {
+    public String key(String name, Object param, String... tables) {
+        String tableStr = "";
+        for (String table : tables) {
+            tableStr = tableStr + "@" + table;
+        }
         try {
-            return "table[" + table + "]name[" + name + "]|param[" + objectMapper.writeValueAsString(param) + "]";
+            return "table[" + tableStr + "]:name[" + name + "]:param[" + objectMapper.writeValueAsString(param) + "]";
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -57,7 +62,7 @@ public class RedisUtil {
     public void set(String key, Object value, long timeout) {
         try {
             // 将对象转换为json字符串，存入redis
-            String jsonValue = objectMapper.writeValueAsString(value);
+            String jsonValue;
             if (value instanceof String) {
                 jsonValue = (String) value;
             } else {
@@ -101,21 +106,71 @@ public class RedisUtil {
      */
     public String getWithJSON(String key) {
         try {
-            // 从redis中获取json字符串，转换为对象返回
             return stringRedisTemplate.opsForValue().get(key);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+
+    /**
+     * 模糊查询key
+     *
+     * @param pattern
+     * @return
+     */
+    public Set<String> keys(String pattern) {
+        return stringRedisTemplate.keys(pattern);
+    }
+
+
     /**
      * 删除redis中的对象
      *
-     * @param s
+     * @param keys
      * @return
      */
-    public boolean delete(String s) {
-        return stringRedisTemplate.delete(s);
+    public int delete(String... keys) {
+        int count = 0;
+        for (String key : keys) {
+            Boolean delete = stringRedisTemplate.delete(key);
+            if (delete != null && delete) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 模糊删除redis中的对象
+     *
+     * @param patterns
+     * @return
+     */
+    public long patternDelete(String... patterns) {
+        long count = 0;
+        for (String pattern : patterns) {
+            Set<String> keys = stringRedisTemplate.keys(pattern);
+            Long delete = stringRedisTemplate.delete(keys);
+            if (delete != null) {
+                count += delete;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 判断删除关联指定表的key
+     *
+     * @param tables
+     * @return
+     */
+    public long deleteWithTable(String... tables) {
+        long count = 0;
+        for (String table : tables) {
+            count += patternDelete("*@" + table + "*");
+        }
+        return count;
     }
 
 }

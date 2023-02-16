@@ -15,6 +15,8 @@ import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.param.CardInfoParam;
 import cn.qkmango.ccms.domain.vo.UserAndCardVO;
 import cn.qkmango.ccms.mvc.service.CardService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Locale;
 
@@ -104,10 +104,10 @@ public class CardController {
             card.setUser(account.getId());
         }
 
-        UserAndCardVO userAndCard = service.list(card);
+        UserAndCardVO detail = service.detail(card);
 
-        if (userAndCard != null) {
-            return R.success(userAndCard);
+        if (detail != null) {
+            return R.success(detail);
         }
         return R.fail(messageSource.getMessage("db.card.detail.failure", null, locale));
     }

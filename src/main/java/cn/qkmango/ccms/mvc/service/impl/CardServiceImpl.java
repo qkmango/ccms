@@ -89,11 +89,8 @@ public class CardServiceImpl implements CardService {
     @Override
     public R<List<UserAndCardVO>> list(Pagination<CardInfoParam> pagination) {
 
-        R r = null;
-
-        String key = redis.key("card_pagination", pagination, "@user@card");
-        r = redis.get(key, R.class);
-
+        String key = redis.key("card:pagination", pagination, "user", "card");
+        R r = redis.get(key, R.class);
         if (r == null) {
             // 如果缓存中没有数据, 就从数据库中查询
             List<UserAndCardVO> cardList = cardDao.list(pagination);
@@ -132,8 +129,7 @@ public class CardServiceImpl implements CardService {
         if (affectedRows != 1) {
             throw new InsertException(messageSource.getMessage("db.card.insert.failure", null, locale));
         }
-
-        redis.delete("*@user*");
+        redis.deleteWithTable("user", "card");
 
         return card;
     }
@@ -197,8 +193,8 @@ public class CardServiceImpl implements CardService {
      * @return 卡详细信息
      */
     @Override
-    public UserAndCardVO list(Card card) {
-        UserAndCardVO vo = cardDao.detail(card);
-        return vo;
+    public UserAndCardVO detail(Card card) {
+        UserAndCardVO detail = cardDao.detail(card);
+        return detail;
     }
 }

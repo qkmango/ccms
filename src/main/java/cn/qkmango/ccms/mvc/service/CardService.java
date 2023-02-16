@@ -53,7 +53,7 @@ public interface CardService {
      * @param card 校园卡（user ID）
      * @return 详细信息
      */
-    UserAndCardVO list(Card card);
+    UserAndCardVO detail(Card card);
 
     /**
      * 充值
