@@ -9,6 +9,9 @@
     --green: #00965e;
     --green2: #2da44e;
 
+    --green_50: rgba(0, 150, 94, 0.5);
+    --green_30: rgba(0, 150, 94, 0.3);
+
     /*米黄色*/
     --maize-yellow: #fdfbf1;
 
