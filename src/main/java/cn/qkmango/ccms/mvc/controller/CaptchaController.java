@@ -28,7 +28,7 @@ import java.util.Locale;
 public class CaptchaController {
 
     @Resource
-    private ReloadableResourceBundleMessageSource message;
+    private ReloadableResourceBundleMessageSource messageSource;
 
     @Resource
     private CaptchaService service;
@@ -45,7 +45,7 @@ public class CaptchaController {
                              @Email(message = "{valid.email.illegal}") String email,
                              Locale locale) {
         service.sendChangeEmail(email, locale);
-        return R.success(message.getMessage("response.email.send.success", null, locale));
+        return R.success(messageSource.getMessage("response.email.send.success", null, locale));
     }
 
 }

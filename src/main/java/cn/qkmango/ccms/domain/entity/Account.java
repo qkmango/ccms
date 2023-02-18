@@ -35,15 +35,18 @@ public class Account implements Serializable {
 
     private String email;
 
+    private String giteeUID;
+
     public Account() {
     }
 
-    public Account(String id, String password, String name, PermissionType permissionType, String email) {
+    public Account(String id, String password, String name, PermissionType permissionType, String email, String giteeUID) {
         this.id = id;
         this.password = password;
         this.name = name;
         this.permissionType = permissionType;
         this.email = email;
+        this.giteeUID = giteeUID;
     }
 
     public String getId() {
@@ -86,6 +89,13 @@ public class Account implements Serializable {
         this.email = email;
     }
 
+    public String getGiteeUID() {
+        return giteeUID;
+    }
+
+    public void setGiteeUID(String giteeUID) {
+        this.giteeUID = giteeUID;
+    }
 
     @Override
     public String toString() {
@@ -95,6 +105,7 @@ public class Account implements Serializable {
                 ", name='" + name + '\'' +
                 ", permissionType=" + permissionType +
                 ", email='" + email + '\'' +
+                ", giteeUID='" + giteeUID + '\'' +
                 '}';
     }
 }

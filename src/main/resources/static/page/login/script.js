@@ -1,4 +1,4 @@
-let $,layer;
+let $, layer;
 
 layui.use(['jquery', 'layer'], function () {
     $ = layui.jquery;
@@ -78,17 +78,29 @@ layui.use(['jquery', 'layer'], function () {
             dataType: "json",
             success: function (res) {
                 if (res.success) {
-                    layer.msg(res.message, {icon: 1},end=>window.location.href = "../../index.html");
+                    layer.msg(res.message, {icon: 1}, end => window.location.href = "../../index.html");
                     return
                 }
-                layer.msg(res.message, {icon: 2},end=>isAjax = false);
+                layer.msg(res.message, {icon: 2}, end => isAjax = false);
 
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                layer.msg(jqXHR.status+'', {icon: 2},end=>isAjax = false);
+                layer.msg(jqXHR.status + '', {icon: 2}, end => isAjax = false);
             }
         })
     }
+
+
+    // gitee认证
+    document.querySelector("#gitee_auth").addEventListener("click", function () {
+        $.get(`../../authentication/gitee/auth.do?type=${permissionType.value}`, (res, status) => {
+            if (res.success) {
+                window.location.href = res.data;
+                return;
+            }
+            layer.msg(res.message, {icon: 2});
+        });
+    })
 
 })
 

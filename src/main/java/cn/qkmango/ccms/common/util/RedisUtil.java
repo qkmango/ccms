@@ -173,4 +173,11 @@ public class RedisUtil {
         return count;
     }
 
+    /**
+     * 判断是否存在key
+     */
+    public boolean hasKey(String key) {
+        return stringRedisTemplate.hasKey(key);
+    }
+
 }

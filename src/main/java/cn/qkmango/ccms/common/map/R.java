@@ -1,6 +1,8 @@
 package cn.qkmango.ccms.common.map;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 响应 Map
@@ -134,6 +136,16 @@ public class R<T> implements Serializable {
         return new R<T>(false, message, data, null, null);
     }
 
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("success", success);
+        map.put("message", message);
+        map.put("data", data);
+        map.put("count", count);
+        map.put("meta", meta);
+        return map;
+    }
 
     @Override
     public String toString() {

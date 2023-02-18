@@ -22,6 +22,7 @@
     --blue-tint: rgba(9, 105, 218, 0.1);
     --orange-tint: rgba(255, 184, 0, 0.1);
     --red-tint: rgba(255, 87, 34, 0.1);
+    --red-tint-solid: #ffeee8;
 
     /*0.9透明度的白色*/
     --white-transparent-9: rgba(255, 255, 255, 0.9);

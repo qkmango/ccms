@@ -144,41 +144,6 @@ select:focus {
     text-align: center;
 }
 
-.link {
-    margin: 0 auto;
-    width: 306px;
-    font-size: 14px;
-    position: relative;
-    bottom: 0;
-    padding: 40px 0;
-}
-
-.link a {
-    text-decoration: none;
-    color: #0969da;
-}
-
-.link a:hover {
-    text-decoration: underline;
-}
-
-.link>a:first-child {
-    float: left;
-}
-
-.link>a:last-child{
-    float: right;
-}
-
-.link>a:nth-child(2){
-    text-align: center;
-    position: absolute;
-    width: 306px;
-    left: 0;
-    right: 0;
-    margin: auto;
-}
-
 
 /* 更改select样式 */
 select {
@@ -191,6 +156,11 @@ select {
     background-position: 245px;
 }
 
+
+/*其他登陆方式*/
+.authentication.label>a>img {
+    height: 35px;
+}
 
 /*清除ie的默认选择框样式清除，隐藏下拉箭头*/
 select::-ms-expand {
