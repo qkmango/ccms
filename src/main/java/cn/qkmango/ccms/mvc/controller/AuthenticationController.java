@@ -1,7 +1,10 @@
 package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.bind.AuthenticationPurpose;
+import cn.qkmango.ccms.domain.bind.AuthenticationType;
 import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.dto.Authentication;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,17 +37,25 @@ public class AuthenticationController {
     /**
      * Gitee授权登陆
      *
-     * @param type   权限类型
-     * @param locale 语言环境
+     * @param purpose 授权目的
+     * @param locale  语言环境
      * @return 返回授权地址
      */
     @ResponseBody
     @RequestMapping("gitee/auth.do")
-    public R giteeAuth(PermissionType type, Locale locale) {
-        if (type == PermissionType.pos) {
+    public R giteeAuth(@RequestParam PermissionType permission,
+                       @RequestParam AuthenticationPurpose purpose,
+                       Locale locale) {
+
+        Authentication authentication = new Authentication();
+        authentication.setPurpose(purpose);
+        authentication.setPermission(permission);
+        authentication.setType(AuthenticationType.gitee);
+
+        if (permission == PermissionType.pos) {
             return R.fail(messageSource.getMessage("response.authentication.permission.failure", null, locale));
         }
-        String redirect = service.giteeAuth(type);
+        String redirect = service.giteeAuth(authentication);
         return R.success().setData(redirect);
     }
 

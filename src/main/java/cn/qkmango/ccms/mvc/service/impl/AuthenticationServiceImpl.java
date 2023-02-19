@@ -3,10 +3,12 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.authentication.GiteeHttpClient;
 import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.dto.Authentication;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import com.alibaba.fastjson2.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,26 +48,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Resource
     private ReloadableResourceBundleMessageSource messageSource;
 
+    @Resource
+    private ObjectMapper objectMapper;
+
     /**
      * Gitee授权登陆
      *
-     * @param type 权限类型
+     * @param authentication 授权信息
      * @return 返回授权地址
      */
     @Override
-    public String giteeAuth(PermissionType type) {
+    public String giteeAuth(Authentication authentication) {
         // 用于第三方应用防止CSRF攻击
-        String state = type + ":" + UUID.randomUUID();
+        String state = "auth:" + UUID.randomUUID();
+        String value = JSONObject.toJSONString(authentication);
 
         // Step1：获取Authorization Code
         String redirect = "https://gitee.com/oauth/authorize?response_type=code" +
                 "&client_id=" + GITEE_CLIENT_ID +
                 "&redirect_uri=" + URLEncoder.encode(GITEE_CALLBACK) +
                 "&state=" + state +
-                "&scope=user_info&type=" + type;
+                "&scope=user_info";
 
         //将 uuid 存入redis，用于第三方应用防止CSRF攻击，有效期为5分钟
-        redis.set("authentication:gitee:state:" + state, "", 60 * 5);
+        redis.set(state, value, 60 * 5);
 
         return redirect;
     }
@@ -99,12 +105,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return modelAndView;
         }
 
-
         //判断state是否有效，防止CSRF攻击
-        String stateKey = "authentication:gitee:state:" + state;
-        boolean has = redis.hasKey(stateKey);
-        redis.delete(stateKey);
-        if (!has) {
+        String value = redis.get(state);
+        redis.delete(state);
+        if (value == null) {
             modelAndView.addObject("message", messageSource.getMessage("response.authentication.state.failure", null, locale));
             return modelAndView;
         }
@@ -115,7 +119,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         //获取用户信息
         JSONObject userInfo = client.getUserInfo(accessToken);
         String uid = ((Integer) userInfo.get("id")).toString();
-        PermissionType type = PermissionType.valueOf(state.split(":")[0]);
+        Authentication authentication = JSONObject.parseObject(value, Authentication.class);
+        PermissionType type = authentication.getPermission();
 
         //查询数据库中是否存在该用户
         switch (type) {

@@ -1,6 +1,8 @@
 package cn.qkmango.ccms.mvc.service;
 
+import cn.qkmango.ccms.domain.bind.AuthenticationPurpose;
 import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.dto.Authentication;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -17,10 +19,10 @@ public interface AuthenticationService {
     /**
      * Gitee授权登陆
      *
-     * @param type 权限类型
+     * @param authentication 授权信息
      * @return 返回授权地址
      */
-    String giteeAuth(PermissionType type);
+    String giteeAuth(Authentication authentication);
 
     /**
      * Gitee授权回调

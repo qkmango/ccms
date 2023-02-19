@@ -104,7 +104,7 @@ public class RedisUtil {
      * @param key redis的key
      * @return 对象的JSON形式字符串
      */
-    public String getWithJSON(String key) {
+    public String get(String key) {
         try {
             return stringRedisTemplate.opsForValue().get(key);
         } catch (Exception e) {

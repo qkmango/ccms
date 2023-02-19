@@ -93,7 +93,7 @@ layui.use(['jquery', 'layer'], function () {
 
     // gitee认证
     document.querySelector("#gitee_auth").addEventListener("click", function () {
-        $.get(`../../authentication/gitee/auth.do?type=${permissionType.value}`, (res, status) => {
+        $.get(`../../authentication/gitee/auth.do?permission=${permissionType.value}&purpose=login`, (res, status) => {
             if (res.success) {
                 window.location.href = res.data;
                 return;
