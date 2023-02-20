@@ -53,9 +53,10 @@ public class GiteeHttpClient {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            httpPost.releaseConnection();
         }
 
-        httpPost.releaseConnection();
         return null;
     }
 
@@ -74,16 +75,15 @@ public class GiteeHttpClient {
         try {
             HttpResponse response = client.execute(httpGet);
             HttpEntity entity = response.getEntity();
-
             if (entity != null) {
                 String result = EntityUtils.toString(entity, "UTF-8");
                 jsonObject = JSONObject.parseObject(result);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            httpGet.releaseConnection();
         }
-
-        httpGet.releaseConnection();
 
         return jsonObject;
     }

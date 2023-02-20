@@ -1,6 +1,8 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
+import cn.qkmango.ccms.common.authentication.DingtalkHttpClient;
 import cn.qkmango.ccms.common.authentication.GiteeHttpClient;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.dto.Authentication;
@@ -8,6 +10,7 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import com.alibaba.fastjson2.JSONObject;
+import com.dingtalk.api.response.OapiSnsGetuserinfoBycodeResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,11 +33,17 @@ import java.util.UUID;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
+    // Gitee授权登陆
     @Value("${ccms.authentication.gitee.clientId}")
     private String GITEE_CLIENT_ID;
-
     @Value("${ccms.authentication.gitee.callback}")
     private String GITEE_CALLBACK;
+
+    // 钉钉授权登陆
+    @Value("${ccms.authentication.dingtalk.callback}")
+    private String DINGTALK_CALLBACK;
+    @Value("${ccms.authentication.dingtalk.appKey}")
+    private String DINGTALK_APP_KEY;
 
     @Resource
     private AuthenticationDao dao;
@@ -43,7 +52,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private RedisUtil redis;
 
     @Resource
-    private GiteeHttpClient client;
+    private GiteeHttpClient giteeHttpClient;
+
+    @Resource
+    private DingtalkHttpClient dingtalkHttpClient;
 
     @Resource
     private ReloadableResourceBundleMessageSource messageSource;
@@ -97,11 +109,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         //设置默认值,默认为登录失败
         modelAndView.addObject("success", false);
-        modelAndView.setViewName("redirect:/page/authentication/gitee/error.html");
+        modelAndView.addObject("type", "gitee");
+        modelAndView.setViewName("redirect:/page/common/authentication.html");
+        modelAndView.addObject("message", messageSource.getMessage("response.authentication.failure", null, locale));
+
 
         //如果用户拒绝授权
         if (error != null || code == null) {
-            modelAndView.addObject("message", messageSource.getMessage("response.authentication.failure", null, locale));
             return modelAndView;
         }
 
@@ -114,19 +128,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         //获取Access Token
-        JSONObject json = client.getAccessToken(code);
+        JSONObject json = giteeHttpClient.getAccessToken(code);
         String accessToken = (String) json.get("access_token");
         //获取用户信息
-        JSONObject userInfo = client.getUserInfo(accessToken);
-        String uid = ((Integer) userInfo.get("id")).toString();
+        JSONObject userInfo = giteeHttpClient.getUserInfo(accessToken);
+
+        //获取redis中存储的授权信息,获取权限类型
         Authentication authentication = JSONObject.parseObject(value, Authentication.class);
-        PermissionType type = authentication.getPermission();
+        PermissionType permission = authentication.getPermission();
 
         //查询数据库中是否存在该用户
-        switch (type) {
-            case user -> loginAccount = dao.userAuthentication(uid);
-            case admin -> loginAccount = dao.adminAuthentication(uid);
-        }
+        String uid = ((Integer) userInfo.get("id")).toString();
+        authentication.setUid(uid);
+        loginAccount = dao.authentication(authentication);
         //如果不存在，返回错误信息
         if (loginAccount == null) {
             modelAndView.addObject("message", messageSource.getMessage("db.user.gitee.uid.failure@notExist", null, locale));
@@ -135,16 +149,91 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
         //登陆成功, 添加session ,返回用户信息
-        loginAccount.setPermissionType(type);
+        loginAccount.setPermissionType(permission);
         request.getSession(true).setAttribute("account", loginAccount);
 
         modelAndView.addObject("account", loginAccount);
         modelAndView.addObject("success", true);
-        modelAndView.addObject("message", messageSource.getMessage("db.user.gitee.uid.failure@notExist", null, locale));
-        modelAndView.setViewName("redirect:/page/authentication/gitee/success.html");
+        modelAndView.addObject("message", messageSource.getMessage("response.authentication.success", null, locale));
 
         return modelAndView;
     }
 
 
+    /**
+     * 钉钉授权登陆地址
+     *
+     * @return 返回授权地址
+     */
+    @Override
+    public String dingtalkAuth(Authentication authentication) {
+        String state = "auth:" + UUID.randomUUID();
+        String value = JSONObject.toJSONString(authentication);
+        redis.set(state, value, 60 * 5);
+        return "https://oapi.dingtalk.com/connect/qrconnect?appid=" + DINGTALK_APP_KEY + "&response_type=code&scope=snsapi_login&state=" + state + "&redirect_uri=" + DINGTALK_CALLBACK;
+    }
+
+    /**
+     * 钉钉授权回调
+     *
+     * @param code 授权码
+     * @return
+     */
+    @Override
+    public ModelAndView dingtalkCallback(String code, String state, HttpServletRequest request, Locale locale) {
+
+        ModelAndView modelAndView = new ModelAndView();
+        Account loginAccount = null;
+
+        //设置默认值,默认为登录失败
+        modelAndView.addObject("success", false);
+        modelAndView.addObject("type", "dingtalk");
+        modelAndView.setViewName("redirect:/page/common/authentication.html");
+        modelAndView.addObject("message", messageSource.getMessage("response.authentication.failure", null, locale));
+
+        //如果用户拒绝授权
+        if (code == null) {
+            return modelAndView;
+        }
+
+        //判断state是否有效，防止CSRF攻击
+        String value = redis.get(state);
+        redis.delete(state);
+        if (value == null) {
+            modelAndView.addObject("message", messageSource.getMessage("response.authentication.state.failure", null, locale));
+            return modelAndView;
+        }
+
+        //根据 code 获取用户信息
+        OapiSnsGetuserinfoBycodeResponse.UserInfo userInfo = dingtalkHttpClient.getUserInfo(code);
+        if (userInfo == null) {
+            return modelAndView;
+        }
+
+        //获取redis中存储的授权信息，获取权限类型
+        Authentication authentication = JSONObject.parseObject(value, Authentication.class);
+        PermissionType permission = authentication.getPermission();
+
+        //查询数据库中是否存在该用户
+        String uid = userInfo.getUnionid();
+        authentication.setUid(uid);
+        loginAccount = dao.authentication(authentication);
+
+        //如果不存在，返回错误信息
+        if (loginAccount == null) {
+            modelAndView.addObject("message", messageSource.getMessage("db.user.dingtalk.uid.failure@notExist", null, locale));
+            return modelAndView;
+        }
+
+
+        //登陆成功, 添加session ,返回用户信息
+        loginAccount.setPermissionType(permission);
+        request.getSession(true).setAttribute("account", loginAccount);
+
+        modelAndView.addObject("account", loginAccount);
+        modelAndView.addObject("success", true);
+        modelAndView.addObject("message", messageSource.getMessage("response.authentication.success", null, locale));
+
+        return modelAndView;
+    }
 }

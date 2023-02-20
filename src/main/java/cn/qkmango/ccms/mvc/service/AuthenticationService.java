@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.mvc.service;
 
-import cn.qkmango.ccms.domain.bind.AuthenticationPurpose;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.dto.Authentication;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,4 +36,13 @@ public interface AuthenticationService {
      * @return 返回重定向页面
      */
     ModelAndView giteeCallback(String state, String code, String error, String error_description, HttpServletRequest request, Locale locale);
+
+    /**
+     * 钉钉授权登陆地址
+     *
+     * @return 返回授权地址
+     */
+    String dingtalkAuth(Authentication authentication);
+
+    ModelAndView dingtalkCallback(String code, String state, HttpServletRequest request, Locale locale);
 }

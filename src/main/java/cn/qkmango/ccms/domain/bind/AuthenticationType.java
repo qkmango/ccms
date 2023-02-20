@@ -16,5 +16,10 @@ public enum AuthenticationType {
     /**
      * Gitee认证
      */
-    gitee
+    gitee,
+
+    /**
+     * 钉钉认证
+     */
+    dingtalk,
 }

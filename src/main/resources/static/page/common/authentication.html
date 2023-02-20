@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>Gitee认证结果</title>
+    <title>认证结果</title>
     <link rel="stylesheet" href="../../../css/color.css" media="all">
     <link rel="stylesheet" href="../../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
     <style>
@@ -49,9 +49,9 @@
             margin: 1rem auto;
         }
 
-        .message > p:last-child {
+        #message > p:nth-child(3),
+        #message > p:nth-child(4) {
             font-size: 2rem;
-            margin: 0 auto;
         }
 
         .fa {
@@ -65,7 +65,7 @@
 </head>
 <body>
 <div class="header">
-    <img src="../../../images/gitee.svg"><span>Gitee 用户认证</span>
+    <img id="type_img"><span id="type_title"></span>
 </div>
 <div class="message" id="message"></div>
 
@@ -75,17 +75,49 @@
 <script src="../../../lib/util/utils.js"></script>
 
 <script>
+    //认证是否成功
     let success = utils.getUrlParam("success");
-    let message = utils.getUrlParam("message");
+    //认证消息
+    let message = utils.getUrlParam("message") || '';
+    //认证平台
+    let type = utils.getUrlParam("type");
 
-    document.querySelector('#message').innerHTML = `
+    switch (type) {
+        case 'gitee':
+            document.getElementById('type_img').src = '../../../images/gitee.svg';
+            document.getElementById('type_title').innerText = 'Gitee 用户认证';
+            break;
+        case 'dingtalk':
+            document.getElementById('type_img').src = '../../../images/dingtalk.svg';
+            document.getElementById('type_title').innerText = '钉钉 用户认证';
+            break;
+    }
+
+
+
+    let url;
+
+    if (success === 'true') {
+        url = "../../../index.html";
+        document.querySelector('#message').innerHTML = `
             <i class="fa fa-check" style="color: var(--green-tint-solid);background-color: var(--green);"></i>
             <p style="color: var(--green);">认证成功</p>
             <p style="color: var(--green);">即将跳转到主页</p>
+            <p style="color: var(--green);">${message}</p>
         `;
+    } else {
+        url = "../../../index.html";
+        document.querySelector('#message').innerHTML = `
+            <i class="fa fa-times" style="color: var(--red-tint-solid);background-color: var(--red);"></i>
+            <p style="color: var(--red);">认证失败</p>
+            <p style="color: var(--red);">即将跳转到登陆页面</p>
+            <p style="color: var(--red);">${message}</p>
+        `;
+    }
 
-    setInterval(function () {
-        window.location = '../../../index.html';
-    }, 2000)
+
+    // setInterval(function () {
+    //     window.location = '../../../index.html';
+    // }, 2000)
 
 </script>

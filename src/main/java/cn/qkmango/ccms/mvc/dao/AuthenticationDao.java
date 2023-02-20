@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.mvc.dao;
 
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.dto.Authentication;
 import cn.qkmango.ccms.domain.entity.Account;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -15,7 +15,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface AuthenticationDao {
 
-    Account userAuthentication(String uid);
-    Account adminAuthentication(String uid);
+    Account authentication(Authentication authentication);
 
 }

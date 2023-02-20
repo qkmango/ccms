@@ -4,12 +4,19 @@
 <mapper namespace="cn.qkmango.ccms.mvc.dao.AuthenticationDao">
 
 
-    <select id="userAuthentication" resultType="cn.qkmango.ccms.domain.entity.Account">
-        SELECT id,
-               name
-        FROM t_user
-        where gitee_uid = #{giteeUid}
-          and unsubscribe = 0;
+    <select id="authentication" resultType="cn.qkmango.ccms.domain.entity.Account">
+        SELECT id,name
+        <choose>
+            <when test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@user">FROM t_user</when>
+            <when test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@admin">FROM t_admin</when>
+        </choose>
+
+        WHERE
+        <choose>
+            <when test="type == @cn.qkmango.ccms.domain.bind.AuthenticationType@gitee">gitee_uid = #{uid}</when>
+            <when test="type == @cn.qkmango.ccms.domain.bind.AuthenticationType@dingtalk">dingtalk_uid = #{uid}</when>
+        </choose>
+        <if test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@user">and unsubscribe = 0;</if>
     </select>
 
     <select id="adminAuthentication" resultType="cn.qkmango.ccms.domain.entity.Account">

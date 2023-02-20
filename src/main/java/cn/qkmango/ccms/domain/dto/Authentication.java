@@ -13,9 +13,25 @@ import cn.qkmango.ccms.domain.bind.PermissionType;
  */
 public class Authentication {
 
+    /**
+     * 用户权限
+     */
     private PermissionType permission;
+
+    /**
+     * 认证类型
+     */
     private AuthenticationType type;
+
+    /**
+     * 认证用途
+     */
     private AuthenticationPurpose purpose;
+
+    /**
+     * 三方平台返回的用户唯一标识
+     */
+    private String uid;
 
     public PermissionType getPermission() {
         return permission;
@@ -41,6 +57,13 @@ public class Authentication {
         this.purpose = purpose;
     }
 
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     @Override
     public String toString() {
@@ -48,6 +71,7 @@ public class Authentication {
                 "permission=" + permission +
                 ", type=" + type +
                 ", purpose=" + purpose +
+                ", uid='" + uid + '\'' +
                 '}';
     }
 }
