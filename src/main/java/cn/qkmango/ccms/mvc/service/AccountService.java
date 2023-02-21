@@ -3,7 +3,6 @@ package cn.qkmango.ccms.mvc.service;
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
 import cn.qkmango.ccms.domain.vo.UserInfoVO;
 

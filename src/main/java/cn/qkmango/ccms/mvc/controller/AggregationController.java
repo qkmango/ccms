@@ -5,13 +5,11 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.mvc.service.AggregationService;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
 
 import java.util.Map;
 

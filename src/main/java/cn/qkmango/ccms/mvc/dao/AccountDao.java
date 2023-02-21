@@ -2,7 +2,6 @@ package cn.qkmango.ccms.mvc.dao;
 
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Pos;
-import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
 import cn.qkmango.ccms.domain.vo.UserInfoVO;
 import org.apache.ibatis.annotations.Mapper;

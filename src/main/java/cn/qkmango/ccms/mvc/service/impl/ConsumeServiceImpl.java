@@ -118,7 +118,6 @@ public class ConsumeServiceImpl implements ConsumeService {
      */
     @Override
     public ConsumeDetailsVO detail(Consume consume) {
-        ConsumeDetailsVO vo = consumeDao.detail(consume);
-        return vo;
+        return consumeDao.detail(consume);
     }
 }

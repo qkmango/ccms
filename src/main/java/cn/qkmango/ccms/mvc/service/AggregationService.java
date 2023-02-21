@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.mvc.service;
 
-import cn.qkmango.ccms.common.map.R;
-
 import java.util.Map;
 
 /**

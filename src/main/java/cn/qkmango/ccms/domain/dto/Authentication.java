@@ -33,6 +33,22 @@ public class Authentication {
      */
     private String uid;
 
+    public Authentication() {
+    }
+
+    public Authentication(PermissionType permission, AuthenticationType type, AuthenticationPurpose purpose) {
+        this.permission = permission;
+        this.type = type;
+        this.purpose = purpose;
+    }
+
+    public Authentication(PermissionType permission, AuthenticationType type, AuthenticationPurpose purpose, String uid) {
+        this.permission = permission;
+        this.type = type;
+        this.purpose = purpose;
+        this.uid = uid;
+    }
+
     public PermissionType getPermission() {
         return permission;
     }

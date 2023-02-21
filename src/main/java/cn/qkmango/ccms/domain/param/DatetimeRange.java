@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.domain.param;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
 
 /**

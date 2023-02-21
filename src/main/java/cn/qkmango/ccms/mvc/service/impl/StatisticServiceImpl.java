@@ -74,9 +74,7 @@ public class StatisticServiceImpl implements StatisticService {
             range.setEndTime(calendar.getTime());
         }
 
-        List<ConsumeStatistic> list = dao.consumeStatistic(range);
-
-        return list;
+        return dao.consumeStatistic(range);
     }
 
     /**

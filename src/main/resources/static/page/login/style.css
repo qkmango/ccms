@@ -1,3 +1,4 @@
+@import url('../../css/color.css');
 body {
     color: #0969da;
     line-height: 1.5;
@@ -158,11 +159,40 @@ select {
 
 
 /*其他登陆方式*/
-.authentication.label>a>img {
-    height: 35px;
+.authentication.label {
+    font-size: 0;
 }
 
-/*清除ie的默认选择框样式清除，隐藏下拉箭头*/
+.authentication.label>div {
+    display: inline-block;
+    text-align: center;
+    /*border: 1px solid;*/
+    border-radius: 6px;
+}
+
+.authentication.label>div:first-child {
+    margin-right: 8px;
+}
+
+.authentication.label>div:hover {
+    background-color: var(--blue-tint);
+    cursor: pointer;
+}
+
+.authentication.label>div>img {
+    height: 35px;
+    margin: 4px 8px;
+}
+
+.authentication.label>a>img:hover {
+    background-color: #0B7500;
+}
+
+.authentication.label>a:first-child {
+    /*margin-right: 14px;*/
+}
+
+    /*清除ie的默认选择框样式清除，隐藏下拉箭头*/
 select::-ms-expand {
     display: none;
 }

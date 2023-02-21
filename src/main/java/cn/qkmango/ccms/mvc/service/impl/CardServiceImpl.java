@@ -194,7 +194,6 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public UserAndCardVO detail(Card card) {
-        UserAndCardVO detail = cardDao.detail(card);
-        return detail;
+        return cardDao.detail(card);
     }
 }

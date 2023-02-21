@@ -93,14 +93,25 @@ layui.use(['jquery', 'layer'], function () {
 
     // gitee认证
     document.querySelector("#gitee_auth").addEventListener("click", function () {
-        $.get(`../../authentication/gitee/auth.do?permission=${permissionType.value}&purpose=login`, (res, status) => {
+        auth(`../../authentication/gitee/auth.do?permission=${permissionType.value}&purpose=login`);
+    })
+
+    // dingtalk认证
+    document.querySelector("#dingtalk_auth").addEventListener("click", function () {
+        auth(`../../authentication/dingtalk/auth.do?permission=${permissionType.value}&purpose=login`)
+    })
+
+
+    // 认证，传入认证地址
+    function auth(url) {
+        $.get(url, (res, status) => {
             if (res.success) {
                 window.location.href = res.data;
                 return;
             }
             layer.msg(res.message, {icon: 2});
         });
-    })
+    }
 
 })
 
@@ -108,20 +119,8 @@ layui.use(['jquery', 'layer'], function () {
  * 更改语言
  */
 function changeLocale(locale) {
-    // setCookie('locale', locale,24*60*60*1000);
     Cookies.set('locale', locale, {expires: 7});
     window.location.reload();
-    // $.ajax({
-    //     url: '../../system/setLocale.do',
-    //     data: {
-    //         locale
-    //     },
-    //     success: function (data) {
-    //         if (data.success) {
-    //             window.location.reload();
-    //         }
-    //     }
-    // })
 }
 
 

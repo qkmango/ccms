@@ -4,7 +4,6 @@ package cn.qkmango.ccms.common.authentication;
 import com.alibaba.fastjson2.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -40,7 +39,7 @@ public class GiteeHttpClient {
                 "&code=" + code +
                 "&redirect_uri=" + GITEE_CALLBACK;
 
-        HttpClient client = HttpClients.createDefault();
+        CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
 
@@ -55,6 +54,13 @@ public class GiteeHttpClient {
             throw new RuntimeException(e);
         } finally {
             httpPost.releaseConnection();
+            if (client != null) {
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         return null;
@@ -80,9 +86,16 @@ public class GiteeHttpClient {
                 jsonObject = JSONObject.parseObject(result);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         } finally {
             httpGet.releaseConnection();
+            if (client != null) {
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         return jsonObject;

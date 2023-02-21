@@ -1,6 +1,5 @@
 package cn.qkmango.ccms.mvc.service;
 
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.dto.Authentication;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,6 +24,7 @@ public interface AuthenticationService {
 
     /**
      * Gitee授权回调
+     * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
      *
      * @param state             授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
      *                          在redis中有效期为5分钟, 拼接为 authentication:PermissionType:UUID
@@ -44,5 +44,13 @@ public interface AuthenticationService {
      */
     String dingtalkAuth(Authentication authentication);
 
+    /**
+     * 钉钉回调地址
+     * 回调中进行从钉钉获取用户信息，然后和系统数据库进行比对登陆
+     *
+     * @param code  授权码
+     * @param state 授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
+     * @return 返回重定向页面
+     */
     ModelAndView dingtalkCallback(String code, String state, HttpServletRequest request, Locale locale);
 }

@@ -56,8 +56,7 @@ public class PosServiceImpl implements PosService {
         if (affectedRows != 1) {
             throw new InsertException(messageSource.getMessage("db.pos.add.failure", null, locale));
         }
-        String id = dao.lastInsertId();
-        return id;
+        return dao.lastInsertId();
     }
 
     /**

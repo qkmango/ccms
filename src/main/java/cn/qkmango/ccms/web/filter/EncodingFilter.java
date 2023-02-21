@@ -31,9 +31,8 @@ public class EncodingFilter implements Filter {
      *
      * @param filterConfig a <code>FilterConfig</code> object containing the
      *                     filter's configuration and initialization parameters
-     * @throws ServletException servlet异常
      */
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
     }
 }

@@ -1,13 +1,12 @@
 package cn.qkmango.ccms.common.authentication;
 
-import com.dingtalk.api.DefaultDingTalkClient;
-import com.dingtalk.api.DingTalkClient;
-import com.dingtalk.api.request.OapiGettokenRequest;
-import com.dingtalk.api.request.OapiSnsGetuserinfoBycodeRequest;
-import com.dingtalk.api.response.OapiGettokenResponse;
-import com.dingtalk.api.response.OapiSnsGetuserinfoBycodeResponse;
-import com.dingtalk.api.response.OapiSnsGetuserinfoBycodeResponse.UserInfo;
-import com.taobao.api.ApiException;
+import com.aliyun.dingtalkcontact_1_0.models.GetUserHeaders;
+import com.aliyun.dingtalkcontact_1_0.models.GetUserResponseBody;
+import com.aliyun.dingtalkoauth2_1_0.Client;
+import com.aliyun.dingtalkoauth2_1_0.models.GetUserTokenRequest;
+import com.aliyun.dingtalkoauth2_1_0.models.GetUserTokenResponse;
+import com.aliyun.teaopenapi.models.Config;
+import com.aliyun.teautil.models.RuntimeOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -27,56 +26,55 @@ public class DingtalkHttpClient {
     @Value("${ccms.authentication.dingtalk.appSecret}")
     private String DINGTALK_APP_SECRET;
 
-    @Value("${ccms.authentication.dingtalk.url.userInfo}")
-    private String DINGTALK_USER_INFO_URL;
-
-    @Value("${ccms.authentication.dingtalk.url.accessToken}")
-    private String DINGTALK_ACCESS_TOKEN_URL;
+    private final String DINGTALK_USER_INFO_URL = "https://oapi.dingtalk.com/sns/getuserinfo_bycode";
+    private final String DINGTALK_ACCESS_TOKEN_URL = "https://oapi.dingtalk.com/gettoken";
+    private final Config config = new Config().setProtocol("https").setRegionId("central");
 
 
     /**
+     * 钉钉accessToken
+     *
+     * @param authCode
      * @return 钉钉accessToken
-     * @date 2022/1/26 22:00
-     * @author cyb
      */
-    public String getAccessToken() {
+    public String getAccessToken(String authCode) {
+        GetUserTokenResponse response = null;
         try {
-            DingTalkClient clientDingTalkClient = new DefaultDingTalkClient(DINGTALK_ACCESS_TOKEN_URL);
-            OapiGettokenRequest request = new OapiGettokenRequest();
-            request.setAppkey(DINGTALK_APP_KEY);
-            request.setAppsecret(DINGTALK_APP_SECRET);
-            request.setHttpMethod("GET");
-            OapiGettokenResponse response = clientDingTalkClient.execute(request);
-            if (response.getErrcode() == 0) {
-                return response.getAccessToken();
-            }
-            System.out.println("获取accessToken失败，错误码：" + response.getErrcode() + "，错误信息：" + response.getErrmsg());
+            Client client = new Client(config);
+            GetUserTokenRequest getUserTokenRequest = new GetUserTokenRequest()
+                    .setClientId(DINGTALK_APP_KEY)
+                    .setClientSecret(DINGTALK_APP_SECRET)
+                    .setCode(authCode)
+                    .setGrantType("authorization_code");
+            response = client.getUserToken(getUserTokenRequest);
         } catch (Exception e) {
-            System.out.println("获取accessToken失败，错误信息：" + e.getMessage());
+            e.printStackTrace();
         }
-        return null;
+
+        //获取用户个人token
+        return response.getBody().getAccessToken();
     }
 
     /**
-     * @param code 扫码返回的code
+     * @param code 钉钉授权码
      * @return openId
      * @date 2022/1/26 22:08
      * @author cyb
      */
-    public UserInfo getUserInfo(String code) {
-        DefaultDingTalkClient client = new DefaultDingTalkClient(DINGTALK_USER_INFO_URL);
-        OapiSnsGetuserinfoBycodeRequest req = new OapiSnsGetuserinfoBycodeRequest();
-        req.setTmpAuthCode(code);
-        OapiSnsGetuserinfoBycodeResponse response = null;
+    public GetUserResponseBody getUserInfo(String code) {
+        //获取accessToken
+        String accessToken = getAccessToken(code);
+        GetUserResponseBody userinfo = null;
         try {
-            response = client.execute(req, DINGTALK_APP_KEY, DINGTALK_APP_SECRET);
-        } catch (ApiException e) {
+            com.aliyun.dingtalkcontact_1_0.Client client = new com.aliyun.dingtalkcontact_1_0.Client(config);
+            GetUserHeaders getUserHeaders = new GetUserHeaders();
+            getUserHeaders.xAcsDingtalkAccessToken = accessToken;
+            //获取用户个人信息，如需获取当前授权人的信息，unionId参数必须传me
+            userinfo = client.getUserWithOptions("me", getUserHeaders, new RuntimeOptions()).getBody();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        if (0 != response.getErrcode()) {
-            return null;
-        }
-        return response.getUserInfo();
+        return userinfo;
     }
 
 

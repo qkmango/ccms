@@ -5,7 +5,6 @@ import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
 import cn.qkmango.ccms.domain.vo.UserInfoVO;
 import cn.qkmango.ccms.mvc.dao.AccountDao;

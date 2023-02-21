@@ -2,7 +2,6 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.authentication.DingtalkHttpClient;
 import cn.qkmango.ccms.common.authentication.GiteeHttpClient;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.dto.Authentication;
@@ -10,8 +9,7 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import com.alibaba.fastjson2.JSONObject;
-import com.dingtalk.api.response.OapiSnsGetuserinfoBycodeResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.aliyun.dingtalkcontact_1_0.models.GetUserResponseBody;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,9 +58,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Resource
     private ReloadableResourceBundleMessageSource messageSource;
 
-    @Resource
-    private ObjectMapper objectMapper;
-
     /**
      * Gitee授权登陆
      *
@@ -91,6 +86,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     /**
      * Gitee授权回调
+     * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
      *
      * @param state             授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
      *                          在redis中有效期为5分钟, 拼接为 authentication:PermissionType:UUID
@@ -170,14 +166,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String state = "auth:" + UUID.randomUUID();
         String value = JSONObject.toJSONString(authentication);
         redis.set(state, value, 60 * 5);
-        return "https://oapi.dingtalk.com/connect/qrconnect?appid=" + DINGTALK_APP_KEY + "&response_type=code&scope=snsapi_login&state=" + state + "&redirect_uri=" + DINGTALK_CALLBACK;
+
+        return "https://login.dingtalk.com/oauth2/auth?response_type=code&prompt=consent&scope=openid&redirect_uri=" + DINGTALK_CALLBACK +
+                "&client_id=" + DINGTALK_APP_KEY + "&state=" + state;
     }
 
+
     /**
-     * 钉钉授权回调
+     * 钉钉回调地址
+     * 回调中进行从钉钉获取用户信息，然后和系统数据库进行比对登陆
      *
-     * @param code 授权码
-     * @return
+     * @param code  授权码
+     * @param state 授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
+     * @return 返回重定向页面
      */
     @Override
     public ModelAndView dingtalkCallback(String code, String state, HttpServletRequest request, Locale locale) {
@@ -205,7 +206,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         //根据 code 获取用户信息
-        OapiSnsGetuserinfoBycodeResponse.UserInfo userInfo = dingtalkHttpClient.getUserInfo(code);
+        GetUserResponseBody userInfo = dingtalkHttpClient.getUserInfo(code);
         if (userInfo == null) {
             return modelAndView;
         }
@@ -215,8 +216,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         PermissionType permission = authentication.getPermission();
 
         //查询数据库中是否存在该用户
-        String uid = userInfo.getUnionid();
-        authentication.setUid(uid);
+        authentication.setUid(userInfo.unionId);
         loginAccount = dao.authentication(authentication);
 
         //如果不存在，返回错误信息

@@ -83,7 +83,4 @@ ccms:
       appKey: dingfi9mcuubqqqkgbec
       appSecret: 2EF6rPtFpWN3dgMKIqihFGknDCbE6ceGKk2RmBfpP5hTvdcsFZGz9N6uqyvItWd7
       callback: http://localhost/authentication/dingtalk/callback.do
-      url:
-        userInfo: https://oapi.dingtalk.com/sns/getuserinfo_bycode
-        accessToken: https://oapi.dingtalk.com/gettoken
 

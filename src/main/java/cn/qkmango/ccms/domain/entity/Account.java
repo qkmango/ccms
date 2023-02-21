@@ -37,16 +37,19 @@ public class Account implements Serializable {
 
     private String giteeUID;
 
+    private String dingtalkUID;
+
     public Account() {
     }
 
-    public Account(String id, String password, String name, PermissionType permissionType, String email, String giteeUID) {
+    public Account(String id, String password, String name, PermissionType permissionType, String email, String giteeUID, String dingtalkUID) {
         this.id = id;
         this.password = password;
         this.name = name;
         this.permissionType = permissionType;
         this.email = email;
         this.giteeUID = giteeUID;
+        this.dingtalkUID = dingtalkUID;
     }
 
     public String getId() {
@@ -97,6 +100,14 @@ public class Account implements Serializable {
         this.giteeUID = giteeUID;
     }
 
+    public String getDingtalkUID() {
+        return dingtalkUID;
+    }
+
+    public void setDingtalkUID(String dingtalkUID) {
+        this.dingtalkUID = dingtalkUID;
+    }
+
     @Override
     public String toString() {
         return "Account{" +
@@ -106,6 +117,7 @@ public class Account implements Serializable {
                 ", permissionType=" + permissionType +
                 ", email='" + email + '\'' +
                 ", giteeUID='" + giteeUID + '\'' +
+                ", dingtalkUID='" + dingtalkUID + '\'' +
                 '}';
     }
 }
