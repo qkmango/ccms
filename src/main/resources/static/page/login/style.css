@@ -1,4 +1,5 @@
 @import url('../../css/color.css');
+
 body {
     color: #0969da;
     line-height: 1.5;
@@ -7,6 +8,15 @@ body {
 
 #locale {
     float: right;
+}
+
+#locale > * {
+    margin: 0 5px;
+}
+
+#locale > img {
+    height: 25px;
+    vertical-align: middle;
 }
 
 #locale button {
@@ -88,7 +98,7 @@ label {
     color: #444d56;
 }
 
-#id,#password,
+#id, #password,
 select {
     border: 1px solid #eaecef;
     width: 240px;
@@ -161,38 +171,42 @@ select {
 /*其他登陆方式*/
 .authentication.label {
     font-size: 0;
+    border: 1px solid #eaecef;
 }
 
-.authentication.label>div {
+.authentication.label > div {
     display: inline-block;
     text-align: center;
-    /*border: 1px solid;*/
     border-radius: 6px;
+    transition: all .4s;
+    border: 1px solid transparent;
 }
 
-.authentication.label>div:first-child {
-    margin-right: 8px;
-}
-
-.authentication.label>div:hover {
-    background-color: var(--blue-tint);
+.authentication.label > div:hover {
+    display: inline-block;
+    text-align: center;
+    border-radius: 6px;
+    transition: all .4s;
+    box-shadow: 0 0 0 3px rgb(3 102 214 / 30%);
+    border-color: #0969da;
+    outline: none;
     cursor: pointer;
 }
 
-.authentication.label>div>img {
+.authentication.label > div:first-child {
+    margin-right: 8px;
+}
+
+.authentication.label > div > img {
     height: 35px;
     margin: 4px 8px;
 }
 
-.authentication.label>a>img:hover {
+.authentication.label > a > img:hover {
     background-color: #0B7500;
 }
 
-.authentication.label>a:first-child {
-    /*margin-right: 14px;*/
-}
-
-    /*清除ie的默认选择框样式清除，隐藏下拉箭头*/
+/*清除ie的默认选择框样式清除，隐藏下拉箭头*/
 select::-ms-expand {
     display: none;
 }

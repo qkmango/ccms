@@ -1,6 +1,7 @@
 package cn.qkmango.ccms.common.authentication;
 
 
+import cn.qkmango.ccms.domain.bind.AuthenticationPurpose;
 import com.alibaba.fastjson2.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,21 +24,31 @@ public class GiteeHttpClient {
     @Value("${ccms.authentication.gitee.clientSecret}")
     private String GITEE_CLIENT_SECRET;
 
-    @Value("${ccms.authentication.gitee.callback}")
-    private String GITEE_CALLBACK;
+    @Value("${ccms.authentication.gitee.callback.login}")
+    private String GITEE_CALLBACK_LOGIN;
+
+    @Value("${ccms.authentication.gitee.callback.bind}")
+    private String GITEE_CALLBACK_BIND;
 
 
     /**
      * 获取Access Token
      * post
      */
-    public JSONObject getAccessToken(String code) {
+    public JSONObject getAccessToken(String code, AuthenticationPurpose purpose) {
+        String callback = null;
+
+        //判断授权用途，设置相应的回调地址
+        switch (purpose) {
+            case bind -> callback = GITEE_CALLBACK_BIND;
+            default -> callback = GITEE_CALLBACK_LOGIN;
+        }
 
         String url = "https://gitee.com/oauth/token?grant_type=authorization_code" +
                 "&client_id=" + GITEE_CLIENT_ID +
                 "&client_secret=" + GITEE_CLIENT_SECRET +
                 "&code=" + code +
-                "&redirect_uri=" + GITEE_CALLBACK;
+                "&redirect_uri=" + callback;
 
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
@@ -64,6 +75,18 @@ public class GiteeHttpClient {
         }
 
         return null;
+    }
+
+    /**
+     * 通过临时授权码code获取用户信息
+     *
+     * @param code 临时授权码
+     * @return
+     */
+    public JSONObject getUserInfoByCode(String code, AuthenticationPurpose purpose) {
+        JSONObject accessToken = getAccessToken(code, purpose);
+        String token = (String) accessToken.get("access_token");
+        return getUserInfo(token);
     }
 
     /**

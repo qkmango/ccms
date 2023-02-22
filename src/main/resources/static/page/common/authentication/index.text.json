@@ -1,0 +1,15 @@
+{
+    "success": true,
+    "data": {
+        "gitee": {
+            "type": "gitee",
+            "state": false,
+            "uid": "6562299"
+        },
+        "dingtalk": {
+            "type": "dingtalk",
+            "state": true,
+            "uid": "VH7YIdCguTarxQ70SIeeGAiEiE"
+        }
+    }
+}

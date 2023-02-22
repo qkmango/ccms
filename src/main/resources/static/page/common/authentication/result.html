@@ -1,11 +1,46 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
     <meta charset="UTF-8">
     <title>认证结果</title>
-    <link rel="stylesheet" href="../../css/color.css" media="all">
-    <link rel="stylesheet" href="../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="../../../css/color.css" media="all">
+    <link rel="stylesheet" href="../../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
     <style>
+
+        /* 自适应尺寸 */
+        @media screen and (max-width: 768px) and (min-width: 320px) {
+            html {
+                font-size: 12px;
+            }
+        }
+
+        /* 手机 */
+        @media screen and (max-width: 1024px) and (min-width: 768px) {
+            html {
+                font-size: 20px;
+            }
+        }
+
+        @media screen and (max-width: 1280px) and (min-width: 1024px) {
+            html {
+                font-size: 12px;
+            }
+        }
+
+        /* 电脑 */
+        @media screen and (max-width: 1920px) and (min-width: 1280px) {
+            html {
+                font-size: 12px;
+            }
+        }
+
+        @media screen and (max-width: 2560px) and (min-width: 1920px) {
+            html {
+                font-size: 22px;
+            }
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -63,16 +98,18 @@
         }
     </style>
 </head>
+
 <body>
 <div class="header">
-    <img id="type_img"><span id="type_title"></span>
+    <img id="type_img" alt="Type Image"><span id="type_title"></span>
 </div>
 <div class="message" id="message"></div>
 
 
 </body>
+
 </html>
-<script src="../../lib/util/utils.js"></script>
+<script src="../../../lib/util/utils.js"></script>
 
 <script>
     //认证是否成功
@@ -80,25 +117,23 @@
     //认证消息
     let message = utils.getUrlParam("message") || '';
     //认证平台
-    let type = utils.getUrlParam("type");
+    let platform = utils.getUrlParam("platform");
+    //授权用途
+    let purpose = utils.getUrlParam("purpose")
 
-    switch (type) {
+    switch (platform) {
         case 'gitee':
-            document.getElementById('type_img').src = '../../images/gitee.svg';
+            document.getElementById('type_img').src = '../../../images/icon/gitee.svg';
             document.getElementById('type_title').innerText = 'Gitee 用户认证';
             break;
         case 'dingtalk':
-            document.getElementById('type_img').src = '../../images/dingtalk.svg';
+            document.getElementById('type_img').src = '../../../images/icon/dingtalk.svg';
             document.getElementById('type_title').innerText = '钉钉 用户认证';
             break;
     }
 
 
-
-    let url;
-
     if (success === 'true') {
-        url = "../../../index.html";
         document.querySelector('#message').innerHTML = `
             <i class="fa fa-check" style="color: var(--green-tint-solid);background-color: var(--green);"></i>
             <p style="color: var(--green);">认证成功</p>
@@ -106,7 +141,6 @@
             <p style="color: var(--green);">${message}</p>
         `;
     } else {
-        url = "../../../index.html";
         document.querySelector('#message').innerHTML = `
             <i class="fa fa-times" style="color: var(--red-tint-solid);background-color: var(--red);"></i>
             <p style="color: var(--red);">认证失败</p>
@@ -116,8 +150,12 @@
     }
 
 
-    // setInterval(function () {
-    //     window.location = '../../../index.html';
-    // }, 2000)
+    setInterval(function () {
+        if (purpose === 'bind') {
+            window.location = 'http://localhost/index.html#/page/common/authentication/open-platform-state.html';
+            return;
+        }
+        window.location = (success === 'true') ? '../../../index.html' : '../../login/index.html';
+    }, 2000)
 
 </script>

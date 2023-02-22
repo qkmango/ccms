@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DingtalkHttpClient {
-    @Value("${ccms.authentication.dingtalk.callback}")
-    private String DINGTALK_CALLBACK;
     @Value("${ccms.authentication.dingtalk.appKey}")
     private String DINGTALK_APP_KEY;
     @Value("${ccms.authentication.dingtalk.appSecret}")

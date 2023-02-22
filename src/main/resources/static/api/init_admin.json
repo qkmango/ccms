@@ -279,6 +279,12 @@
                     "target": "_self"
                 },
                 {
+                    "title": "授权平台",
+                    "icon": "fa fa-cubes",
+                    "href": "page/common/authentication/open-platform-state.html",
+                    "target": "_self"
+                },
+                {
                     "title": "修改密码",
                     "icon": "fa fa-key",
                     "href": "page/common/update-password.html",

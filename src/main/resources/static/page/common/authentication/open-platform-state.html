@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>账户信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../css/public.css" media="all">
+    <link rel="stylesheet" href="../../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <style>
+        table > thead > tr > th {
+            text-align: center !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <div class="layui-bg-gray" style="padding: 30px;">
+            <span class="loading">
+                <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
+                加载中
+            </span>
+            <table class="layui-table" style="text-align: center">
+                <colgroup>
+                    <col width="auto">
+                    <col width="100">
+                    <col width="100">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>平台</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="open_platform_state_table">
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+<script src="../../../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script src="../../../js/lay-config.js" charset="utf-8"></script>
+<script src="../../../lib/util/layui_verify_config.js"></script>
+<script>
+
+    let form, $, authentication;
+
+    layui.use(['form'], function () {
+        form = layui.form;
+        $ = layui.jquery;
+
+        //绑定或解绑
+        authentication = function (platform, bind) {
+            console.log(platform)
+            let url;
+            switch (platform) {
+                case 'gitee'    :url='../../../authentication/gitee/auth.do';break;
+                case 'dingtalk' :url='../../../authentication/dingtalk/auth.do';break;
+            }
+            $.ajax({
+                url:url,
+                // url: "index.text.json",
+                data:{
+                    permission:JSON.parse(sessionStorage.account).permissionType,
+                    purpose:'bind'
+                },
+                dataType: "json",
+                success: function (res) {
+                    if (res.success) {
+                        window.open(res.data);
+                    }
+                }
+            })
+        }
+
+
+        $.ajax({
+            url:"../../../authentication/open-platform/state.do",
+            // url: "index.text.json",
+            dataType: "json",
+            success: function (res) {
+                if (res.success) {
+                    const data = res.data;
+                    document.querySelector(".loading").style.display = "none";
+                    document.querySelector('#open_platform_state_table').innerHTML = `
+                        <tr>
+                            <td><img src="../../../images/icon/dingtalk.svg" style="height: 28px"></td>
+                            <td style="background-color:var(${data.dingtalk.state ? '--green-tint' : '--red-tint'})">
+                                <i class="fa fa-circle" style="font-size: 8px;color: var(${data.dingtalk.state ? '--green' : '--red'})"></i>
+                                <span>${data.dingtalk.state ? '使用中' : '未绑定'}</span></td>
+                            <td>
+                                <a class="layui-btn layui-btn-xs layui-btn-blue-tint"
+                                   onclick="authentication('dingtalk',${!data.dingtalk.state})">${data.dingtalk.state ? '解除绑定' : '绑定账号'}</a>
+                           </td>
+                        </tr>
+                        <tr>
+                            <td><img src="../../../images/icon/gitee.svg" style="height: 28px"></td>
+                            <td style="background-color:var(${data.gitee.state ? '--green-tint' : '--red-tint'})">
+                                <i class="fa fa-circle" style="font-size: 8px;color: var(${data.gitee.state ? '--green' : '--red'})"></i>
+                                <span>${data.gitee.state ? '使用中' : '未绑定'}</span></td>
+                            <td>
+                                <a class="layui-btn layui-btn-xs layui-btn-blue-tint"
+                                   onclick="authentication('gitee',${!data.gitee.state})">${data.gitee.state ? '解除绑定' : '绑定账号'}</a>
+                           </td>
+                        </tr>
+                    `
+                    return
+                }
+                layer.msg(res.message, {icon: 2});
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                layer.msg(jqXHR.status + '', {icon: 2});
+            }
+        })
+
+
+    });
+</script>
+</body>
+</html>

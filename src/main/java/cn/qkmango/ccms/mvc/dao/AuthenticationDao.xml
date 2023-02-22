@@ -3,26 +3,68 @@
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.AuthenticationDao">
 
-
     <select id="authentication" resultType="cn.qkmango.ccms.domain.entity.Account">
         SELECT id,name
+        FROM
         <choose>
-            <when test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@user">FROM t_user</when>
-            <when test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@admin">FROM t_admin</when>
+            <when test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@user">t_user</when>
+            <when test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@admin">t_admin</when>
         </choose>
 
         WHERE
         <choose>
-            <when test="type == @cn.qkmango.ccms.domain.bind.AuthenticationType@gitee">gitee_uid = #{uid}</when>
-            <when test="type == @cn.qkmango.ccms.domain.bind.AuthenticationType@dingtalk">dingtalk_uid = #{uid}</when>
+            <when test="platform == @cn.qkmango.ccms.domain.bind.PlatformType@gitee">gitee_uid = #{uid}</when>
+            <when test="platform == @cn.qkmango.ccms.domain.bind.PlatformType@dingtalk">dingtalk_uid = #{uid}</when>
         </choose>
+
         <if test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@user">and unsubscribe = 0;</if>
     </select>
 
-    <select id="adminAuthentication" resultType="cn.qkmango.ccms.domain.entity.Account">
-        SELECT id,
-               name
-        FROM t_admin
-        where gitee_uid = #{giteeUid}
+    <update id="bind">
+        update
+        <choose>
+            <when test="account.permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">t_user</when>
+            <when test="account.permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">t_admin</when>
+        </choose>
+        set
+        <choose>
+            <when test="platform.type == @cn.qkmango.ccms.domain.bind.PlatformType@gitee">gitee_uid = #{platform.uid}
+            </when>
+            <when test="platform.type == @cn.qkmango.ccms.domain.bind.PlatformType@dingtalk">dingtalk_uid =#{platform.uid}
+            </when>
+        </choose>
+
+        where id = #{account.id}
+    </update>
+
+
+    <select id="openPlatformBindState" resultMap="OpenPlatformBindStateMap">
+        select
+        'gitee' as gitee_type,
+        gitee_uid,
+        if(gitee_uid is null, 0, 1) as gitee_state,
+
+        dingtalk_uid,
+        'dingtalk' as dingtalk_type,
+        if(dingtalk_uid is null, 0, 1) as dingtalk_state
+        from
+        <choose>
+            <when test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">t_user</when>
+            <when test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">t_admin</when>
+        </choose>
+        where id = #{id}
     </select>
+
+    <resultMap id="OpenPlatformBindStateMap" type="cn.qkmango.ccms.domain.vo.OpenPlatformBindState">
+        <association property="gitee">
+            <result property="type" column="gitee_type"/>
+            <result property="state" column="gitee_state"/>
+            <result property="uid" column="gitee_uid"/>
+        </association>
+        <association property="dingtalk">
+            <result property="type" column="dingtalk_type"/>
+            <result property="state" column="dingtalk_state"/>
+            <result property="uid" column="dingtalk_uid"/>
+        </association>
+    </resultMap>
 </mapper>

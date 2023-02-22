@@ -1,7 +1,7 @@
 package cn.qkmango.ccms.domain.dto;
 
 import cn.qkmango.ccms.domain.bind.AuthenticationPurpose;
-import cn.qkmango.ccms.domain.bind.AuthenticationType;
+import cn.qkmango.ccms.domain.bind.PlatformType;
 import cn.qkmango.ccms.domain.bind.PermissionType;
 
 /**
@@ -11,7 +11,7 @@ import cn.qkmango.ccms.domain.bind.PermissionType;
  * @version 1.0
  * @date 2023-02-19 10:19
  */
-public class Authentication {
+public class AuthenticationAccount {
 
     /**
      * 用户权限
@@ -19,9 +19,9 @@ public class Authentication {
     private PermissionType permission;
 
     /**
-     * 认证类型
+     * 认证平台
      */
-    private AuthenticationType type;
+    private PlatformType platform;
 
     /**
      * 认证用途
@@ -33,18 +33,18 @@ public class Authentication {
      */
     private String uid;
 
-    public Authentication() {
+    public AuthenticationAccount() {
     }
 
-    public Authentication(PermissionType permission, AuthenticationType type, AuthenticationPurpose purpose) {
+    public AuthenticationAccount(PermissionType permission, PlatformType platform, AuthenticationPurpose purpose) {
         this.permission = permission;
-        this.type = type;
+        this.platform = platform;
         this.purpose = purpose;
     }
 
-    public Authentication(PermissionType permission, AuthenticationType type, AuthenticationPurpose purpose, String uid) {
+    public AuthenticationAccount(PermissionType permission, PlatformType platform, AuthenticationPurpose purpose, String uid) {
         this.permission = permission;
-        this.type = type;
+        this.platform = platform;
         this.purpose = purpose;
         this.uid = uid;
     }
@@ -57,12 +57,12 @@ public class Authentication {
         this.permission = permission;
     }
 
-    public AuthenticationType getType() {
-        return type;
+    public PlatformType getPlatform() {
+        return platform;
     }
 
-    public void setType(AuthenticationType type) {
-        this.type = type;
+    public void setPlatform(PlatformType platform) {
+        this.platform = platform;
     }
 
     public AuthenticationPurpose getPurpose() {
@@ -85,7 +85,7 @@ public class Authentication {
     public String toString() {
         return "Authentication{" +
                 "permission=" + permission +
-                ", type=" + type +
+                ", type=" + platform +
                 ", purpose=" + purpose +
                 ", uid='" + uid + '\'' +
                 '}';
