@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.domain.bind;
+package cn.qkmango.ccms.domain.auth;
 
 /**
  * 平台类型

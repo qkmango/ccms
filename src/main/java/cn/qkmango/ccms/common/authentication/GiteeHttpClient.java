@@ -1,7 +1,7 @@
 package cn.qkmango.ccms.common.authentication;
 
 
-import cn.qkmango.ccms.domain.bind.AuthenticationPurpose;
+import cn.qkmango.ccms.domain.auth.PurposeType;
 import com.alibaba.fastjson2.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -35,7 +35,7 @@ public class GiteeHttpClient {
      * 获取Access Token
      * post
      */
-    public JSONObject getAccessToken(String code, AuthenticationPurpose purpose) {
+    public JSONObject getAccessToken(String code, PurposeType purpose) {
         String callback = null;
 
         //判断授权用途，设置相应的回调地址
@@ -83,7 +83,7 @@ public class GiteeHttpClient {
      * @param code 临时授权码
      * @return
      */
-    public JSONObject getUserInfoByCode(String code, AuthenticationPurpose purpose) {
+    public JSONObject getUserInfoByCode(String code, PurposeType purpose) {
         JSONObject accessToken = getAccessToken(code, purpose);
         String token = (String) accessToken.get("access_token");
         return getUserInfo(token);

@@ -81,7 +81,7 @@
                     form.val('noticeDetail', res.data);
                     return;
                 }
-                layer.msg(res.message, {icon: 2});
+                layer.msg(res.message, {icon: 1});
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 layer.msg(jqXHR.status+'', {icon: 2});

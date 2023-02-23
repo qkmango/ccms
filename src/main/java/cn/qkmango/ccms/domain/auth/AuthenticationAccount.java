@@ -1,7 +1,5 @@
-package cn.qkmango.ccms.domain.dto;
+package cn.qkmango.ccms.domain.auth;
 
-import cn.qkmango.ccms.domain.bind.AuthenticationPurpose;
-import cn.qkmango.ccms.domain.bind.PlatformType;
 import cn.qkmango.ccms.domain.bind.PermissionType;
 
 /**
@@ -26,7 +24,7 @@ public class AuthenticationAccount {
     /**
      * 认证用途
      */
-    private AuthenticationPurpose purpose;
+    private PurposeType purpose;
 
     /**
      * 三方平台返回的用户唯一标识
@@ -36,13 +34,13 @@ public class AuthenticationAccount {
     public AuthenticationAccount() {
     }
 
-    public AuthenticationAccount(PermissionType permission, PlatformType platform, AuthenticationPurpose purpose) {
+    public AuthenticationAccount(PermissionType permission, PlatformType platform, PurposeType purpose) {
         this.permission = permission;
         this.platform = platform;
         this.purpose = purpose;
     }
 
-    public AuthenticationAccount(PermissionType permission, PlatformType platform, AuthenticationPurpose purpose, String uid) {
+    public AuthenticationAccount(PermissionType permission, PlatformType platform, PurposeType purpose, String uid) {
         this.permission = permission;
         this.platform = platform;
         this.purpose = purpose;
@@ -65,11 +63,11 @@ public class AuthenticationAccount {
         this.platform = platform;
     }
 
-    public AuthenticationPurpose getPurpose() {
+    public PurposeType getPurpose() {
         return purpose;
     }
 
-    public void setPurpose(AuthenticationPurpose purpose) {
+    public void setPurpose(PurposeType purpose) {
         this.purpose = purpose;
     }
 

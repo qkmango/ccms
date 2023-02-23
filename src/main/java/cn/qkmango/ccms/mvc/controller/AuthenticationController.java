@@ -4,19 +4,17 @@ import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.UserSession;
-import cn.qkmango.ccms.domain.bind.AuthenticationPurpose;
+import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.bind.PermissionType;
-import cn.qkmango.ccms.domain.bind.PlatformType;
-import cn.qkmango.ccms.domain.dto.AuthenticationAccount;
+import cn.qkmango.ccms.domain.auth.PlatformType;
+import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Locale;
@@ -37,24 +35,27 @@ public class AuthenticationController {
 
 
     /**
-     * Gitee授权登陆
+     * Gitee / 钉钉 授权登陆地址
      *
-     * @param purpose 授权目的
+     * @param permission 权限类型
+     * @param purpose    授权目的
+     * @param platform   平台类型
      * @return 返回授权地址
      */
     @ResponseBody
-    @RequestMapping("gitee/auth.do")
+    @RequestMapping("{platform}/{purpose}/{permission}/auth.do")
     @Permission({PermissionType.admin, PermissionType.user})
-    public R giteeAuth(@RequestParam PermissionType permission,
-                       @RequestParam AuthenticationPurpose purpose) {
+    public R auth(@PathVariable PermissionType permission,
+                  @PathVariable PurposeType purpose,
+                  @PathVariable PlatformType platform) {
 
         //如果是绑定，则不信任前端穿的权限
-        if (purpose == AuthenticationPurpose.bind) {
+        if (purpose == PurposeType.bind) {
             permission = UserSession.getAccount().getPermissionType();
         }
 
-        AuthenticationAccount authentication = new AuthenticationAccount(permission, PlatformType.gitee, purpose);
-        String redirect = service.giteeAuth(authentication);
+        AuthenticationAccount authentication = new AuthenticationAccount(permission, platform, purpose);
+        String redirect = service.auth(authentication);
         return R.success().setData(redirect);
     }
 
@@ -109,18 +110,38 @@ public class AuthenticationController {
 
 
     /**
-     * 钉钉授权登陆地址
+     * Gitee授权回调
+     * 进行绑定账号
+     * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
      *
-     * @return 返回授权地址
+     * @param purpose           授权目的
+     * @param state             授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
+     *                          在redis中有效期为5分钟, 拼接为 authentication:PermissionType:UUID
+     * @param code              授权码
+     * @param error             有错误时返回
+     * @param error_description 错误描述
+     * @param request           请求
+     * @param locale            语言环境
+     * @return 返回重定向页面
      */
-    @ResponseBody
-    @RequestMapping("dingtalk/auth.do")
-    @Permission({PermissionType.admin, PermissionType.user})
-    public R dingtalkAuth(@RequestParam PermissionType permission,
-                          @RequestParam AuthenticationPurpose purpose) {
-        AuthenticationAccount authentication = new AuthenticationAccount(permission, PlatformType.dingtalk, purpose);
-        String redirect = service.dingtalkAuth(authentication);
-        return R.success().setData(redirect);
+    @RequestMapping("gitee/{purpose}.do")
+    public ModelAndView gitee(
+            @PathVariable PurposeType purpose,
+            @RequestParam String state,
+            String code,
+            String error,
+            String error_description,
+            HttpServletRequest request,
+            Locale locale) throws UpdateException {
+
+        switch (purpose) {
+            case login:
+                return service.giteeLogin(state, code, error, error_description, request, locale);
+            case bind:
+                return service.giteeBind(state, code, error, error_description, request, locale);
+            default:
+                return new ModelAndView("redirect:/");
+        }
     }
 
 
@@ -136,9 +157,8 @@ public class AuthenticationController {
     @RequestMapping("dingtalk/login.do")
     public ModelAndView dingtalkLogin(@RequestParam("authCode") String code,
                                       String state,
-                                      HttpServletRequest request,
                                       Locale locale) {
-        return service.dingtalkLogin(code, state, request, locale);
+        return service.dingtalkLogin(code, state, locale);
     }
 
     /**
@@ -146,19 +166,23 @@ public class AuthenticationController {
      * 进行绑定账号
      * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
      *
-     * @param state   授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
-     *                在redis中有效期为5分钟, 拼接为 authentication:PermissionType:UUID
-     * @param code    授权码
-     * @param request 请求
-     * @param locale  语言环境
+     * @param state  授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
+     *               在redis中有效期为5分钟, 拼接为 authentication:PermissionType:UUID
+     * @param code   授权码
+     * @param locale 语言环境
      * @return 返回重定向页面
      */
     @RequestMapping("dingtalk/bind.do")
     public ModelAndView dingtalkBind(@RequestParam("authCode") String code,
                                      String state,
-                                     HttpServletRequest request,
                                      Locale locale) throws UpdateException {
-        return service.dingtalkBind(code, state, request, locale);
+        return service.dingtalkBind(code, state, locale);
+    }
+
+    @ResponseBody
+    @PostMapping("{platform}/unbind.do")
+    public R unbind(@PathVariable PlatformType platform, Locale locale) throws UpdateException {
+        return service.unbind(platform, locale);
     }
 
     /**

@@ -1,7 +1,9 @@
 package cn.qkmango.ccms.mvc.service;
 
 import cn.qkmango.ccms.common.exception.UpdateException;
-import cn.qkmango.ccms.domain.dto.AuthenticationAccount;
+import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
+import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,12 +19,12 @@ import java.util.Locale;
  */
 public interface AuthenticationService {
     /**
-     * Gitee授权登陆
+     * Gitee/钉钉 授权登陆
      *
      * @param authentication 授权信息
      * @return 返回授权地址
      */
-    String giteeAuth(AuthenticationAccount authentication);
+    String auth(AuthenticationAccount authentication);
 
     /**
      * Gitee授权回调
@@ -40,13 +42,6 @@ public interface AuthenticationService {
     ModelAndView giteeLogin(String state, String code, String error, String error_description, HttpServletRequest request, Locale locale);
 
     /**
-     * 钉钉授权登陆地址
-     *
-     * @return 返回授权地址
-     */
-    String dingtalkAuth(AuthenticationAccount authentication);
-
-    /**
      * 钉钉回调地址
      * 回调中进行从钉钉获取用户信息，然后和系统数据库进行比对登陆
      *
@@ -54,7 +49,7 @@ public interface AuthenticationService {
      * @param state 授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
      * @return 返回重定向页面
      */
-    ModelAndView dingtalkLogin(String code, String state, HttpServletRequest request, Locale locale);
+    ModelAndView dingtalkLogin(String code, String state, Locale locale);
 
     /**
      * 获取开放平台绑定状态
@@ -65,5 +60,13 @@ public interface AuthenticationService {
 
     ModelAndView giteeBind(String state, String code, String error, String errorDescription, HttpServletRequest request, Locale locale) throws UpdateException;
 
-    ModelAndView dingtalkBind(String code, String state, HttpServletRequest request, Locale locale) throws UpdateException;
+    ModelAndView dingtalkBind(String code, String state, Locale locale) throws UpdateException;
+
+    /**
+     * 解绑开放平台
+     *
+     * @param platform 平台类型
+     * @return 返回解绑结果
+     */
+    R unbind(PlatformType platform,Locale locale) throws UpdateException;
 }

@@ -114,4 +114,15 @@ var utils = {
         }
         return diff;
     },
+
+    /**
+     * 随机数
+     * 包含边界值
+     * @param min 最小值
+     * @param max 最大值
+     * @returns {*}
+     */
+    random: function (min, max) {
+        return Math.floor(Math.random() * max) + min;
+    }
 }

@@ -1,8 +1,9 @@
 package cn.qkmango.ccms.mvc.dao;
 
-import cn.qkmango.ccms.domain.dto.AuthenticationAccount;
+import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
+import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.domain.entity.OpenPlatform;
+import cn.qkmango.ccms.domain.auth.OpenPlatform;
 import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -46,4 +47,12 @@ public interface AuthenticationDao {
      */
     int bind(@Param("platform") OpenPlatform openPlatform, @Param("account") Account account);
 
+    /**
+     * 解绑开放平台
+     *
+     * @param platform 平台类型
+     * @param account  已登陆的账户
+     * @return 数据库影响的行数
+     */
+    int unbind(@Param("platform") PlatformType platform, @Param("account") Account account);
 }

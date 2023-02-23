@@ -1,6 +1,4 @@
-package cn.qkmango.ccms.domain.entity;
-
-import cn.qkmango.ccms.domain.bind.PlatformType;
+package cn.qkmango.ccms.domain.auth;
 
 /**
  * 描述

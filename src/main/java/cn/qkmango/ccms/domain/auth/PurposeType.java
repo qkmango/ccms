@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.domain.bind;
+package cn.qkmango.ccms.domain.auth;
 
 /**
  * 认证用途
@@ -7,7 +7,7 @@ package cn.qkmango.ccms.domain.bind;
  * @version 1.0
  * @date 2023-02-19 10:03
  */
-public enum AuthenticationPurpose {
+public enum PurposeType {
 
     /**
      * 登陆
@@ -17,5 +17,10 @@ public enum AuthenticationPurpose {
     /**
      * 绑定
      */
-    bind
+    bind,
+
+    /**
+     * 解绑
+     */
+    unbind
 }

@@ -3,13 +3,14 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.authentication.DingtalkHttpClient;
 import cn.qkmango.ccms.common.authentication.GiteeHttpClient;
 import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.common.util.UserSession;
-import cn.qkmango.ccms.domain.bind.AuthenticationPurpose;
-import cn.qkmango.ccms.domain.bind.PlatformType;
-import cn.qkmango.ccms.domain.dto.AuthenticationAccount;
+import cn.qkmango.ccms.domain.auth.PurposeType;
+import cn.qkmango.ccms.domain.auth.PlatformType;
+import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.domain.entity.OpenPlatform;
+import cn.qkmango.ccms.domain.auth.OpenPlatform;
 import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
@@ -17,6 +18,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.aliyun.dingtalkcontact_1_0.models.GetUserResponseBody;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -80,13 +82,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private AuthenticationServiceImpl thisService;
 
     /**
-     * Gitee授权登陆
+     * Gitee / 钉钉 授权登陆
      *
      * @param authentication 授权信息
      * @return 返回授权地址
      */
     @Override
-    public String giteeAuth(AuthenticationAccount authentication) {
+    public String auth(AuthenticationAccount authentication) {
+
         // 用于第三方应用防止CSRF攻击
         String state = "auth:" + UUID.randomUUID();
         String value = JSONObject.toJSONString(authentication);
@@ -94,25 +97,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         //将 uuid 存入redis，用于第三方应用防止CSRF攻击，有效期为5分钟
         redis.set(state, value, 60 * 5);
 
-        //登陆
-        if (authentication.getPurpose() == AuthenticationPurpose.login) {
-            return "https://gitee.com/oauth/authorize?response_type=code" +
-                    "&client_id=" + GITEE_CLIENT_ID +
-                    "&redirect_uri=" + URLEncoder.encode(GITEE_CALLBACK_LOGIN) +
-                    "&state=" + state +
-                    "&scope=user_info";
+        PlatformType platform = authentication.getPlatform();
+        PurposeType purpose = authentication.getPurpose();
+
+        String url = null;
+
+        //Gitee
+        if (platform == PlatformType.gitee) {
+            url = "https://gitee.com/oauth/authorize?response_type=code&scope=user_info" +
+                    "&client_id=" + GITEE_CLIENT_ID + "&state=" + state + "&redirect_uri=";
+            switch (purpose) {
+                case login -> url += URLEncoder.encode(GITEE_CALLBACK_LOGIN);
+                case bind -> url += URLEncoder.encode(GITEE_CALLBACK_BIND);
+            }
+
         }
 
-        //绑定
-        else {
-            return "https://gitee.com/oauth/authorize?response_type=code" +
-                    "&client_id=" + GITEE_CLIENT_ID +
-                    "&redirect_uri=" + URLEncoder.encode(GITEE_CALLBACK_BIND) +
-                    "&state=" + state +
-                    "&scope=user_info";
+        // 钉钉
+        else if (platform == PlatformType.dingtalk) {
+            url = "https://login.dingtalk.com/oauth2/auth?response_type=code&prompt=consent&scope=openid" +
+                    "&client_id=" + DINGTALK_APP_KEY + "&state=" + state + "&redirect_uri=";
+            switch (purpose) {
+                case login -> url += URLEncoder.encode(DINGTALK_CALLBACK_LOGIN);
+                case bind -> url += URLEncoder.encode(DINGTALK_CALLBACK_BIND);
+            }
         }
 
-
+        return url;
     }
 
 
@@ -159,7 +170,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         AuthenticationAccount authenticationAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
 
         //获取用户信息
-        AuthenticationPurpose purpose = authenticationAccount.getPurpose();
+        PurposeType purpose = authenticationAccount.getPurpose();
         JSONObject userInfo = giteeHttpClient.getUserInfoByCode(code, purpose);
 
         //查询数据库中是否存在该用户
@@ -167,7 +178,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationAccount.setUid(uid);
 
         //判断认证用途，执行 认证 的操作
-        login(authenticationAccount, modelAndView, request, locale);
+        login(authenticationAccount, modelAndView, locale);
 
         return modelAndView;
     }
@@ -202,7 +213,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         AuthenticationAccount authenticationAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
 
         //获取用户信息
-        AuthenticationPurpose purpose = authenticationAccount.getPurpose();
+        PurposeType purpose = authenticationAccount.getPurpose();
         JSONObject userInfo = giteeHttpClient.getUserInfoByCode(code, purpose);
         String uid = ((Integer) userInfo.get("id")).toString();
         authenticationAccount.setUid(uid);
@@ -217,30 +228,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return modelAndView;
     }
 
-    /**
-     * 钉钉授权登陆地址
-     *
-     * @return 返回授权地址
-     */
-    @Override
-    public String dingtalkAuth(AuthenticationAccount authentication) {
-        String state = "auth:" + UUID.randomUUID();
-        String value = JSONObject.toJSONString(authentication);
-        redis.set(state, value, 60 * 5);
-
-        //登陆
-        if (authentication.getPurpose() == AuthenticationPurpose.login) {
-            return "https://login.dingtalk.com/oauth2/auth?response_type=code&prompt=consent&scope=openid&redirect_uri=" + DINGTALK_CALLBACK_LOGIN +
-                    "&client_id=" + DINGTALK_APP_KEY + "&state=" + state;
-        }
-
-        //绑定
-        else {
-            return "https://login.dingtalk.com/oauth2/auth?response_type=code&prompt=consent&scope=openid&redirect_uri=" + DINGTALK_CALLBACK_BIND +
-                    "&client_id=" + DINGTALK_APP_KEY + "&state=" + state;
-        }
-    }
-
 
     /**
      * 钉钉回调登陆
@@ -251,7 +238,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @return 返回重定向页面
      */
     @Override
-    public ModelAndView dingtalkLogin(String code, String state, HttpServletRequest request, Locale locale) {
+    public ModelAndView dingtalkLogin(String code, String state, Locale locale) {
 
         ModelAndView modelAndView = new ModelAndView();
         //设置默认值,默认为登录失败
@@ -285,14 +272,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationAccount.setUid(userInfo.unionId);
 
         //查询数据库中是否存在该用户
-        login(authenticationAccount, modelAndView, request, locale);
+        login(authenticationAccount, modelAndView, locale);
 
         return modelAndView;
     }
 
 
     @Override
-    public ModelAndView dingtalkBind(String code, String state, HttpServletRequest request, Locale locale) throws UpdateException {
+    public ModelAndView dingtalkBind(String code, String state, Locale locale) throws UpdateException {
 
         ModelAndView modelAndView = new ModelAndView();
 
@@ -354,7 +341,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     private void login(AuthenticationAccount account,
                        ModelAndView modelAndView,
-                       HttpServletRequest request,
                        Locale locale) {
 
         Account loginAccount = dao.authentication(account);
@@ -372,7 +358,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         //登陆成功, 添加session ,返回用户信息
         loginAccount.setPermissionType(account.getPermission());
-        request.getSession(true).setAttribute("account", loginAccount);
+        HttpSession session = UserSession.getSession(true);
+        session.setAttribute("account", loginAccount);
 
         modelAndView.addObject("account", loginAccount);
         modelAndView.addObject("success", true);
@@ -392,5 +379,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new UpdateException(messageSource.getMessage("db.update.authentication.bind.failure", null, locale));
         }
 
+    }
+
+    /**
+     * 解绑开放平台
+     *
+     * @param platform 平台类型
+     * @return 返回解绑结果
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public R unbind(PlatformType platform, Locale locale) throws UpdateException {
+        Account account = UserSession.getAccount();
+        int affectedRows = dao.unbind(platform, account);
+        if (affectedRows != 1) {
+            throw new UpdateException(messageSource.getMessage("db.update.authentication.unbind.failure", null, locale));
+        }
+        return R.success(messageSource.getMessage("db.update.authentication.unbind.success", null, locale));
     }
 }

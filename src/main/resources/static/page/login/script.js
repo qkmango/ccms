@@ -1,4 +1,4 @@
-let $, layer;
+let $, layer, auth;
 
 layui.use(['jquery', 'layer'], function () {
     $ = layui.jquery;
@@ -91,20 +91,9 @@ layui.use(['jquery', 'layer'], function () {
     }
 
 
-    // gitee认证
-    document.querySelector("#gitee_auth").addEventListener("click", function () {
-        auth(`../../authentication/gitee/auth.do?permission=${permissionType.value}&purpose=login`);
-    })
-
-    // dingtalk认证
-    document.querySelector("#dingtalk_auth").addEventListener("click", function () {
-        auth(`../../authentication/dingtalk/auth.do?permission=${permissionType.value}&purpose=login`)
-    })
-
-
     // 认证，传入认证地址
-    function auth(url) {
-        $.get(url, (res, status) => {
+    auth = function (platform, purpose, permission) {
+        $.get(`../../authentication/${platform}/${purpose}/${permission}/auth.do`, (res, status) => {
             if (res.success) {
                 window.location.href = res.data;
                 return;

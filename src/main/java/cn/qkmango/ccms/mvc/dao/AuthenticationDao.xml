@@ -13,8 +13,8 @@
 
         WHERE
         <choose>
-            <when test="platform == @cn.qkmango.ccms.domain.bind.PlatformType@gitee">gitee_uid = #{uid}</when>
-            <when test="platform == @cn.qkmango.ccms.domain.bind.PlatformType@dingtalk">dingtalk_uid = #{uid}</when>
+            <when test="platform == @cn.qkmango.ccms.domain.auth.PlatformType@gitee">gitee_uid = #{uid}</when>
+            <when test="platform == @cn.qkmango.ccms.domain.auth.PlatformType@dingtalk">dingtalk_uid = #{uid}</when>
         </choose>
 
         <if test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@user">and unsubscribe = 0;</if>
@@ -28,12 +28,26 @@
         </choose>
         set
         <choose>
-            <when test="platform.type == @cn.qkmango.ccms.domain.bind.PlatformType@gitee">gitee_uid = #{platform.uid}
+            <when test="platform.type == @cn.qkmango.ccms.domain.auth.PlatformType@gitee">gitee_uid = #{platform.uid}
             </when>
-            <when test="platform.type == @cn.qkmango.ccms.domain.bind.PlatformType@dingtalk">dingtalk_uid =#{platform.uid}
+            <when test="platform.type == @cn.qkmango.ccms.domain.auth.PlatformType@dingtalk">dingtalk_uid =#{platform.uid}
             </when>
         </choose>
 
+        where id = #{account.id}
+    </update>
+
+    <update id="unbind">
+        update
+        <choose>
+            <when test="account.permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">t_user</when>
+            <when test="account.permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">t_admin</when>
+        </choose>
+        set
+        <choose>
+            <when test="platform == @cn.qkmango.ccms.domain.auth.PlatformType@gitee">gitee_uid = null</when>
+            <when test="platform == @cn.qkmango.ccms.domain.auth.PlatformType@dingtalk">dingtalk_uid = null</when>
+        </choose>
         where id = #{account.id}
     </update>
 

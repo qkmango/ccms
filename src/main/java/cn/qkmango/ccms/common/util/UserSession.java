@@ -22,12 +22,22 @@ public class UserSession {
      * @return session
      */
     public static HttpSession getSession() {
+        return getSession(false);
+    }
+
+    /**
+     * 获取当前请求的session
+     *
+     * @param create 是否创建
+     * @return
+     */
+    public static HttpSession getSession(boolean create) {
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
             return null;
         }
         HttpServletRequest request = ((ServletRequestAttributes) attributes).getRequest();
-        return request.getSession(false);
+        return request.getSession(create);
     }
 
     /**
