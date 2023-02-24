@@ -16,8 +16,8 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 // @Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
 
-    @Value("${ccms.login.api}")
-    private String loginApi;
+    @Value("${ccms.login.url}")
+    private String LOGIN_URL;
 
     @Value("${ccms.response.NO_LOGIN_JSON}")
     private String NO_LOGIN_JSON;
@@ -35,7 +35,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .addPathPatterns("/system/setLocale.do");
 
         //登陆拦截器
-        LoginInterceptor loginInterceptor = new LoginInterceptor(loginApi,NO_LOGIN_JSON);
+        LoginInterceptor loginInterceptor = new LoginInterceptor(LOGIN_URL,NO_LOGIN_JSON);
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**/*.do")
                 .excludePathPatterns("/account/login.do")
@@ -45,7 +45,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/test/**/*.do");
 
 
-        PermissionsInterceptor permissionsInterceptor = new PermissionsInterceptor(loginApi,OPERATION_WITHOUT_PERMISSION_JSON);
+        PermissionsInterceptor permissionsInterceptor = new PermissionsInterceptor(LOGIN_URL,OPERATION_WITHOUT_PERMISSION_JSON);
         registry.addInterceptor(permissionsInterceptor)
                 .addPathPatterns("/**/*.do")
                 .excludePathPatterns("/account/login.do")

@@ -14,11 +14,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
  */
 public class LoginInterceptor implements HandlerInterceptor {
 
-    private final String LOGIN_API;
+    private final String LOGIN_URL;
     private final String NO_LOGIN_JSON;
 
-    public LoginInterceptor(String LOGIN_API, String NO_LOGIN_JSON) {
-        this.LOGIN_API = LOGIN_API;
+    public LoginInterceptor(String LOGIN_URL, String NO_LOGIN_JSON) {
+        this.LOGIN_URL = LOGIN_URL;
         this.NO_LOGIN_JSON = NO_LOGIN_JSON;
     }
 
@@ -29,7 +29,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         String path = request.getServletPath();
 
         //如果是登陆请求，则放行
-        if (LOGIN_API.equals(path)) {
+        if (LOGIN_URL.equals(path)) {
             return true;
         }
 

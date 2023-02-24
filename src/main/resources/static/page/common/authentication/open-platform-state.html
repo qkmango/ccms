@@ -63,7 +63,7 @@
 
             switch (purpose) {
                 case 'unbind': {
-                    $.post(`../../../authentication/${platform}/unbind.do`, (res, status) => {
+                    $.post(`../../../authentication/unbind/${platform}.do`, (res, status) => {
                         if (res.success) {
                             layer.msg(res.message, {icon: 1, end: () => location.reload()});
                             return;

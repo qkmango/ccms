@@ -12,7 +12,6 @@ import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -59,55 +58,6 @@ public class AuthenticationController {
         return R.success().setData(redirect);
     }
 
-    /**
-     * Gitee授权回调
-     * 进行认证登陆或者绑定账号
-     * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
-     *
-     * @param state             授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
-     *                          在redis中有效期为5分钟, 拼接为 authentication:PermissionType:UUID
-     * @param code              授权码
-     * @param error             有错误时返回
-     * @param error_description 错误描述
-     * @param request           请求
-     * @param locale            语言环境
-     * @return 返回重定向页面
-     */
-    @RequestMapping("gitee/login.do")
-    public ModelAndView giteeLogin(@RequestParam String state,
-                                   String code,
-                                   String error,
-                                   String error_description,
-                                   HttpServletRequest request,
-                                   Locale locale) {
-        return service.giteeLogin(state, code, error, error_description, request, locale);
-    }
-
-
-    /**
-     * Gitee授权回调
-     * 进行绑定账号
-     * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
-     *
-     * @param state             授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
-     *                          在redis中有效期为5分钟, 拼接为 authentication:PermissionType:UUID
-     * @param code              授权码
-     * @param error             有错误时返回
-     * @param error_description 错误描述
-     * @param request           请求
-     * @param locale            语言环境
-     * @return 返回重定向页面
-     */
-    @RequestMapping("gitee/bind.do")
-    public ModelAndView giteeBind(@RequestParam String state,
-                                  String code,
-                                  String error,
-                                  String error_description,
-                                  HttpServletRequest request,
-                                  Locale locale) throws UpdateException {
-        return service.giteeBind(state, code, error, error_description, request, locale);
-    }
-
 
     /**
      * Gitee授权回调
@@ -134,14 +84,11 @@ public class AuthenticationController {
             HttpServletRequest request,
             Locale locale) throws UpdateException {
 
-        switch (purpose) {
-            case login:
-                return service.giteeLogin(state, code, error, error_description, request, locale);
-            case bind:
-                return service.giteeBind(state, code, error, error_description, request, locale);
-            default:
-                return new ModelAndView("redirect:/");
-        }
+        return switch (purpose) {
+            case login -> service.giteeLogin(state, code, error, error_description, request, locale);
+            case bind -> service.giteeBind(state, code, error, error_description, request, locale);
+            default -> new ModelAndView("redirect:/");
+        };
     }
 
 
@@ -150,37 +97,26 @@ public class AuthenticationController {
      * 进行认证登陆或者绑定账号
      * 回调中进行从钉钉获取用户信息，然后和系统数据库进行比对登陆
      *
-     * @param code  授权码
-     * @param state 授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
+     * @param authCode 授权码
+     * @param state    授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
      * @return 返回重定向页面
      */
-    @RequestMapping("dingtalk/login.do")
-    public ModelAndView dingtalkLogin(@RequestParam("authCode") String code,
-                                      String state,
-                                      Locale locale) {
-        return service.dingtalkLogin(code, state, locale);
-    }
+    @RequestMapping("dingtalk/{purpose}.do")
+    public ModelAndView dingtalk(
+            @PathVariable PurposeType purpose,
+            String authCode,
+            String state,
+            Locale locale) throws UpdateException {
 
-    /**
-     * Gitee授权回调
-     * 进行绑定账号
-     * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
-     *
-     * @param state  授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
-     *               在redis中有效期为5分钟, 拼接为 authentication:PermissionType:UUID
-     * @param code   授权码
-     * @param locale 语言环境
-     * @return 返回重定向页面
-     */
-    @RequestMapping("dingtalk/bind.do")
-    public ModelAndView dingtalkBind(@RequestParam("authCode") String code,
-                                     String state,
-                                     Locale locale) throws UpdateException {
-        return service.dingtalkBind(code, state, locale);
+        return switch (purpose) {
+            case login -> service.dingtalkLogin(authCode, state, locale);
+            case bind -> service.dingtalkBind(authCode, state, locale);
+            default -> new ModelAndView("redirect:/");
+        };
     }
 
     @ResponseBody
-    @PostMapping("{platform}/unbind.do")
+    @PostMapping("unbind/{platform}.do")
     public R unbind(@PathVariable PlatformType platform, Locale locale) throws UpdateException {
         return service.unbind(platform, locale);
     }

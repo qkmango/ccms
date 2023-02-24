@@ -63,7 +63,7 @@ logging:
 # 以下是自定义配置
 ccms:
   login:
-    api: /account/login.do
+    url: /account/login.do
   pos:
     default:
       password: 888888
