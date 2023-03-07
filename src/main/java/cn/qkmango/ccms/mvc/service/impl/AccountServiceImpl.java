@@ -129,13 +129,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * 同班同学列表
+     * 同组用户列表
      *
-     * @return 同班同学列表
+     * @return 同组用户列表
      */
     @Override
-    public List<Account> clazzmate() {
+    public List<Account> groupUser() {
         String id = UserSession.getAccountId();
-        return dao.clazzmate(id);
+        return dao.groupUser(id);
     }
 }

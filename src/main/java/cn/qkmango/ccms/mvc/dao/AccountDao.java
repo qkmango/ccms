@@ -70,9 +70,9 @@ public interface AccountDao {
                     @Param("email") String email);
 
     /**
-     * 同班同学列表
+     * 同组用户列表
      *
-     * @return 同班同学列表
+     * @return 同组用户列表
      */
-    List<Account> clazzmate(String id);
+    List<Account> groupUser(String id);
 }

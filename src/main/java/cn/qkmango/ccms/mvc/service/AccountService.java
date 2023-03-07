@@ -56,9 +56,9 @@ public interface AccountService {
     void updateEmail(Account account, String email, String captcha, Locale locale) throws UpdateException;
 
     /**
-     * 同班同学列表
+     * 同组用户列表
      *
-     * @return 同班同学列表
+     * @return 同组用户列表
      */
-    List<Account> clazzmate();
+    List<Account> groupUser();
 }

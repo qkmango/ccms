@@ -72,7 +72,7 @@
         where id = #{account.id}
     </update>
 
-    <select id="clazzmate" resultType="cn.qkmango.ccms.domain.entity.Account">
+    <select id="groupUser" resultType="cn.qkmango.ccms.domain.entity.Account">
         select id, name, email
         from t_user
         where clazz = (select clazz from t_user where id = #{id})

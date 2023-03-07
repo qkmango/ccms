@@ -167,13 +167,13 @@ public class AccountController {
     }
 
     /**
-     * 同班同学列表
+     * 同组用户列表
      *
-     * @return 同班同学列表
+     * @return 同组用户列表
      */
-    @GetMapping("clazzmate/all/list.do")
-    public R<List> clazzmate() {
-        List<Account> data = service.clazzmate();
+    @GetMapping("group-user/all/list.do")
+    public R<List> groupUser() {
+        List<Account> data = service.groupUser();
         return R.success(data);
     }
 

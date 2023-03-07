@@ -59,6 +59,9 @@
                         #{id}
                     </foreach>
                 </if>
+                <if test="param.faculty != null">
+                    and faculty=#{param.faculty}
+                </if>
             </where>
         </if>
     </select>
