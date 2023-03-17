@@ -1,0 +1,21 @@
+/*
+详细信息页的表单样式，无边框，无背景色
+*/
+.layui-form-label,
+.layui-input {
+    border-width: 0 !important;
+    background-color: transparent !important;
+}
+
+.layui-form-item {
+    margin-bottom: 0 !important;
+}
+
+legend {
+    font-size: 16px !important;
+    font-weight: bold !important;
+}
+
+.layui-form-label {
+    text-align: left !important;
+}

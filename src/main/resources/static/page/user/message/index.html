@@ -16,9 +16,9 @@
             float: right;
         }
 
-        .layui-card {
-            border: 2px solid var(--green_30);
-        }
+        /*.layui-card {*/
+        /*    border: 2px solid var(--green_30);*/
+        /*}*/
     </style>
 </head>
 
@@ -64,8 +64,8 @@
 
         let currentTable = cardTable.render({
             elem: '#currentTableId',
-            url: './index.test.json',
-            // url: '../../../message/pagination/list.do',
+            // url: './index.test.json',
+            url: '../../../message/pagination/list.do',
             toolbar:'toolbarDemo',
             elemClass: 'layui-anim layui-anim-scale',
             method: 'post',

@@ -18,15 +18,15 @@ import java.util.Date;
 @RequestMapping("test")
 public class TestController {
 
-        @RequestMapping("hello")
-        public String hello() {
-            return "hello";
-        }
+    @RequestMapping("hello")
+    public String hello() {
+        return "hello";
+    }
 
-        @RequestMapping("hello2.do")
-        public DatetimeRange hello2(DatetimeRange range) {
-            return range;
-        }
+    @RequestMapping("hello2.do")
+    public DatetimeRange hello2(DatetimeRange range) {
+        return range;
+    }
 
     @RequestMapping("hello3.do")
     public Date hello2(Date date1) {

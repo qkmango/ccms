@@ -37,7 +37,7 @@
             "title": "同组成员",
             "icon": "fa fa-address-book",
             "target": "_self",
-            "href": "page/user/classmate.html"
+            "href": "page/user/group-user.html"
         },
         {
             "title": "个人中心",

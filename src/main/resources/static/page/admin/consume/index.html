@@ -155,7 +155,7 @@
                 {field: 'info', title: '信息', templet: d=> {return d.info}},
 
                 {title: '操作', width: 100, align: 'center',fixed:'right', templet: d=> {
-                        return `<a class="layui-btn layui-btn-xs" lay-event="detail"><i class="fa fa-info-circle"></i> 详情</a>`;
+                        return `<a class="layui-btn layui-btn-xs layui-btn-green2-tint" lay-event="detail"><i class="fa fa-info-circle"></i> 详情</a>`;
                     }
                 }
             ]],
@@ -208,6 +208,7 @@
                     anim: 2,
                     area: ['50%', '100%'],
                     shade: 0.2,
+                    shadeClose: true,
                     content: '../../common/consume-detail.html?id=' + obj.data.id
                 });
             }

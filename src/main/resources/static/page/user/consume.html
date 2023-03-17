@@ -123,7 +123,7 @@
                 {field: 'createTime', title: '时间', templet: d=> {return timestampToTime(d.createTime)}},
                 {field: 'price', title: '金额', align: 'right', templet: d=> {
                     return d.type === 'RECHARGE' ?
-                        `<div style="color: var(--green2);background-color:var(--green2-tint)">${d.price / 100}</div>` : d.price / 100
+                        `<div style="color: var(--green2);background-color:var(--green2-tint)">+ ${d.price / 100}</div>` : d.price / 100
                 }},
                 {field: 'type', title: '类别', templet: d=> {return FieldMapping.consume.type(d.type)}},
                 {field: 'info', title: '信息', templet: d=> {return d.info}},

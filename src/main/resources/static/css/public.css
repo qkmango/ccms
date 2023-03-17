@@ -145,8 +145,8 @@ body {
 }
 
 .layui-bg-green2-tint {
-    color: var(--green2);
-    background-color: var(--green2-tint);
+    color: var(--green);
+    background-color: var(--green-tint);
 }
 
 .layui-bg-red-tint {
