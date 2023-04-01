@@ -20,9 +20,7 @@ src/test/
 /src/main/resources/static/page/**/*.test.json
 /src/main/resources/static/**/*.test.css
 out
-src/main/java/cn/qkmango/ccms/mvc/controller/Test.java
 /src/main/java/cn/qkmango/ccms/mvc/controller/Test2.java
-/src/main/java/cn/qkmango/ccms/mvc/controller/Test.java
 /src/main/resources/application.properties
 /src/main/resources/static/api/upload.json
 /src/main/resources/static/api/tableSelect.json
