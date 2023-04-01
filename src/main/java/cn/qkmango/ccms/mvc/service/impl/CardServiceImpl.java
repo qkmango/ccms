@@ -67,6 +67,8 @@ public class CardServiceImpl implements CardService {
             if (affectedRows != 1) {
                 throw new UpdateException(messageSource.getMessage("db.updateCardState.failure", null, locale));
             }
+            //删除redis中的缓存
+            redis.deleteWithTable("card");
         }
 
         //如果已经注销, 就不允许再次修改状态
