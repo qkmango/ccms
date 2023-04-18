@@ -4,7 +4,7 @@ import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
-import cn.qkmango.ccms.domain.vo.UserInfoVO;
+import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 
 import java.util.List;
 import java.util.Locale;
@@ -39,10 +39,10 @@ public interface AccountService {
     /**
      * 获取用户信息
      *
-     * @param id 用户ID
+     * @param account 用户ID
      * @return 用户信息
      */
-    UserInfoVO userInfo(String id);
+    AccountInfoVO accountInfo(Account account);
 
     /**
      * 更新用户email

@@ -25,15 +25,17 @@
                     <div class="layui-card layui-row">
                         <div class="layui-card-header layui-bg-sf-green-dark">基本信息</div>
                         <div class="layui-card-body" id="account_info">
-                            <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i> 加载中
+                            <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
+                            加载中
                         </div>
                     </div>
                 </div>
-                <div class="layui-col-md6 layui-col-sm12 layui-col-xs12">
+                <div class="layui-col-md6 layui-col-sm12 layui-col-xs12" id="teach_info_box">
                     <div class="layui-card layui-row">
                         <div class="layui-card-header layui-bg-sf-green-dark">教学单位信息</div>
                         <div class="layui-card-body" id="teach_info">
-                            <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i> 加载中
+                            <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
+                            加载中
                         </div>
                     </div>
                 </div>
@@ -55,38 +57,39 @@
 
 
         $.ajax({
-            url:"../../account/one/user/info.do",
-            dataType:"json",
-            success:function(res) {
+            url: "../../account/one/info.do",
+            dataType: "json",
+            success: function (res) {
                 if (res.success) {
                     const data = res.data;
-                    document.querySelector('#account_info').innerHTML = `
+
+                    if (data.account.permissionType === 'user') {
+                        document.querySelector('#account_info').innerHTML = `
                         <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
-                            账号 : ${data.user.id}<br>
-                            姓名 : ${data.user.name}
+                            账号 : ${data.account.id}<br>
+                            姓名 : ${data.account.name}
                         </div>
                         <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
                             卡状态 : ${
-                                data.card.lock === true ?
-                                    `<span class="layui-badge-rim layui-bg-red-tint">挂失</span>`:
-                                    `<span class="layui-badge-rim layui-bg-green2-tint">正常</span>`
-                            }<br>
-                            卡余额 : ${data.card.balance/100} 元
+                            data.card.lock === true ?
+                                `<span class="layui-badge-rim layui-bg-red-tint">挂失</span>` :
+                                `<span class="layui-badge-rim layui-bg-green2-tint">正常</span>`
+                        }<br>
+                            卡余额 : ${data.card.balance / 100} 元
                         </div>
                         <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
                             账户状态 : ${
-                                data.user.unsubscribe === true ?
-                                    `<span class="layui-badge-rim layui-bg-red-tint">注销</span>`:
-                                    `<span class="layui-badge-rim layui-bg-green2-tint">正常</span>`
-                            }<br>
+                            data.user.unsubscribe === true ?
+                                `<span class="layui-badge-rim layui-bg-red-tint">注销</span>` :
+                                `<span class="layui-badge-rim layui-bg-green2-tint">正常</span>`
+                        }<br>
                             账户类型 : 用户
                         </div>
                         <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
-                        邮箱 : ${data.user.email||''}
+                        邮箱 : ${data.account.email || ''}
                         </div>
                     `
-
-                    document.querySelector('#teach_info').innerHTML = `
+                        document.querySelector('#teach_info').innerHTML = `
                         <div class="layui-col-md6 layui-col-sm4 layui-col-xs12">
                             学院 : ${data.faculty.name}
                         </div>
@@ -97,12 +100,30 @@
                             班级 : ${data.clazz.name}
                         </div>
                     `
-                    return
+                        return
+                    }
+
+                    if (data.account.permissionType === 'admin') {
+                        document.querySelector('#account_info').innerHTML = `
+                        <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
+                            账号 : ${data.account.id}<br>
+                            姓名 : ${data.account.name}
+                        </div>
+
+                        <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">账户类型 : 管理员</div>
+                        <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
+                        邮箱 : ${data.account.email || ''}
+                        </div>
+                    `
+                        document.querySelector('#teach_info_box').style.display = 'none'
+                        return;
+                    }
+
                 }
                 layer.msg(res.message, {icon: 2});
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                layer.msg(jqXHR.status+'', {icon: 2});
+                layer.msg(jqXHR.status + '', {icon: 2});
             }
         })
 

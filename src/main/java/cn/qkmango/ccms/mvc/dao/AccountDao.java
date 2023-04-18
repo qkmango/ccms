@@ -3,7 +3,8 @@ package cn.qkmango.ccms.mvc.dao;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
-import cn.qkmango.ccms.domain.vo.UserInfoVO;
+import cn.qkmango.ccms.domain.vo.AccountInfoVO;
+import cn.qkmango.ccms.domain.vo.UserAccountInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -57,7 +58,16 @@ public interface AccountDao {
      * @param id 用户ID
      * @return 用户信息
      */
-    UserInfoVO userInfo(String id);
+    UserAccountInfoVO userAccountInfo(String id);
+
+
+    /**
+     * 获取管理员信息
+     *
+     * @param id 管理员ID
+     * @return 管理员信息
+     */
+    AccountInfoVO adminAccountInfo(String id);
 
     /**
      * 更新用户email
@@ -75,4 +85,6 @@ public interface AccountDao {
      * @return 同组用户列表
      */
     List<Account> groupUser(String id);
+
+
 }

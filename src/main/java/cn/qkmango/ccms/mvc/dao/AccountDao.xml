@@ -40,24 +40,36 @@
           and password = #{password};
     </select>
 
-    <select id="userInfo" resultMap="UserInfoVO">
-        select u.id          as user_id,
-               u.name        as user_name,
+    <select id="userAccountInfo" resultMap="UserAccountInfoVO">
+        select u.id          as account_id,
+               u.name        as account_name,
+               u.email       as account_email,
+               'user'        as account_type,
+
                u.idCard      as user_idcard,
                u.unsubscribe as user_unsubscribe,
-               u.email      as user_email,
+
                ca.balance    as card_balance,
                ca.`lock`     as card_lock,
+
                cz.name       as clazz_name,
                sp.name       as specialized_name,
                fa.name       as faculty_name
-
         from t_user u
                  left join t_card ca on ca.user = u.id
                  left join t_clazz cz on cz.id = u.clazz
                  left join t_specialty sp on sp.id = cz.specialty
                  left join t_faculty fa on fa.id = sp.faculty
         where u.id = #{id}
+    </select>
+
+    <select id="adminAccountInfo" resultMap="AccountInfoVO">
+        select id,
+               name,
+               email,
+               'admin' as type
+        from t_admin
+        where id = #{id}
     </select>
 
     <update id="updateEmail">
@@ -79,12 +91,15 @@
     </select>
 
 
-    <resultMap id="UserInfoVO" type="cn.qkmango.ccms.domain.vo.UserInfoVO">
+    <resultMap id="UserAccountInfoVO" type="cn.qkmango.ccms.domain.vo.UserAccountInfoVO">
+        <association property="account">
+            <id property="id" column="account_id"/>
+            <result property="name" column="account_name"/>
+            <result property="email" column="account_email"/>
+            <result property="permissionType" column="account_type"/>
+        </association>
         <association property="user">
-            <id property="id" column="user_id"/>
-            <result property="name" column="user_name"/>
             <result property="idCard" column="user_idcard"/>
-            <result property="email" column="user_email"/>
             <result property="unsubscribe" column="user_unsubscribe"/>
         </association>
         <association property="card">
@@ -99,6 +114,15 @@
         </association>
         <association property="faculty">
             <result property="name" column="faculty_name"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="AccountInfoVO" type="cn.qkmango.ccms.domain.vo.AccountInfoVO">
+        <association property="account">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+            <result property="email" column="email"/>
+            <result property="permissionType" column="type"/>
         </association>
     </resultMap>
 

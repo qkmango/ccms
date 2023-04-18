@@ -47,7 +47,7 @@
                 {
                     "title": "基本资料",
                     "icon": "fa fa-id-card-o",
-                    "href": "page/user/account-info.html",
+                    "href": "page/common/account-info.html",
                     "target": "_self"
                 },
                 {

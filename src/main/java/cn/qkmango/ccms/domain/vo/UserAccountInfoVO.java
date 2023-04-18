@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2023-01-18 14:43
  */
-public class UserInfoVO implements Serializable {
+public class UserAccountInfoVO extends AccountInfoVO implements Serializable {
     private User user;
     private Card card;
     private Clazz clazz;
@@ -60,12 +60,13 @@ public class UserInfoVO implements Serializable {
 
     @Override
     public String toString() {
-        return "UserInfoVO{" +
+        return "UserAccountInfoVO{" +
                 "user=" + user +
                 ", card=" + card +
                 ", clazz=" + clazz +
                 ", specialty=" + specialty +
                 ", faculty=" + faculty +
+                ", account=" + getAccount() +
                 '}';
     }
 }

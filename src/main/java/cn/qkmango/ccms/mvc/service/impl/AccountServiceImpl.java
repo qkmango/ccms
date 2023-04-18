@@ -4,9 +4,10 @@ import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.common.validate.group.Query;
+import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
-import cn.qkmango.ccms.domain.vo.UserInfoVO;
+import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 import cn.qkmango.ccms.mvc.dao.AccountDao;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -88,12 +89,17 @@ public class AccountServiceImpl implements AccountService {
     /**
      * 获取用户信息
      *
-     * @param id 用户ID
+     * @param account 用户ID
      * @return 用户信息
      */
     @Override
-    public UserInfoVO userInfo(String id) {
-        return dao.userInfo(id);
+    public AccountInfoVO accountInfo(Account account) {
+        if (account.getPermissionType() == PermissionType.admin) {
+            return dao.adminAccountInfo(account.getId());
+        } else if (account.getPermissionType() == PermissionType.user) {
+            return dao.userAccountInfo(account.getId());
+        }
+        return null;
     }
 
     /**

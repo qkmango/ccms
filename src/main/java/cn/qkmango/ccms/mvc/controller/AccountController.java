@@ -10,7 +10,7 @@ import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.param.ChangePasswordParam;
-import cn.qkmango.ccms.domain.vo.UserInfoVO;
+import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.mvc.service.UserService;
 import jakarta.annotation.Resource;
@@ -140,10 +140,10 @@ public class AccountController {
      * @return 用户信息
      */
     @Permission({PermissionType.admin, PermissionType.user})
-    @GetMapping("one/user/info.do")
-    public R<UserInfoVO> userInfo() {
-        String id = UserSession.getAccountId();
-        UserInfoVO info = service.userInfo(id);
+    @GetMapping("one/info.do")
+    public R userInfo() {
+        Account account = UserSession.getAccount();
+        AccountInfoVO info = service.accountInfo(account);
         return R.success(info);
     }
 
