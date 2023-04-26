@@ -124,5 +124,24 @@ var utils = {
      */
     random: function (min, max) {
         return Math.floor(Math.random() * max) + min;
+    },
+
+    /**
+     * 获取对象的所有属性
+     */
+    getObjAllProperty: function (obj) {
+        let props = [];
+        do {
+            props = props.concat(Object.getOwnPropertyNames(obj));
+        } while (obj = Object.getPrototypeOf(obj));
+        return props;
+    },
+
+    /**
+     * 获取对象属性的个数
+     */
+    getObjPropertyCount: function (obj) {
+        return this.getObjAllProperty(obj).length;
     }
+
 }
