@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Bean 配置类
@@ -53,8 +53,24 @@ public class Beans {
      */
     @Bean(name = "mailCaptchaTemplate")
     public String MailCaptchaTemplate() throws IOException {
-        File file = new ClassPathResource("static/template/mail_captcha_template.html").getFile();
-        return FileUtils.readFileToString(file, "UTF-8");
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("static/template/mail_captcha_template.html");
+        // File file = new ClassPathResource("static/template/mail_captcha_template.html").getFile();
+
+        InputStreamReader reader = new InputStreamReader(in);
+        BufferedReader br = new BufferedReader(reader);
+        StringBuilder sb = new StringBuilder();
+
+        //读取BufferedReader中的内容并放到StringBuilder中
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+
+        reader.close();
+        br.close();
+
+        // return FileUtils.readFileToString(file, "UTF-8");
+        return sb.toString();
     }
 
 }
