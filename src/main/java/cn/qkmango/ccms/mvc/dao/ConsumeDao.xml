@@ -48,17 +48,20 @@
 
     <select id="detail" resultMap="ConsumeDetailsVO" parameterType="cn.qkmango.ccms.domain.entity.Consume">
         select
-        c.id as consumeId,
-        c.createTime as consumeCreateTime,
-        c.price as consumePrice,
-        c.type as consumeType,
-        c.info as consumeInfo,
-        u.id as userId,
-        u.name as userName,
-        u.idCard as userIdCard,
-        p.id as posId,
-        p.name as posName,
-        p.address as posAddress
+        c.id            as consumeId,
+        c.createTime    as consumeCreateTime,
+        c.price         as consumePrice,
+        c.type          as consumeType,
+        c.info          as consumeInfo,
+
+        u.id            as userId,
+        u.name          as userName,
+        u.idCard        as userIdCard,
+
+        p.id            as posId,
+        p.name          as posName,
+        p.address       as posAddress
+
         from t_consume c
         left join t_user u on c.user = u.id
         left join t_pos p on c.pos = p.id
