@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotEmpty;
  * @version 1.0
  * @date 2022-12-09 22:35
  */
-public class ChangePasswordParam {
+public class UpdatePasswordParam {
     private String id;
 
     @NotEmpty
@@ -21,14 +21,14 @@ public class ChangePasswordParam {
 
     private PermissionType permissionType;
 
-    public ChangePasswordParam(String oldPassword, String newPassword, String id, PermissionType permissionType) {
+    public UpdatePasswordParam(String oldPassword, String newPassword, String id, PermissionType permissionType) {
         this.oldPassword = oldPassword;
         this.newPassword = newPassword;
         this.id = id;
         this.permissionType = permissionType;
     }
 
-    public ChangePasswordParam() {
+    public UpdatePasswordParam() {
     }
 
     public String getOldPassword() {

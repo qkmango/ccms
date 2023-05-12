@@ -7,7 +7,7 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
-import cn.qkmango.ccms.domain.auth.OpenPlatform;
+import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.entity.Account;

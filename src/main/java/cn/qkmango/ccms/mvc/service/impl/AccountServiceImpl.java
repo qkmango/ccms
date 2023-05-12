@@ -2,22 +2,22 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.security.PasswordEncoder;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.domain.param.ChangePasswordParam;
+import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
 import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 import cn.qkmango.ccms.mvc.dao.AccountDao;
 import cn.qkmango.ccms.mvc.service.AccountService;
+import jakarta.annotation.Resource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-
-import jakarta.annotation.Resource;
 
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +42,9 @@ public class AccountServiceImpl implements AccountService {
     @Resource
     private StringRedisTemplate srt;
 
+    @Resource
+    private PasswordEncoder passwordEncoder;
+
     /**
      * 登陆接口
      *
@@ -61,10 +64,22 @@ public class AccountServiceImpl implements AccountService {
             case admin -> loginAccount = dao.loginAdmin(account);
         }
 
+        //判断用户是否存在
         if (loginAccount == null) {
+            throw new LoginException(messageSource.getMessage("db.account.notExist", null, locale));
+        }
+
+        //判断密码是否正确
+        String dbPassword = loginAccount.getPassword();
+        boolean matches = passwordEncoder.matches(account.getPassword(), dbPassword);
+        if (!matches) {
             throw new LoginException(messageSource.getMessage("response.login.failure", null, locale));
         }
 
+        //清除密码
+        loginAccount.setPassword(null);
+
+        //将登陆用户信息存入session
         loginAccount.setPermissionType(account.getPermissionType());
         return loginAccount;
     }
@@ -79,8 +94,24 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void updatePassword(ChangePasswordParam param, Locale locale) throws UpdateException {
-        int affectedRows = dao.updatePassword(param);
+    public void updatePassword(UpdatePasswordParam param, Locale locale) throws UpdateException {
+
+        String id = param.getId();
+        String oldRawPassword = param.getOldPassword();
+        PermissionType type = param.getPermissionType();
+        String newRawPassword = param.getNewPassword();
+
+        //判断输入的旧密码和数据库的旧密码是否一致
+        String oldBCryptPassword = dao.getAccountPassword(id, type);
+        if (!passwordEncoder.matches(oldRawPassword, oldBCryptPassword)) {
+            throw new UpdateException(messageSource.getMessage("db.update.password.failure@different", null, locale));
+        }
+
+        //加密新密码
+        String newBCryptPassword = passwordEncoder.encode(newRawPassword);
+
+        //更新密码
+        int affectedRows = dao.updatePassword(id, newBCryptPassword, type);
         if (affectedRows != 1) {
             throw new UpdateException(messageSource.getMessage("db.update.password.failure", null, locale));
         }

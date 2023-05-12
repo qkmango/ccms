@@ -17,9 +17,14 @@ public class LoginInterceptor implements HandlerInterceptor {
     private final String LOGIN_URL;
     private final String NO_LOGIN_JSON;
 
-    public LoginInterceptor(String LOGIN_URL, String NO_LOGIN_JSON) {
-        this.LOGIN_URL = LOGIN_URL;
-        this.NO_LOGIN_JSON = NO_LOGIN_JSON;
+    public LoginInterceptor() {
+        this.LOGIN_URL = "/account/login.do";
+        this.NO_LOGIN_JSON = "{\"success\":false,\"message\":\"未登录\"}";
+    }
+
+    public LoginInterceptor(String login, String noLoginJSON) {
+        this.LOGIN_URL = login;
+        this.NO_LOGIN_JSON = noLoginJSON;
     }
 
     @Override

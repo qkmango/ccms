@@ -1,8 +1,10 @@
-package cn.qkmango.ccms.domain.auth;
+package cn.qkmango.ccms.domain.entity;
+
+import cn.qkmango.ccms.domain.auth.PlatformType;
 
 /**
- * 描述
- * <p></p>
+ * 开放平台实体类
+ * <p>第三方开放平台，用于第三方登陆</p>
  *
  * @author qkmango
  * @version 1.0

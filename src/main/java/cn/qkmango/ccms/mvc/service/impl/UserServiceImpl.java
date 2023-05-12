@@ -1,6 +1,7 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.security.PasswordEncoder;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.vo.UserAndCardVO;
@@ -31,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private CardDao cardDao;
     @Resource
     private ReloadableResourceBundleMessageSource messageSource;
+    @Resource
+    private PasswordEncoder passwordEncoder;
 
     /**
      * 注销账户
@@ -86,7 +89,11 @@ public class UserServiceImpl implements UserService {
             throw new UpdateException(messageSource.getMessage("db.resetPassword.failure", null, locale));
         }
 
-        user.setPassword(user.getIdCard().substring(user.getIdCard().length() - 6));
+        //重置密码为身份证后6位
+        String defaultRawPassword = user.getIdCard().substring(user.getIdCard().length() - 6);
+        String newBCryptPassword = passwordEncoder.encode(defaultRawPassword);
+
+        user.setPassword(newBCryptPassword);
 
         int affectedRows = userDao.resetPassword(user);
         if (affectedRows != 1) {

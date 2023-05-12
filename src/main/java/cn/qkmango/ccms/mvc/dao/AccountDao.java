@@ -1,8 +1,8 @@
 package cn.qkmango.ccms.mvc.dao;
 
+import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Pos;
-import cn.qkmango.ccms.domain.param.ChangePasswordParam;
 import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 import cn.qkmango.ccms.domain.vo.UserAccountInfoVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -29,12 +29,19 @@ public interface AccountDao {
     Account loginUser(Account account);
 
     /**
+     * 获取账户密码
+     *
+     * @param id 账户id
+     * @return 账户密码
+     */
+    String getAccountPassword(String id, PermissionType type);
+
+    /**
      * 修改密码
      *
-     * @param param 新的密码
      * @return 数据库影响的行数
      */
-    int updatePassword(ChangePasswordParam param);
+    int updatePassword(String id, String password, PermissionType type);
 
     /**
      * 刷卡机登陆

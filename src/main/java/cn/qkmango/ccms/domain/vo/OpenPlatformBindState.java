@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.domain.vo;
 
-import cn.qkmango.ccms.domain.auth.OpenPlatform;
+import cn.qkmango.ccms.domain.entity.OpenPlatform;
 
 /**
  * 描述
