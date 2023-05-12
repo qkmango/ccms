@@ -24,7 +24,7 @@ public interface AuthenticationService {
      * @param authentication 授权信息
      * @return 返回授权地址
      */
-    String auth(AuthenticationAccount authentication);
+    String platformAuthenticationURL(AuthenticationAccount authentication);
 
     /**
      * Gitee授权回调
@@ -39,7 +39,9 @@ public interface AuthenticationService {
      * @param locale            语言环境
      * @return 返回重定向页面
      */
-    ModelAndView giteeLogin(String state, String code, String error, String error_description, HttpServletRequest request, Locale locale);
+    String giteeLogin(String state, String code, String error, String error_description, HttpServletRequest request, Locale locale);
+
+    String giteeBind(String state, String code, String error, String errorDescription, HttpServletRequest request, Locale locale) throws UpdateException;
 
     /**
      * 钉钉回调地址
@@ -49,7 +51,9 @@ public interface AuthenticationService {
      * @param state 授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
      * @return 返回重定向页面
      */
-    ModelAndView dingtalkLogin(String code, String state, Locale locale);
+    String dingtalkLogin(String code, String state, Locale locale);
+
+    String dingtalkBind(String code, String state, Locale locale) throws UpdateException;
 
     /**
      * 获取开放平台绑定状态
@@ -57,10 +61,6 @@ public interface AuthenticationService {
      * @return 返回开放平台绑定状态
      */
     OpenPlatformBindState openPlatformBindState();
-
-    ModelAndView giteeBind(String state, String code, String error, String errorDescription, HttpServletRequest request, Locale locale) throws UpdateException;
-
-    ModelAndView dingtalkBind(String code, String state, Locale locale) throws UpdateException;
 
     /**
      * 解绑开放平台

@@ -4,10 +4,10 @@ import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.UserSession;
+import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
+import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.bind.PermissionType;
-import cn.qkmango.ccms.domain.auth.PlatformType;
-import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import jakarta.annotation.Resource;
@@ -34,7 +34,7 @@ public class AuthenticationController {
 
 
     /**
-     * Gitee / 钉钉 授权登陆地址
+     * Gitee / 钉钉 授权登陆地址（认证地址）
      *
      * @param permission 权限类型
      * @param purpose    授权目的
@@ -42,20 +42,20 @@ public class AuthenticationController {
      * @return 返回授权地址
      */
     @ResponseBody
-    @RequestMapping("{platform}/{purpose}/{permission}/auth.do")
+    @RequestMapping("{platform}/{purpose}/{permission}/platform-authentication-url.do")
     @Permission({PermissionType.admin, PermissionType.user})
-    public R auth(@PathVariable PermissionType permission,
-                  @PathVariable PurposeType purpose,
-                  @PathVariable PlatformType platform) {
+    public R platformAuthenticationURL(@PathVariable PermissionType permission,
+                                       @PathVariable PurposeType purpose,
+                                       @PathVariable PlatformType platform) {
 
-        //如果是绑定，则不信任前端穿的权限
+        //如果是绑定第三方平台，则说明已经登陆过了，则不信任前端传的权限，从session中获取
         if (purpose == PurposeType.bind) {
             permission = UserSession.getAccount().getPermissionType();
         }
 
-        AuthenticationAccount authentication = new AuthenticationAccount(permission, platform, purpose);
-        String redirect = service.auth(authentication);
-        return R.success().setData(redirect);
+        AuthenticationAccount authAccount = new AuthenticationAccount(permission, platform, purpose);
+        String url = service.platformAuthenticationURL(authAccount);
+        return R.success().setData(url);
     }
 
 
@@ -63,6 +63,7 @@ public class AuthenticationController {
      * Gitee授权回调
      * 进行绑定账号
      * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
+     * 回调接口返回的结果必须重定向
      *
      * @param purpose           授权目的
      * @param state             授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
@@ -75,7 +76,7 @@ public class AuthenticationController {
      * @return 返回重定向页面
      */
     @RequestMapping("gitee/{purpose}.do")
-    public ModelAndView gitee(
+    public String gitee(
             @PathVariable PurposeType purpose,
             @RequestParam String state,
             String code,
@@ -87,7 +88,7 @@ public class AuthenticationController {
         return switch (purpose) {
             case login -> service.giteeLogin(state, code, error, error_description, request, locale);
             case bind -> service.giteeBind(state, code, error, error_description, request, locale);
-            default -> new ModelAndView("redirect:/");
+            default -> "redirect:/page/login/index.html";
         };
     }
 
@@ -102,7 +103,7 @@ public class AuthenticationController {
      * @return 返回重定向页面
      */
     @RequestMapping("dingtalk/{purpose}.do")
-    public ModelAndView dingtalk(
+    public String dingtalk(
             @PathVariable PurposeType purpose,
             String authCode,
             String state,
@@ -111,10 +112,13 @@ public class AuthenticationController {
         return switch (purpose) {
             case login -> service.dingtalkLogin(authCode, state, locale);
             case bind -> service.dingtalkBind(authCode, state, locale);
-            default -> new ModelAndView("redirect:/");
+            default -> "redirect:/page/login/index.html";
         };
     }
 
+    /**
+     * 解绑
+     */
     @ResponseBody
     @PostMapping("unbind/{platform}.do")
     public R unbind(@PathVariable PlatformType platform, Locale locale) throws UpdateException {
@@ -123,8 +127,6 @@ public class AuthenticationController {
 
     /**
      * 获取开放平台绑定状态
-     *
-     * @return 返回开放平台绑定状态
      */
     @ResponseBody
     @GetMapping("open-platform/state.do")

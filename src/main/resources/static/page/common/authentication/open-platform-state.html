@@ -74,7 +74,7 @@
                     break;
 
                 case 'bind': {
-                    $.get(`../../../authentication/${platform}/${purpose}/${permission}/auth.do`, (res, status) => {
+                    $.get(`../../../authentication/${platform}/${purpose}/${permission}/platform-authentication-url.do`, (res, status) => {
                         if (res.success) {
                             window.open(res.data);
                             return;

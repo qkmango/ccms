@@ -40,8 +40,9 @@ public class GiteeHttpClient {
 
         //判断授权用途，设置相应的回调地址
         switch (purpose) {
+            case login -> callback = GITEE_CALLBACK_LOGIN;
             case bind -> callback = GITEE_CALLBACK_BIND;
-            default -> callback = GITEE_CALLBACK_LOGIN;
+            default -> throw new RuntimeException("授权用途错误");
         }
 
         String url = "https://gitee.com/oauth/token?grant_type=authorization_code" +

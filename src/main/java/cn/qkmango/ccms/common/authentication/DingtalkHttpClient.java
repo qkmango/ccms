@@ -59,7 +59,7 @@ public class DingtalkHttpClient {
      * @date 2022/1/26 22:08
      * @author cyb
      */
-    public GetUserResponseBody getUserInfo(String code) {
+    public GetUserResponseBody getUserInfoByCode(String code) {
         //获取accessToken
         String accessToken = getAccessToken(code);
         GetUserResponseBody userinfo = null;

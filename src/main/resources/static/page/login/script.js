@@ -93,7 +93,7 @@ layui.use(['jquery', 'layer'], function () {
 
     // 认证，传入认证地址
     auth = function (platform, purpose, permission) {
-        $.get(`../../authentication/${platform}/${purpose}/${permission}/auth.do`, (res, status) => {
+        $.get(`../../authentication/${platform}/${purpose}/${permission}/platform-authentication-url.do`, (res, status) => {
             if (res.success) {
                 window.location.href = res.data;
                 return;
