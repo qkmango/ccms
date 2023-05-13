@@ -41,11 +41,11 @@ public interface AuthenticationDao {
     /**
      * 绑定第三方平台
      *
-     * @param openPlatform 开放平台
+     * @param platform 开放平台
      * @param account      已登陆的账户
      * @return 数据库影响的行数
      */
-    int bind(@Param("platform") OpenPlatform openPlatform, @Param("account") Account account);
+    int toBind(@Param("platform") OpenPlatform platform, @Param("account") Account account);
 
     /**
      * 解绑开放平台
@@ -55,4 +55,9 @@ public interface AuthenticationDao {
      * @return 数据库影响的行数
      */
     int unbind(@Param("platform") PlatformType platform, @Param("account") Account account);
+
+    /**
+     * 判断账户指定平台是否绑定
+     */
+    boolean isBind(OpenPlatform platform, Account account);
 }

@@ -7,10 +7,10 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
-import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
@@ -231,7 +231,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         //判断认证用途，执行 绑定 的操作
         Account account = UserSession.getAccount();
         OpenPlatform openPlatform = new OpenPlatform(account.getId(), PlatformType.gitee, true, uid);
-        thisService.bind(openPlatform, account, locale);
+        thisService.toBind(openPlatform, account, locale);
 
         message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
         return String.format(redirect, true, platform, purpose, URLEncoder.encode(message));
@@ -326,7 +326,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         //判断认证用途，执行 绑定 的操作
         Account account = UserSession.getAccount();
         OpenPlatform openPlatform = new OpenPlatform(account.getId(), PlatformType.dingtalk, true, uid);
-        thisService.bind(openPlatform, account, locale);
+        thisService.toBind(openPlatform, account, locale);
 
         message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
         return String.format(redirect, true, platform, purpose, URLEncoder.encode(message));
@@ -339,7 +339,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @return 返回开放平台绑定状态
      */
     @Override
-    public OpenPlatformBindState openPlatformBindState() {
+    public OpenPlatformBindState openPlatformState() {
         Account account = UserSession.getAccount();
         return dao.openPlatformBindState(account);
     }
@@ -371,15 +371,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * 绑定第三方账户
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void bind(OpenPlatform openPlatform,
-                     Account account,
-                     Locale locale) throws UpdateException {
+    public void toBind(OpenPlatform platform,
+                       Account account,
+                       Locale locale) throws UpdateException {
 
-        int affectedRows = dao.bind(openPlatform, account);
+        //如果已经绑定，抛出异常
+        if (isBind(platform, account)) {
+            throw new UpdateException(messageSource.getMessage("db.update.authentication.bind.failure@exist", null, locale));
+        }
+
+        //绑定
+        int affectedRows = dao.toBind(platform, account);
         if (affectedRows != 1) {
             throw new UpdateException(messageSource.getMessage("db.update.authentication.bind.failure", null, locale));
         }
+    }
 
+    /**
+     * 判断账户指定平台是否绑定
+     *
+     * @param platform 平台
+     * @param account  账户
+     * @return 返回绑定状态
+     */
+    public boolean isBind(OpenPlatform platform,
+                          Account account) {
+        return dao.isBind(platform, account);
     }
 
     /**

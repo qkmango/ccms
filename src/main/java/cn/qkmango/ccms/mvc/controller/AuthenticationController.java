@@ -14,7 +14,6 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Locale;
 
@@ -130,8 +129,8 @@ public class AuthenticationController {
      */
     @ResponseBody
     @GetMapping("open-platform/state.do")
-    public R openPlatformBindState() {
-        OpenPlatformBindState state = service.openPlatformBindState();
+    public R openPlatformState() {
+        OpenPlatformBindState state = service.openPlatformState();
         return R.success(state);
     }
 }
