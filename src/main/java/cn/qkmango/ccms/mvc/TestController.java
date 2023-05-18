@@ -20,7 +20,7 @@ public class TestController {
 
     @RequestMapping("hello")
     public String hello() {
-        return "hello";
+        return "hello 你好";
     }
 
     @RequestMapping("hello2.do")

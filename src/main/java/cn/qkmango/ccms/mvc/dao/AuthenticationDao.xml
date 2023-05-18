@@ -12,10 +12,7 @@
         </choose>
 
         WHERE
-        <choose>
-            <when test="platform == @cn.qkmango.ccms.domain.auth.PlatformType@gitee">gitee_uid = #{uid}</when>
-            <when test="platform == @cn.qkmango.ccms.domain.auth.PlatformType@dingtalk">dingtalk_uid = #{uid}</when>
-        </choose>
+        id=(SELECT account FROM t_open_platform WHERE type = #{platform} and uid = #{uid})
 
         <if test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@user">and unsubscribe = 0;</if>
     </select>

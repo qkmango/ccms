@@ -45,6 +45,9 @@ const layui_verify_config = {
         return /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/.test(value) === true ? false : "身份证号不合法";
     },
     password: function (value, item) {
+        if (value === '' || value === null) {
+            return false;
+        }
         //必须包含字母、数字和特殊字符,8-16位
         return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@&%#_])[a-zA-Z0-9~!@&%#_]{8,16}$/.test(value) ? false : "密码为8-16位大小写字母数字特殊字符";
     },

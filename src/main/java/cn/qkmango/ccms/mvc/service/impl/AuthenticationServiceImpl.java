@@ -14,6 +14,8 @@ import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
+import cn.qkmango.ccms.security.UserInfo;
+import cn.qkmango.ccms.security.request.HttpRequest;
 import com.alibaba.fastjson2.JSONObject;
 import com.aliyun.dingtalkcontact_1_0.models.GetUserResponseBody;
 import jakarta.annotation.Resource;
@@ -80,14 +82,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private AuthenticationServiceImpl thisService;
 
+    @Resource(name = "giteeHttpRequest")
+    private HttpRequest giteeHttpRequest;
+
+    @Resource(name = "dingtalkHttpRequest")
+    private HttpRequest dingtalkHttpRequest;
+
     /**
-     * Gitee / 钉钉 授权登陆
+     * 获取授权登陆地址
      *
      * @param authAccount 授权信息
      * @return 返回授权地址
      */
     @Override
-    public String platformAuthenticationURL(AuthenticationAccount authAccount) {
+    public String authorize(AuthenticationAccount authAccount) {
+
 
         // 用于第三方应用防止CSRF攻击
         String state = "auth:" + UUID.randomUUID();
@@ -102,28 +111,55 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         //授权地址
         String url = null;
+        //
+        // //Gitee
+        // if (platform == PlatformType.gitee) {
+        //     url = "https://gitee.com/oauth/authorize?response_type=code&scope=user_info" +
+        //             "&client_id=" + GITEE_CLIENT_ID + "&state=" + state + "&redirect_uri=";
+        //     switch (purpose) {
+        //         case login -> url += URLEncoder.encode(GITEE_CALLBACK_LOGIN);
+        //         case bind -> url += URLEncoder.encode(GITEE_CALLBACK_BIND);
+        //     }
+        // }
 
-        //Gitee
-        if (platform == PlatformType.gitee) {
-            url = "https://gitee.com/oauth/authorize?response_type=code&scope=user_info" +
-                    "&client_id=" + GITEE_CLIENT_ID + "&state=" + state + "&redirect_uri=";
-            switch (purpose) {
-                case login -> url += URLEncoder.encode(GITEE_CALLBACK_LOGIN);
-                case bind -> url += URLEncoder.encode(GITEE_CALLBACK_BIND);
+        switch (platform) {
+            case gitee -> {
+                url = giteeHttpRequest.getHttpRequestBaseUrl().getAuthorizeURL().builder()
+                        .with("response_type", "code")
+                        .with("scope", "user_info")
+                        .with("client_id", giteeHttpRequest.getClient().getId())
+                        .with("state", state)
+                        .with("redirect_uri", giteeHttpRequest.getHttpRequestBaseUrl().getCallbackURL(purpose).url())
+                        .build();
+            }
+            case dingtalk -> {
+                url = dingtalkHttpRequest.getHttpRequestBaseUrl().getAuthorizeURL().builder()
+                        .with("response_type", "code")
+                        .with("prompt", "consent")
+                        .with("scope", "openid")
+                        .with("client_id", dingtalkHttpRequest.getClient().getId())
+                        .with("state", state)
+                        .with("redirect_uri", dingtalkHttpRequest.getHttpRequestBaseUrl().getCallbackURL(purpose).url())
+                        .build();
+            }
+            default -> {
             }
         }
 
-        // 钉钉
-        else if (platform == PlatformType.dingtalk) {
-            url = "https://login.dingtalk.com/oauth2/auth?response_type=code&prompt=consent&scope=openid" +
-                    "&client_id=" + DINGTALK_APP_KEY + "&state=" + state + "&redirect_uri=";
-            switch (purpose) {
-                case login -> url += URLEncoder.encode(DINGTALK_CALLBACK_LOGIN);
-                case bind -> url += URLEncoder.encode(DINGTALK_CALLBACK_BIND);
-            }
-        }
 
+        //
+        // // 钉钉
+        // else if (platform == PlatformType.dingtalk) {
+        //     url = "https://login.dingtalk.com/oauth2/auth?response_type=code&prompt=consent&scope=openid" +
+        //             "&client_id=" + DINGTALK_APP_KEY + "&state=" + state + "&redirect_uri=";
+        //     switch (purpose) {
+        //         case login -> url += URLEncoder.encode(DINGTALK_CALLBACK_LOGIN);
+        //         case bind -> url += URLEncoder.encode(DINGTALK_CALLBACK_BIND);
+        //     }
+        // }
+        //
         return url;
+
     }
 
 
@@ -269,16 +305,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         //根据 code 获取用户信息
-        GetUserResponseBody userInfo = dingtalkHttpClient.getUserInfoByCode(code);
+        // GetUserResponseBody userInfo = dingtalkHttpClient.getUserInfoByCode(code);
+        // GetUserResponseBody userInfo = null;
+        UserInfo userInfo = dingtalkHttpRequest.getUserInfoByCode(code);
+
         if (userInfo == null) {
             return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
         }
 
         //获取redis中存储的授权信息，获取权限类型
         AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
-        authAccount.setUid(userInfo.unionId);
+        authAccount.setUid(userInfo.getUid());
+
+        System.out.println("authAccount = " + authAccount);
 
         //查询数据库中是否存在该用户
+        // AuthenticationAccount authenticationAccount = new AuthenticationAccount();
+        // authenticationAccount.setPermission(authAccount.getPermission());
+        // authenticationAccount.setPlatform(authAccount.getPlatform());
+
         boolean login = login(authAccount, locale);
         //如果认证陆成功
         if (login) {

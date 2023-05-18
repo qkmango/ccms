@@ -23,7 +23,7 @@ public interface AuthenticationService {
      * @param authentication 授权信息
      * @return 返回授权地址
      */
-    String platformAuthenticationURL(AuthenticationAccount authentication);
+    String authorize(AuthenticationAccount authentication);
 
     /**
      * Gitee授权回调

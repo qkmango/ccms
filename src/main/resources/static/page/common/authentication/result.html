@@ -7,56 +7,22 @@
     <link rel="stylesheet" href="../../../css/color.css" media="all">
     <link rel="stylesheet" href="../../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
     <style>
-
-        /* 自适应尺寸 */
-        @media screen and (max-width: 768px) and (min-width: 320px) {
-            html {
-                font-size: 12px;
-            }
-        }
-
-        /* 手机 */
-        @media screen and (max-width: 1024px) and (min-width: 768px) {
-            html {
-                font-size: 20px;
-            }
-        }
-
-        @media screen and (max-width: 1280px) and (min-width: 1024px) {
-            html {
-                font-size: 12px;
-            }
-        }
-
-        /* 电脑 */
-        @media screen and (max-width: 1920px) and (min-width: 1280px) {
-            html {
-                font-size: 12px;
-            }
-        }
-
-        @media screen and (max-width: 2560px) and (min-width: 1920px) {
-            html {
-                font-size: 22px;
-            }
-        }
-
         body {
             margin: 0;
             padding: 0;
         }
 
         .header {
-            padding: 2rem 4rem;
+            padding: 1rem 4rem;
             background-color: var(--green-tint);
         }
 
-        .header > img {
+        .header>img {
             height: 4rem;
             vertical-align: text-bottom;
         }
 
-        .header > span {
+        .header>span {
             line-height: 4rem;
             vertical-align: text-bottom;
             margin-left: 2rem;
@@ -80,12 +46,12 @@
             font-size: 4em;
         }
 
-        .message > p {
+        .message>p {
             margin: 1rem auto;
         }
 
-        #message > p:nth-child(3),
-        #message > p:nth-child(4) {
+        #message>p:nth-child(3),
+        #message>p:nth-child(4) {
             font-size: 2rem;
         }
 
@@ -96,14 +62,53 @@
             width: 5rem;
             height: 5rem;
         }
+
+
+        /* 自适应尺寸 */
+        @media screen and (max-width: 768px) and (min-width: 320px) {
+            html {
+                font-size: 12px;
+            }
+        }
+
+        /* 手机 */
+        @media screen and (max-width: 1024px) and (min-width: 768px) {
+            html {
+                font-size: 20px;
+            }
+
+            .header {
+                padding: 2rem 4rem;
+            }
+        }
+
+        @media screen and (max-width: 1280px) and (min-width: 1024px) {
+            html {
+                font-size: 12px;
+            }
+        }
+
+        /* 电脑 */
+        @media screen and (max-width: 1920px) and (min-width: 1280px) {
+            html {
+                font-size: 12px;
+            }
+        }
+
+        @media screen and (max-width: 2560px) and (min-width: 1920px) {
+            html {
+                font-size: 22px;
+            }
+        }
+
     </style>
 </head>
 
 <body>
-<div class="header">
-    <img id="type_img" alt="Type Image"><span id="type_title"></span>
-</div>
-<div class="message" id="message"></div>
+    <div class="header">
+        <img id="type_img" alt="Type Image"><span id="type_title"></span>
+    </div>
+    <div class="message" id="message"></div>
 
 
 </body>
@@ -130,6 +135,9 @@
             document.getElementById('type_img').src = '../../../images/icon/dingtalk.svg';
             document.getElementById('type_title').innerText = '钉钉 用户认证';
             break;
+        default:
+            document.getElementById('type_img').src = '../../../images/logo.svg';
+            break;
     }
 
 
@@ -152,7 +160,7 @@
 
     setInterval(function () {
         if (purpose === 'bind') {
-            window.location = 'http://localhost/index.html#/page/common/authentication/open-platform-state.html';
+            window.location = '/index.html#/page/common/authentication/open-platform-state.html';
             return;
         }
         window.location = (success === 'true') ? '../../../index.html' : '../../login/index.html';

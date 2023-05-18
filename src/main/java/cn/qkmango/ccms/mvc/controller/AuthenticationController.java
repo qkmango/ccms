@@ -41,11 +41,11 @@ public class AuthenticationController {
      * @return 返回授权地址
      */
     @ResponseBody
-    @RequestMapping("{platform}/{purpose}/{permission}/platform-authentication-url.do")
+    @RequestMapping("{platform}/{purpose}/{permission}/authorize.do")
     @Permission({PermissionType.admin, PermissionType.user})
-    public R platformAuthenticationURL(@PathVariable PermissionType permission,
-                                       @PathVariable PurposeType purpose,
-                                       @PathVariable PlatformType platform) {
+    public R authorize(@PathVariable PermissionType permission,
+                       @PathVariable PurposeType purpose,
+                       @PathVariable PlatformType platform) {
 
         //如果是绑定第三方平台，则说明已经登陆过了，则不信任前端传的权限，从session中获取
         if (purpose == PurposeType.bind) {
@@ -53,7 +53,7 @@ public class AuthenticationController {
         }
 
         AuthenticationAccount authAccount = new AuthenticationAccount(permission, platform, purpose);
-        String url = service.platformAuthenticationURL(authAccount);
+        String url = service.authorize(authAccount);
         return R.success().setData(url);
     }
 
