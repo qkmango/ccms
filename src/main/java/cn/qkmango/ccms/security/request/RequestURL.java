@@ -1,5 +1,8 @@
 package cn.qkmango.ccms.security.request;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 请求的 URL
  *
@@ -10,16 +13,14 @@ package cn.qkmango.ccms.security.request;
 public class RequestURL {
     private String url;
     // private Map<String, String> params = new HashMap<>();
-
-    // public RequestURL() {
-    // }
+    private Map<String, String> staticParams = new HashMap<>();
 
     public RequestURL(String url) {
         this.url = url;
     }
 
-    public RequestUrlBuilder builder() {
-        return new RequestUrlBuilder(this);
+    public Builder builder() {
+        return new Builder(this);
     }
 
     public String getUrl() {
@@ -34,6 +35,9 @@ public class RequestURL {
         return url;
     }
 
+    public static Builder builder(String url) {
+        return new RequestURL.Builder(new RequestURL(url));
+    }
 
     @Override
     public String toString() {
@@ -41,5 +45,42 @@ public class RequestURL {
                 "url='" + url + '\'' +
                 ", builder=" + builder() +
                 '}';
+    }
+
+    /**
+     * Builder 模式
+     *
+     * @author qkmango
+     * @version 1.0
+     * @date 2023-05-18 22:19
+     */
+    public static class Builder {
+        private final RequestURL url;
+        public final Map<String, Object> params = new HashMap<>();
+
+        public Builder(RequestURL requestURL) {
+            this.url = requestURL;
+        }
+
+        public Builder with(String key, Object value) {
+            params.put(key, value);
+            return this;
+        }
+
+        public RequestURL build() {
+            StringBuilder sb = new StringBuilder(url.getUrl());
+
+            // if(url.url.contains("?")) {
+            //     sb.append("&");
+            // } else {
+            //     sb.append("?");
+            // }
+            sb.append("?");
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+            return new RequestURL(sb.toString());
+        }
     }
 }

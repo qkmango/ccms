@@ -12,6 +12,11 @@ import cn.qkmango.ccms.domain.bind.PermissionType;
 public class AuthenticationAccount {
 
     /**
+     * 用户ID
+     */
+    private String id;
+
+    /**
      * 用户权限
      */
     private PermissionType permission;
@@ -79,11 +84,21 @@ public class AuthenticationAccount {
         this.uid = uid;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
     @Override
     public String toString() {
-        return "Authentication{" +
-                "permission=" + permission +
-                ", type=" + platform +
+        return "AuthenticationAccount{" +
+                "id='" + id + '\'' +
+                ", permission=" + permission +
+                ", platform=" + platform +
                 ", purpose=" + purpose +
                 ", uid='" + uid + '\'' +
                 '}';

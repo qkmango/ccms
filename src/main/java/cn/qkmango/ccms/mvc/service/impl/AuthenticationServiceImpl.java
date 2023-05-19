@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.authentication.DingtalkHttpClient;
-import cn.qkmango.ccms.common.authentication.GiteeHttpClient;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.RedisUtil;
@@ -14,15 +12,14 @@ import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
-import cn.qkmango.ccms.security.UserInfo;
-import cn.qkmango.ccms.security.request.HttpRequest;
+import cn.qkmango.ccms.security.AuthenticationResult;
+import cn.qkmango.ccms.security.client.AuthHttpClient;
+import cn.qkmango.ccms.security.request.RequestURL;
 import com.alibaba.fastjson2.JSONObject;
-import com.aliyun.dingtalkcontact_1_0.models.GetUserResponseBody;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
@@ -43,37 +40,11 @@ import java.util.UUID;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    // Gitee授权登陆
-    @Value("${ccms.authentication.gitee.clientId}")
-    private String GITEE_CLIENT_ID;
-    @Value("${ccms.authentication.gitee.callback.login}")
-    private String GITEE_CALLBACK_LOGIN;
-
-    @Value("${ccms.authentication.gitee.callback.bind}")
-    private String GITEE_CALLBACK_BIND;
-
-    // 登陆回调
-    @Value("${ccms.authentication.dingtalk.callback.login}")
-    private String DINGTALK_CALLBACK_LOGIN;
-
-    // 绑定回调
-    @Value("${ccms.authentication.dingtalk.callback.bind}")
-    private String DINGTALK_CALLBACK_BIND;
-
-    @Value("${ccms.authentication.dingtalk.appKey}")
-    private String DINGTALK_APP_KEY;
-
     @Resource
     private AuthenticationDao dao;
 
     @Resource(name = "redisUtil")
     private RedisUtil redis;
-
-    @Resource
-    private GiteeHttpClient giteeHttpClient;
-
-    @Resource
-    private DingtalkHttpClient dingtalkHttpClient;
 
     @Resource
     private ReloadableResourceBundleMessageSource messageSource;
@@ -82,11 +53,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private AuthenticationServiceImpl thisService;
 
-    @Resource(name = "giteeHttpRequest")
-    private HttpRequest giteeHttpRequest;
+    @Resource(name = "giteeAuthHttpClient")
+    private AuthHttpClient giteeAuthHttpClient;
 
-    @Resource(name = "dingtalkHttpRequest")
-    private HttpRequest dingtalkHttpRequest;
+    @Resource(name = "dingtalkAuthHttpClient")
+    private AuthHttpClient dingtalkAuthHttpClient;
 
     /**
      * 获取授权登陆地址
@@ -97,74 +68,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String authorize(AuthenticationAccount authAccount) {
 
-
         // 用于第三方应用防止CSRF攻击
         String state = "auth:" + UUID.randomUUID();
         String value = JSONObject.toJSONString(authAccount);
 
-        //将 uuid 存入redis，用于第三方应用防止CSRF攻击，有效期为5分钟
-        redis.set(state, value, 60 * 5);
-
-        //获取 第三方平台 和 授权用途
+        //获取 第三方平台
         PlatformType platform = authAccount.getPlatform();
-        PurposeType purpose = authAccount.getPurpose();
 
         //授权地址
         String url = null;
-        //
-        // //Gitee
-        // if (platform == PlatformType.gitee) {
-        //     url = "https://gitee.com/oauth/authorize?response_type=code&scope=user_info" +
-        //             "&client_id=" + GITEE_CLIENT_ID + "&state=" + state + "&redirect_uri=";
-        //     switch (purpose) {
-        //         case login -> url += URLEncoder.encode(GITEE_CALLBACK_LOGIN);
-        //         case bind -> url += URLEncoder.encode(GITEE_CALLBACK_BIND);
-        //     }
-        // }
 
         switch (platform) {
-            case gitee -> {
-                url = giteeHttpRequest.getHttpRequestBaseUrl().getAuthorizeURL().builder()
-                        .with("response_type", "code")
-                        .with("scope", "user_info")
-                        .with("client_id", giteeHttpRequest.getClient().getId())
-                        .with("state", state)
-                        .with("redirect_uri", giteeHttpRequest.getHttpRequestBaseUrl().getCallbackURL(purpose).url())
-                        .build();
-            }
-            case dingtalk -> {
-                url = dingtalkHttpRequest.getHttpRequestBaseUrl().getAuthorizeURL().builder()
-                        .with("response_type", "code")
-                        .with("prompt", "consent")
-                        .with("scope", "openid")
-                        .with("client_id", dingtalkHttpRequest.getClient().getId())
-                        .with("state", state)
-                        .with("redirect_uri", dingtalkHttpRequest.getHttpRequestBaseUrl().getCallbackURL(purpose).url())
-                        .build();
-            }
-            default -> {
-            }
+            case gitee ->    url = giteeAuthHttpClient.authorize(authAccount, state, value);
+            case dingtalk -> url = dingtalkAuthHttpClient.authorize(authAccount, state, value);
         }
-
-
-        //
-        // // 钉钉
-        // else if (platform == PlatformType.dingtalk) {
-        //     url = "https://login.dingtalk.com/oauth2/auth?response_type=code&prompt=consent&scope=openid" +
-        //             "&client_id=" + DINGTALK_APP_KEY + "&state=" + state + "&redirect_uri=";
-        //     switch (purpose) {
-        //         case login -> url += URLEncoder.encode(DINGTALK_CALLBACK_LOGIN);
-        //         case bind -> url += URLEncoder.encode(DINGTALK_CALLBACK_BIND);
-        //     }
-        // }
-        //
         return url;
-
     }
 
 
     /**
-     * Gitee授权回调登陆
+     * Gitee 回调 登陆/绑定
      * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
      *
      * @param state             授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
@@ -177,206 +100,146 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @return 返回重定向页面
      */
     @Override
-    public String giteeLogin(String state, String code, String error, String error_description, HttpServletRequest request, Locale locale) {
-
-        //设置默认值,默认为登录失败
-        String platform = "gitee";
-        String purpose = "login";
-        String message = messageSource.getMessage("response.authentication.failure", null, locale);
-        String redirect = "redirect:/page/common/authentication/result.html?success=%s&platform=%s&purpose=%s&message=%s";
-
-        //如果用户拒绝授权
-        if (error != null || code == null) {
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
-        //判断state是否有效，防止CSRF攻击
-        String value = redis.get(state);
-        redis.delete(state);
-        if (value == null) {
-            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
+    public String giteeCallback(String state, String code, String error, String error_description, PurposeType purpose, HttpServletRequest request, Locale locale) throws UpdateException {
         //获取redis中存储的授权信息,获取权限类型
+        String value = redis.get(state);
         AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
 
-        //根据 code 获取用户信息
-        PurposeType authPurpose = authAccount.getPurpose();
-        JSONObject userInfo = giteeHttpClient.getUserInfoByCode(code, authPurpose);
+        //获取第三方认证结果
+        AuthenticationResult result = giteeAuthHttpClient.authentication(state, code, locale, error);
 
+        //获取重定向地址
+        RequestURL.Builder builder = giteeAuthHttpClient.getAppConfig().redirect().builder()
+                .with("platform", "gitee")
+                .with("purpose", purpose.name());
 
-        //查询数据库中是否存在该用户
-        //如果code无效，则Gitee返回的结果中没有 id
-        if (userInfo.get("id") == null) {
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
+        String message = null;
+
+        //如果第三方认证失败
+        if (!result.success) {
+            return builder
+                    .with("success", false)
+                    .with("message", URLEncoder.encode(result.message))
+                    .build().url();
         }
-        String uid = ((Integer) userInfo.get("id")).toString();
+
+        //第三方认证成功后，登陆系统
+        //登陆系统
+        String uid = result.getUserInfo().getUid();
         authAccount.setUid(uid);
 
-        //判断认证用途，执行 认证 的操作
-        boolean login = login(authAccount, locale);
-        //如果认证陆成功
-        if (login) {
-            message = messageSource.getMessage("response.authentication.success", null, locale);
-            return String.format(redirect, true, platform, purpose, URLEncoder.encode(message));
+        switch (purpose) {
+            case login -> {
+                boolean login = toLogin(authAccount, locale);
+                //如果登陆成功
+                if (login) {
+                    message = messageSource.getMessage("response.authentication.success", null, locale);
+                    return builder
+                            .with("success", true)
+                            .with("message", URLEncoder.encode(message))
+                            .build().url();
+                }
+                //如果登陆失败
+                else {
+                    message = messageSource.getMessage("db.user.gitee.uid.failure@notExist", null, locale);
+                    return builder
+                            .with("success", false)
+                            .with("message", URLEncoder.encode(message))
+                            .build().url();
+                }
+            }
+            case bind -> {
+                Account account = UserSession.getAccount();
+                OpenPlatform openPlatform = new OpenPlatform(account.getId(), PlatformType.gitee, true, uid);
+
+                thisService.toBind(openPlatform, UserSession.getAccount(), locale);
+                message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
+                return builder
+                        .with("success", true)
+                        .with("message", URLEncoder.encode(message))
+                        .build().url();
+            }
         }
-        //如果认证失败
-        else {
-            message = messageSource.getMessage("db.user.gitee.uid.failure@notExist", null, locale);
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
-    }
-
-
-    @Override
-    public String giteeBind(String state, String code, String error, String errorDescription, HttpServletRequest request, Locale locale) throws UpdateException {
-
-        //设置默认值,默认为登录失败
-        String platform = "gitee";
-        String purpose = "bind";
-        String message = messageSource.getMessage("response.authentication.failure", null, locale);
-        String redirect = "redirect:/page/common/authentication/result.html?success=%s&platform=%s&purpose=%s&message=%s";
-
-        //如果用户拒绝授权
-        if (error != null || code == null) {
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
-        //判断state是否有效，防止CSRF攻击
-        String value = redis.get(state);
-        redis.delete(state);
-        if (value == null) {
-            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
-        //获取redis中存储的授权信息,获取权限类型
-        AuthenticationAccount authenticationAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
-
-        //根据 code 获取用户信息
-        PurposeType authPurpose = authenticationAccount.getPurpose();
-        JSONObject userInfo = giteeHttpClient.getUserInfoByCode(code, authPurpose);
-        if (userInfo.get("id") == null) {
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-        String uid = ((Integer) userInfo.get("id")).toString();
-        authenticationAccount.setUid(uid);
-
-        //判断认证用途，执行 绑定 的操作
-        Account account = UserSession.getAccount();
-        OpenPlatform openPlatform = new OpenPlatform(account.getId(), PlatformType.gitee, true, uid);
-        thisService.toBind(openPlatform, account, locale);
-
-        message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
-        return String.format(redirect, true, platform, purpose, URLEncoder.encode(message));
+        return "redirect:/page/login/index.html";
     }
 
 
     /**
-     * 钉钉回调登陆
+     * dingtalk 回调 登陆/绑定
      * 回调中进行从钉钉获取用户信息，然后和系统数据库进行比对登陆
      *
-     * @param code  授权码
-     * @param state 授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
+     * @param state   授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
+     * @param code    授权码
+     * @param purpose 授权目的
+     * @param locale  语言环境
      * @return 返回重定向页面
      */
     @Override
-    public String dingtalkLogin(String code, String state, Locale locale) {
-
-        //设置默认值,默认为登录失败
-        String platform = "dingtalk";
-        String purpose = "login";
-        String message = messageSource.getMessage("response.authentication.failure", null, locale);
-        String redirect = "redirect:/page/common/authentication/result.html?success=%s&platform=%s&purpose=%s&message=%s";
-
-        //如果用户拒绝授权
-        if (code == null) {
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
-        //判断state是否有效，防止CSRF攻击
-        String value = redis.get(state);
-        redis.delete(state);
-        if (value == null) {
-            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
-        //根据 code 获取用户信息
-        // GetUserResponseBody userInfo = dingtalkHttpClient.getUserInfoByCode(code);
-        // GetUserResponseBody userInfo = null;
-        UserInfo userInfo = dingtalkHttpRequest.getUserInfoByCode(code);
-
-        if (userInfo == null) {
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
-        //获取redis中存储的授权信息，获取权限类型
-        AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
-        authAccount.setUid(userInfo.getUid());
-
-        System.out.println("authAccount = " + authAccount);
-
-        //查询数据库中是否存在该用户
-        // AuthenticationAccount authenticationAccount = new AuthenticationAccount();
-        // authenticationAccount.setPermission(authAccount.getPermission());
-        // authenticationAccount.setPlatform(authAccount.getPlatform());
-
-        boolean login = login(authAccount, locale);
-        //如果认证陆成功
-        if (login) {
-            message = messageSource.getMessage("response.authentication.success", null, locale);
-            return String.format(redirect, true, platform, purpose, URLEncoder.encode(message));
-        }
-        //如果认证失败
-        else {
-            message = messageSource.getMessage("db.user.dingtalk.uid.failure@notExist", null, locale);
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
-    }
-
-
-    @Override
-    public String dingtalkBind(String code, String state, Locale locale) throws UpdateException {
-
-        //设置默认值,默认为登录失败
-        String platform = "dingtalk";
-        String purpose = "bind";
-        String message = messageSource.getMessage("response.authentication.failure", null, locale);
-        String redirect = "redirect:/page/common/authentication/result.html?success=%s&platform=%s&purpose=%s&message=%s";
-
-        //如果用户拒绝授权
-        if (code == null) {
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
-        //判断state是否有效，防止CSRF攻击
-        String value = redis.get(state);
-        redis.delete(state);
-        if (value == null) {
-            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
-            return String.format(redirect, false, platform, purpose, URLEncoder.encode(message));
-        }
-
+    public String dingtalkCallback(String state, String code, PurposeType purpose, Locale locale) throws UpdateException {
         //获取redis中存储的授权信息,获取权限类型
-        // AuthenticationAccount authenticationAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
+        String value = redis.get(state);
+        AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
 
-        //获取用户信息
-        GetUserResponseBody userInfo = dingtalkHttpClient.getUserInfoByCode(code);
-        String uid = userInfo.getUnionId();
+        //获取第三方认证结果
+        AuthenticationResult result = dingtalkAuthHttpClient.authentication(state, code, locale);
 
-        //判断认证用途，执行 绑定 的操作
-        Account account = UserSession.getAccount();
-        OpenPlatform openPlatform = new OpenPlatform(account.getId(), PlatformType.dingtalk, true, uid);
-        thisService.toBind(openPlatform, account, locale);
+        //获取重定向地址
+        RequestURL.Builder builder = dingtalkAuthHttpClient.getAppConfig().redirect().builder()
+                .with("platform", "dingtalk")
+                .with("purpose", purpose.name());
 
-        message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
-        return String.format(redirect, true, platform, purpose, URLEncoder.encode(message));
+        String message;
+
+        //如果第三方认证失败
+        if (!result.success) {
+            return builder
+                    .with("success", false)
+                    .with("message", URLEncoder.encode(result.message))
+                    .build().url();
+        }
+
+        //第三方认证成功后，登陆系统
+        //登陆系统
+        String uid = result.getUserInfo().getUid();
+        switch (purpose) {
+            case login -> {
+                authAccount.setUid(uid);
+                boolean login = toLogin(authAccount, locale);
+                //如果登陆成功
+                if (login) {
+                    message = messageSource.getMessage("response.authentication.success", null, locale);
+                    return builder
+                            .with("success", true)
+                            .with("message", URLEncoder.encode(message))
+                            .build().url();
+                }
+                //如果登陆成功
+                else {
+                    message = messageSource.getMessage("db.user.gitee.uid.failure@notExist", null, locale);
+                    return builder
+                            .with("success", false)
+                            .with("message", URLEncoder.encode(message))
+                            .build().url();
+                }
+            }
+            case bind -> {
+                //判断认证用途，执行 绑定 的操作
+                Account account = UserSession.getAccount();
+                OpenPlatform openPlatform = new OpenPlatform(account.getId(), PlatformType.dingtalk, true, uid);
+                thisService.toBind(openPlatform, account, locale);
+
+                message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
+                return builder
+                        .with("success", true)
+                        .with("message", URLEncoder.encode(message))
+
+                        .build().url();
+            }
+        }
+
+        return "redirect:/page/login/index.html";
+
     }
-
 
     /**
      * 获取开放平台绑定状态
@@ -395,8 +258,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      *
      * @param account 认证账户
      */
-    private boolean login(AuthenticationAccount account,
-                          Locale locale) {
+    private boolean toLogin(AuthenticationAccount account,
+                            Locale locale) {
 
         Account loginAccount = dao.authentication(account);
         //如果不存在，返回错误信息

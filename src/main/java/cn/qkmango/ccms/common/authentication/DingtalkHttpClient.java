@@ -17,15 +17,15 @@ import org.springframework.stereotype.Component;
  * @version 1.0
  * @date 2023-02-20 11:49
  */
-@Component
+// @Component
 public class DingtalkHttpClient {
     @Value("${ccms.authentication.dingtalk.appKey}")
     private String DINGTALK_APP_KEY;
     @Value("${ccms.authentication.dingtalk.appSecret}")
     private String DINGTALK_APP_SECRET;
 
-    private final String DINGTALK_USER_INFO_URL = "https://oapi.dingtalk.com/sns/getuserinfo_bycode";
-    private final String DINGTALK_ACCESS_TOKEN_URL = "https://oapi.dingtalk.com/gettoken";
+    // private final String DINGTALK_USER_INFO_URL = "https://oapi.dingtalk.com/sns/getuserinfo_bycode";
+    // private final String DINGTALK_ACCESS_TOKEN_URL = "https://oapi.dingtalk.com/gettoken";
     private final Config config = new Config().setProtocol("https").setRegionId("central");
 
 

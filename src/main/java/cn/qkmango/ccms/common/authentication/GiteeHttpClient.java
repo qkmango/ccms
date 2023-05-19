@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Component
+// @Component
 public class GiteeHttpClient {
 
     @Value("${ccms.authentication.gitee.clientId}")

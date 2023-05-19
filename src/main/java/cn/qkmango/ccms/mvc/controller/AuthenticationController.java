@@ -84,11 +84,7 @@ public class AuthenticationController {
             HttpServletRequest request,
             Locale locale) throws UpdateException {
 
-        return switch (purpose) {
-            case login -> service.giteeLogin(state, code, error, error_description, request, locale);
-            case bind -> service.giteeBind(state, code, error, error_description, request, locale);
-            default -> "redirect:/page/login/index.html";
-        };
+        return service.giteeCallback(state, code, error, error_description, purpose, request, locale);
     }
 
 
@@ -108,11 +104,7 @@ public class AuthenticationController {
             String state,
             Locale locale) throws UpdateException {
 
-        return switch (purpose) {
-            case login -> service.dingtalkLogin(authCode, state, locale);
-            case bind -> service.dingtalkBind(authCode, state, locale);
-            default -> "redirect:/page/login/index.html";
-        };
+        return service.dingtalkCallback(state, authCode, purpose, locale);
     }
 
     /**
