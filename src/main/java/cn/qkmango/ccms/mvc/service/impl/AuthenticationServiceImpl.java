@@ -9,7 +9,6 @@ import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
-import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import cn.qkmango.ccms.security.AuthenticationResult;
@@ -27,6 +26,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -79,7 +79,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String url = null;
 
         switch (platform) {
-            case gitee ->    url = giteeAuthHttpClient.authorize(authAccount, state, value);
+            case gitee -> url = giteeAuthHttpClient.authorize(authAccount, state, value);
             case dingtalk -> url = dingtalkAuthHttpClient.authorize(authAccount, state, value);
         }
         return url;
@@ -109,7 +109,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         AuthenticationResult result = giteeAuthHttpClient.authentication(state, code, locale, error);
 
         //获取重定向地址
-        RequestURL.Builder builder = giteeAuthHttpClient.getAppConfig().redirect().builder()
+        RequestURL.Builder builder = giteeAuthHttpClient.getAppConfig().getRedirect().builder()
                 .with("platform", "gitee")
                 .with("purpose", purpose.name());
 
@@ -150,7 +150,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
             case bind -> {
                 Account account = UserSession.getAccount();
-                OpenPlatform openPlatform = new OpenPlatform(account.getId(), PlatformType.gitee, true, uid);
+                OpenPlatform openPlatform = new OpenPlatform(
+                        account.getId(),
+                        PlatformType.gitee,
+                        true,
+                        uid,
+                        account.getPermissionType());
 
                 thisService.toBind(openPlatform, UserSession.getAccount(), locale);
                 message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
@@ -184,7 +189,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         AuthenticationResult result = dingtalkAuthHttpClient.authentication(state, code, locale);
 
         //获取重定向地址
-        RequestURL.Builder builder = dingtalkAuthHttpClient.getAppConfig().redirect().builder()
+        RequestURL.Builder builder = dingtalkAuthHttpClient.getAppConfig().getRedirect().builder()
                 .with("platform", "dingtalk")
                 .with("purpose", purpose.name());
 
@@ -225,7 +230,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             case bind -> {
                 //判断认证用途，执行 绑定 的操作
                 Account account = UserSession.getAccount();
-                OpenPlatform openPlatform = new OpenPlatform(account.getId(), PlatformType.dingtalk, true, uid);
+                OpenPlatform openPlatform = new OpenPlatform(
+                        account.getId(),
+                        PlatformType.dingtalk,
+                        true,
+                        uid,
+                        account.getPermissionType());
+
                 thisService.toBind(openPlatform, account, locale);
 
                 message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
@@ -247,7 +258,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @return 返回开放平台绑定状态
      */
     @Override
-    public OpenPlatformBindState openPlatformState() {
+    public List<OpenPlatform> openPlatformState() {
         Account account = UserSession.getAccount();
         return dao.openPlatformBindState(account);
     }

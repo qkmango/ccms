@@ -63,7 +63,7 @@
 
             switch (purpose) {
                 case 'unbind': {
-                    $.post(`../../../authentication/unbind/${platform}.do`, (res, status) => {
+                    $.post(`../../../auth/unbind/${platform}.do`, (res, status) => {
                         if (res.success) {
                             layer.msg(res.message, {icon: 1, end: () => location.reload()});
                             return;
@@ -74,7 +74,7 @@
                     break;
 
                 case 'bind': {
-                    $.get(`../../../authentication/${platform}/${purpose}/${permission}/platform-authentication-url.do`, (res, status) => {
+                    $.get(`../../../auth/${platform}/${purpose}/${permission}/platform-authentication-url.do`, (res, status) => {
                         if (res.success) {
                             window.open(res.data);
                             return;
@@ -87,39 +87,30 @@
         }
 
         $.ajax({
-            url: "../../../authentication/open-platform/state.do",
-            // url: "index.text.json",
+            url: "../../../auth/open-platform/state.do",
             dataType: "json",
             success: function (res) {
                 if (res.success) {
+                    let html = '';
                     const data = res.data;
-                    const state = {
-                        gitee: data.gitee.state,
-                        dingtalk: data.dingtalk.state,
-                    }
+
+                    data.forEach(item => {
+                        html +=
+                            `<tr>
+                                <td><img src="../../../images/icon/${item.type}.svg" style="height: 28px"></td>
+                                <td style="background-color:var(${item.state ? '--green-tint' : '--red-tint'})">
+                                    <i class="fa fa-circle"
+                                       style="font-size: 8px;color: var(${item.state ? '--green' : '--red'})"></i>
+                                    <span>${item.state ? '使用中' : '未绑定'}</span></td>
+                                <td>
+                                    <a class="layui-btn layui-btn-xs layui-btn-blue-tint"
+                                       onClick="auth('dingtalk','${item.state ? 'unbind' : 'bind'}','${account.permissionType}')">${item.state ? '解除绑定' : '绑定账号'}</a>
+                                </td>
+                            </tr>`
+                    })
+
                     document.querySelector(".loading").style.display = "none";
-                    document.querySelector('#open_platform_state_table').innerHTML = `
-                        <tr>
-                            <td><img src="../../../images/icon/dingtalk.svg" style="height: 28px"></td>
-                            <td style="background-color:var(${state.dingtalk ? '--green-tint' : '--red-tint'})">
-                                <i class="fa fa-circle" style="font-size: 8px;color: var(${state.dingtalk ? '--green' : '--red'})"></i>
-                                <span>${state.dingtalk ? '使用中' : '未绑定'}</span></td>
-                            <td>
-                                <a class="layui-btn layui-btn-xs layui-btn-blue-tint"
-                                   onclick="auth('dingtalk','${state.dingtalk ? 'unbind' : 'bind'}','${account.permissionType}')">${state.dingtalk ? '解除绑定' : '绑定账号'}</a>
-                           </td>
-                        </tr>
-                        <tr>
-                            <td><img src="../../../images/icon/gitee.svg" style="height: 28px"></td>
-                            <td style="background-color:var(${data.gitee.state ? '--green-tint' : '--red-tint'})">
-                                <i class="fa fa-circle" style="font-size: 8px;color: var(${state.gitee ? '--green' : '--red'})"></i>
-                                <span>${state.gitee ? '使用中' : '未绑定'}</span></td>
-                            <td>
-                                <a class="layui-btn layui-btn-xs layui-btn-blue-tint"
-                                   onclick="auth('gitee','${state.gitee ? 'unbind' : 'bind'}','${account.permissionType}')">${state.gitee ? '解除绑定' : '绑定账号'}</a>
-                           </td>
-                        </tr>
-                    `
+                    document.querySelector('#open_platform_state_table').innerHTML = html;
                     return
                 }
                 layer.msg(res.message, {icon: 2});

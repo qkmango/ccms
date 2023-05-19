@@ -70,12 +70,12 @@ public class RequestURL {
         public RequestURL build() {
             StringBuilder sb = new StringBuilder(url.getUrl());
 
-            // if(url.url.contains("?")) {
-            //     sb.append("&");
-            // } else {
-            //     sb.append("?");
-            // }
-            sb.append("?");
+            if(url.url.contains("?")) {
+                sb.append("&");
+            } else {
+                sb.append("?");
+            }
+            // sb.append("?");
             for (Map.Entry<String, Object> entry : params.entrySet()) {
                 sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
             }

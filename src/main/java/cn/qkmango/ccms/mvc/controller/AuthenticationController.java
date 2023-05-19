@@ -8,6 +8,7 @@ import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import jakarta.annotation.Resource;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -25,7 +27,7 @@ import java.util.Locale;
  * @date 2023-02-18 18:10
  */
 @Controller
-@RequestMapping("authentication")
+@RequestMapping("auth")
 public class AuthenticationController {
 
     @Resource
@@ -74,10 +76,10 @@ public class AuthenticationController {
      * @param locale            语言环境
      * @return 返回重定向页面
      */
-    @RequestMapping("gitee/{purpose}.do")
+    @RequestMapping("gitee/callback.do")
     public String gitee(
-            @PathVariable PurposeType purpose,
             @RequestParam String state,
+            @RequestParam PurposeType purpose,
             String code,
             String error,
             String error_description,
@@ -97,9 +99,9 @@ public class AuthenticationController {
      * @param state    授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
      * @return 返回重定向页面
      */
-    @RequestMapping("dingtalk/{purpose}.do")
+    @RequestMapping("dingtalk/callback.do")
     public String dingtalk(
-            @PathVariable PurposeType purpose,
+            @RequestParam PurposeType purpose,
             String authCode,
             String state,
             Locale locale) throws UpdateException {
@@ -122,7 +124,7 @@ public class AuthenticationController {
     @ResponseBody
     @GetMapping("open-platform/state.do")
     public R openPlatformState() {
-        OpenPlatformBindState state = service.openPlatformState();
-        return R.success(state);
+        List<OpenPlatform> states = service.openPlatformState();
+        return R.success(states);
     }
 }

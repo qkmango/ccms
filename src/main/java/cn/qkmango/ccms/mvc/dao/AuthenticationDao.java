@@ -8,6 +8,8 @@ import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 认证信息持久层接口
  *
@@ -36,7 +38,7 @@ public interface AuthenticationDao {
      * @param account 系统账户
      * @return 返回开放平台绑定状态
      */
-    OpenPlatformBindState openPlatformBindState(Account account);
+    List<OpenPlatform> openPlatformBindState(Account account);
 
     /**
      * 绑定第三方平台

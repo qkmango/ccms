@@ -1,5 +1,5 @@
 
-package cn.qkmango.ccms.common.security;
+package cn.qkmango.ccms.security.encoder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

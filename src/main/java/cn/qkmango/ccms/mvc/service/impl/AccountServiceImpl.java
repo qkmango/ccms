@@ -2,7 +2,7 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
-import cn.qkmango.ccms.common.security.PasswordEncoder;
+import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.bind.PermissionType;

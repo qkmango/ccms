@@ -18,6 +18,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Locale;
 
 /**
@@ -48,19 +49,23 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
 
         PurposeType purpose = authAccount.getPurpose();
 
-        RequestURL authorize = config.authorize();
-        RequestURL callback = config.urls.get(switch (purpose) {
-            case login -> "callbackLogin";
-            case bind -> "callbackBind";
-            case unbind -> null;
-        });
+        RequestURL authorize = config.getAuthorize();
+        // RequestURL callback = config.urls.get(switch (purpose) {
+        //     case login -> "callbackLogin";
+        //     case bind -> "callbackBind";
+        //     case unbind -> null;
+        // });
+
+        String callback = config.getCallback().builder()
+                .with("purpose", purpose.name())
+                .build().url();
 
         return authorize.builder()
                 .with("response_type", "code")
                 .with("scope", "user_info")
                 .with("client_id", config.id)
                 .with("state", state)
-                .with("redirect_uri", callback.url())
+                .with("redirect_uri", URLEncoder.encode(callback))
                 .build().url();
     }
 
@@ -78,20 +83,25 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
         PurposeType purpose = (PurposeType) params[1];
 
         //判断授权用途，设置相应的回调地址
-        RequestURL callback = config.urls.get(switch (purpose) {
-            case login -> "callbackLogin";
-            case bind -> "callbackBind";
-            default -> throw new IllegalStateException("Unexpected value: " + purpose);
-        });
-        String redirect = callback.url();
+        // RequestURL callback = config.urls.get(switch (purpose) {
+        //     case login -> "callbackLogin";
+        //     case bind -> "callbackBind";
+        //     default -> throw new IllegalStateException("Unexpected value: " + purpose);
+        // });
 
-        RequestURL accessToken = config.accessToken();
+        String callback = config.getCallback().builder()
+                .with("purpose", purpose.name())
+                .build().url();
+
+        // String redirect = callback.url();
+
+        RequestURL accessToken = config.getAccessToken();
         String url = accessToken.builder()
                 .with("client_id", config.id)
                 .with("client_secret", config.secret)
                 .with("grant_type", "authorization_code")
                 .with("code", code)
-                .with("redirect_uri", redirect)
+                .with("redirect_uri", URLEncoder.encode(callback))
                 .build().url();
 
         CloseableHttpClient client = HttpClients.createDefault();
@@ -137,7 +147,7 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
 
         // String url = "https://gitee.com/api/v5/user?access_token=" + accessToken;
 
-        RequestURL userInfo = config.userInfo();
+        RequestURL userInfo = config.getUserInfo();
 
         String url = userInfo.builder()
                 .with("access_token", accessToken)

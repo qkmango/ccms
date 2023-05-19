@@ -54,22 +54,20 @@
         where id = #{account.id}
     </update>
 
+    <select id="openPlatformBindState" resultType="cn.qkmango.ccms.domain.entity.OpenPlatform">
+        SELECT 'dingtalk' as type, IF(COUNT(*),TRUE,FALSE) as state
+        FROM t_open_platform
+        WHERE account=#{id}
+        and account_type=#{permissionType}
+        and type='dingtalk'
 
-    <select id="openPlatformBindState" resultMap="OpenPlatformBindStateMap">
-        select
-        'gitee' as gitee_type,
-        gitee_uid,
-        if(gitee_uid is null, 0, 1) as gitee_state,
+        UNION ALL
 
-        dingtalk_uid,
-        'dingtalk' as dingtalk_type,
-        if(dingtalk_uid is null, 0, 1) as dingtalk_state
-        from
-        <choose>
-            <when test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">t_user</when>
-            <when test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">t_admin</when>
-        </choose>
-        where id = #{id}
+        SELECT 'gitee' as type, IF(COUNT(*),TRUE,FALSE) as state
+        FROM t_open_platform
+        WHERE account=#{id}
+        and account_type=#{permissionType}
+        and type='gitee'
     </select>
 
     <select id="isBind" resultType="java.lang.Boolean">
@@ -81,6 +79,8 @@
             and account_type = #{account.permissionType}
         ]]>
     </select>
+
+
 
     <resultMap id="OpenPlatformBindStateMap" type="cn.qkmango.ccms.domain.vo.OpenPlatformBindState">
         <association property="gitee">

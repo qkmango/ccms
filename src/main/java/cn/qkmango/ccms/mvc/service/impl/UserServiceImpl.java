@@ -1,7 +1,7 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.UpdateException;
-import cn.qkmango.ccms.common.security.PasswordEncoder;
+import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.vo.UserAndCardVO;

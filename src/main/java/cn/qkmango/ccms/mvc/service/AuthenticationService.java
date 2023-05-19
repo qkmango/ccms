@@ -5,9 +5,11 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
+import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.domain.vo.OpenPlatformBindState;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -58,7 +60,7 @@ public interface AuthenticationService {
      *
      * @return 返回开放平台绑定状态
      */
-    OpenPlatformBindState openPlatformState();
+    List<OpenPlatform> openPlatformState();
 
     /**
      * 解绑开放平台

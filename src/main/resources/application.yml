@@ -78,22 +78,19 @@ ccms:
     gitee:
       id: 06c9956bdfd279c5c0a81f187711cc7137f268331f701fcf53382e40e9f69cee
       secret: adc73ff714c0b29d0af634c2d0f20187d089eb7fdbfc7809a26afa85932010e1
-      url:
-        authorize: https://gitee.com/oauth/authorize
-        accessToken: https://gitee.com/oauth/token
-        userInfo: https://gitee.com/api/v5/user
-        callback:
-          login: http://localhost/authentication/gitee/login.do
-          bind: http://localhost/authentication/gitee/bind.do
+      authorize: https://gitee.com/oauth/authorize
+      accessToken: https://gitee.com/oauth/token
+      userInfo: https://gitee.com/api/v5/user
+      callback: http://localhost/auth/gitee/callback.do
+      redirect: redirect:/page/common/authentication/result.html
+
 
     dingtalk:
       id: dingfi9mcuubqqqkgbec
       secret: 2EF6rPtFpWN3dgMKIqihFGknDCbE6ceGKk2RmBfpP5hTvdcsFZGz9N6uqyvItWd7
-      url:
-        authorize: https://login.dingtalk.com/oauth2/auth
-        accessToken: https://oapi.dingtalk.com/gettoken
-        userInfo: https://oapi.dingtalk.com/sns/getuserinfo_bycode
-        callback:
-          login: http://localhost/authentication/dingtalk/login.do
-          bind: http://localhost/authentication/dingtalk/bind.do
+      authorize: https://login.dingtalk.com/oauth2/auth
+      accessToken: https://oapi.dingtalk.com/gettoken
+      userInfo: https://oapi.dingtalk.com/sns/getuserinfo_bycode
+      callback: http://localhost/auth/dingtalk/callback.do
+      redirect: redirect:/page/common/authentication/result.html
 

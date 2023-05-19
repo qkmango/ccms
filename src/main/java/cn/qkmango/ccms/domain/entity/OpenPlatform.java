@@ -1,6 +1,7 @@
 package cn.qkmango.ccms.domain.entity;
 
 import cn.qkmango.ccms.domain.auth.PlatformType;
+import cn.qkmango.ccms.domain.bind.PermissionType;
 
 /**
  * 开放平台实体类
@@ -24,14 +25,17 @@ public class OpenPlatform {
     // 平台绑定的账号
     private String uid;
 
+    private PermissionType accountType;
+
     public OpenPlatform() {
     }
 
-    public OpenPlatform(String id, PlatformType type, Boolean state, String uid) {
+    public OpenPlatform(String id, PlatformType type, Boolean state, String uid, PermissionType accountType) {
         this.id = id;
         this.type = type;
         this.state = state;
         this.uid = uid;
+        this.accountType = accountType;
     }
 
     public String getId() {
@@ -66,6 +70,15 @@ public class OpenPlatform {
         this.uid = uid;
     }
 
+    public PermissionType getAccountType() {
+        return accountType;
+    }
+
+    public OpenPlatform setAccountType(PermissionType accountType) {
+        this.accountType = accountType;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "OpenPlatform{" +
@@ -73,6 +86,7 @@ public class OpenPlatform {
                 ", type=" + type +
                 ", state=" + state +
                 ", uid='" + uid + '\'' +
+                ", accountType=" + accountType +
                 '}';
     }
 }

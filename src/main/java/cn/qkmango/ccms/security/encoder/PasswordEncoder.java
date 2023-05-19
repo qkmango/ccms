@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.security;
+package cn.qkmango.ccms.security.encoder;
 
 /**
  * Service interface for encoding passwords.

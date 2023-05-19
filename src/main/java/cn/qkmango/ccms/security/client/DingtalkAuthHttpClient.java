@@ -16,6 +16,7 @@ import com.aliyun.teaopenapi.models.Config;
 import com.aliyun.teautil.models.RuntimeOptions;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
+import java.net.URLEncoder;
 import java.util.Locale;
 
 /**
@@ -50,12 +51,11 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
         stateCache.setState(state, (String) params[0]);
 
         PurposeType purpose = authAccount.getPurpose();
-        RequestURL authorize = config.authorize();
-        RequestURL callback = config.urls.get(switch (purpose) {
-            case login -> "callbackLogin";
-            case bind -> "callbackBind";
-            case unbind -> null;
-        });
+        RequestURL authorize = config.getAuthorize();
+        String callback = config.getCallback().builder()
+                .with("purpose", purpose.name())
+                .build().url();
+
 
         return authorize.builder()
                 .with("response_type", "code")
@@ -63,7 +63,7 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
                 .with("scope", "openid")
                 .with("client_id", config.id)
                 .with("state", state)
-                .with("redirect_uri", callback.url())
+                .with("redirect_uri", URLEncoder.encode(callback))
                 .build().url();
     }
 
