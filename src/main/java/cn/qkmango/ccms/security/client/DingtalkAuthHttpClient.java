@@ -48,7 +48,7 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
     @Override
     public String authorize(AuthenticationAccount authAccount, String state, Object... params) {
 
-        stateCache.setState(state, (String) params[0]);
+        // stateCache.setState(state, (String) params[0]);
 
         PurposeType purpose = authAccount.getPurpose();
         RequestURL authorize = config.getAuthorize();

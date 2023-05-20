@@ -59,6 +59,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Resource(name = "dingtalkAuthHttpClient")
     private AuthHttpClient dingtalkAuthHttpClient;
 
+    @Resource(name = "alipayAuthHttpClient")
+    private AuthHttpClient alipayAuthHttpClient;
+
     /**
      * 获取授权登陆地址
      *
@@ -72,6 +75,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String state = "auth:" + UUID.randomUUID();
         String value = JSONObject.toJSONString(authAccount);
 
+        //将授权信息和state存入redis, 有效期为5分钟
+        redis.set(state, value, 5 * 60);
+
         //获取 第三方平台
         PlatformType platform = authAccount.getPlatform();
 
@@ -81,6 +87,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         switch (platform) {
             case gitee -> url = giteeAuthHttpClient.authorize(authAccount, state, value);
             case dingtalk -> url = dingtalkAuthHttpClient.authorize(authAccount, state, value);
+            case alipay -> url = alipayAuthHttpClient.authorize(authAccount, state, value);
         }
         return url;
     }
@@ -95,25 +102,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param code              授权码
      * @param error             有错误时返回
      * @param error_description 错误描述
-     * @param request           请求
      * @param locale            语言环境
      * @return 返回重定向页面
      */
     @Override
-    public String giteeCallback(String state, String code, String error, String error_description, PurposeType purpose, HttpServletRequest request, Locale locale) throws UpdateException {
-        //获取redis中存储的授权信息,获取权限类型
-        String value = redis.get(state);
-        AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
+    public String giteeCallback(String state, String code, String error, String error_description, PurposeType purpose, Locale locale) throws UpdateException {
 
-        //获取第三方认证结果
-        AuthenticationResult result = giteeAuthHttpClient.authentication(state, code, locale, error);
+        String message = null;
 
         //获取重定向地址
         RequestURL.Builder builder = giteeAuthHttpClient.getAppConfig().getRedirect().builder()
                 .with("platform", "gitee")
                 .with("purpose", purpose.name());
 
-        String message = null;
+        //检查state是否存在
+        String value = redis.get(state);
+        if (value == null) {
+            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
+            return builder
+                    .with("success", false)
+                    .with("message", URLEncoder.encode(message))
+                    .build().url();
+        }
+
+        //获取redis中存储的授权信息,获取权限类型
+        AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
+
+        //获取第三方认证结果
+        AuthenticationResult result = giteeAuthHttpClient.authentication(state, code, locale, error);
 
         //如果第三方认证失败
         if (!result.success) {
@@ -130,7 +146,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         switch (purpose) {
             case login -> {
-                boolean login = toLogin(authAccount, locale);
+                boolean login = toLogin(authAccount);
                 //如果登陆成功
                 if (login) {
                     message = messageSource.getMessage("response.authentication.success", null, locale);
@@ -181,19 +197,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public String dingtalkCallback(String state, String code, PurposeType purpose, Locale locale) throws UpdateException {
-        //获取redis中存储的授权信息,获取权限类型
-        String value = redis.get(state);
-        AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
 
-        //获取第三方认证结果
-        AuthenticationResult result = dingtalkAuthHttpClient.authentication(state, code, locale);
+        String message;
 
         //获取重定向地址
         RequestURL.Builder builder = dingtalkAuthHttpClient.getAppConfig().getRedirect().builder()
                 .with("platform", "dingtalk")
                 .with("purpose", purpose.name());
 
-        String message;
+
+        //检查state是否存在
+        String value = redis.get(state);
+        if (value == null) {
+            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
+            return builder
+                    .with("success", false)
+                    .with("message", URLEncoder.encode(message))
+                    .build().url();
+        }
+
+        //获取redis中存储的授权信息,获取权限类型
+        AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
+
+        //获取第三方认证结果
+        AuthenticationResult result = dingtalkAuthHttpClient.authentication(state, code, locale);
 
         //如果第三方认证失败
         if (!result.success) {
@@ -209,7 +236,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         switch (purpose) {
             case login -> {
                 authAccount.setUid(uid);
-                boolean login = toLogin(authAccount, locale);
+                boolean login = toLogin(authAccount);
                 //如果登陆成功
                 if (login) {
                     message = messageSource.getMessage("response.authentication.success", null, locale);
@@ -220,7 +247,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
                 //如果登陆成功
                 else {
-                    message = messageSource.getMessage("db.user.gitee.uid.failure@notExist", null, locale);
+                    message = messageSource.getMessage("db.user.dingtalk.uid.failure@notExist", null, locale);
                     return builder
                             .with("success", false)
                             .with("message", URLEncoder.encode(message))
@@ -252,6 +279,101 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     }
 
+
+    /**
+     * alipay 回调 登陆/绑定
+     *
+     * @param purpose
+     * @param authCode
+     * @param state
+     * @param appId
+     * @param source
+     * @param scope
+     * @param locale
+     * @return
+     * @throws UpdateException
+     */
+    @Override
+    public String alipayCallback(PurposeType purpose, String authCode, String state, String appId, String source, String scope, Locale locale) throws UpdateException {
+
+        String message;
+
+        //获取重定向地址
+        RequestURL.Builder builder = alipayAuthHttpClient.getAppConfig().getRedirect().builder()
+                .with("platform", "alipay")
+                .with("purpose", purpose.name());
+
+        //检查state是否存在
+        String value = redis.get(state);
+        if (value == null) {
+            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
+            return builder
+                    .with("success", false)
+                    .with("message", URLEncoder.encode(message))
+                    .build().url();
+        }
+
+        AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
+
+        //获取第三方认证结果
+        AuthenticationResult result = alipayAuthHttpClient.authentication(state, authCode, locale);
+
+
+        //如果第三方认证失败
+        if (!result.success) {
+            return builder
+                    .with("success", false)
+                    .with("message", URLEncoder.encode(result.message))
+                    .build().url();
+        }
+
+        //第三方认证成功后，登陆系统
+        //登陆系统
+        String uid = result.getUserInfo().getUid();
+        switch (purpose) {
+            case login -> {
+                authAccount.setUid(uid);
+                boolean login = toLogin(authAccount);
+                //如果登陆成功
+                if (login) {
+                    message = messageSource.getMessage("response.authentication.success", null, locale);
+                    return builder
+                            .with("success", true)
+                            .with("message", URLEncoder.encode(message))
+                            .build().url();
+                }
+                //如果登陆成功
+                else {
+                    message = messageSource.getMessage("db.user.alipay.uid.failure@notExist", null, locale);
+                    return builder
+                            .with("success", false)
+                            .with("message", URLEncoder.encode(message))
+                            .build().url();
+                }
+            }
+            case bind -> {
+                //判断认证用途，执行 绑定 的操作
+                Account account = UserSession.getAccount();
+                OpenPlatform openPlatform = new OpenPlatform(
+                        account.getId(),
+                        PlatformType.alipay,
+                        true,
+                        uid,
+                        account.getPermissionType());
+
+                thisService.toBind(openPlatform, account, locale);
+
+                message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
+                return builder
+                        .with("success", true)
+                        .with("message", URLEncoder.encode(message))
+                        .build().url();
+            }
+        }
+
+        return "redirect:/page/login/index.html";
+    }
+
     /**
      * 获取开放平台绑定状态
      *
@@ -269,8 +391,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      *
      * @param account 认证账户
      */
-    private boolean toLogin(AuthenticationAccount account,
-                            Locale locale) {
+    private boolean toLogin(AuthenticationAccount account) {
 
         Account loginAccount = dao.authentication(account);
         //如果不存在，返回错误信息
@@ -334,4 +455,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return R.success(messageSource.getMessage("db.update.authentication.unbind.success", null, locale));
     }
+
 }

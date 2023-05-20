@@ -22,4 +22,9 @@ public enum PlatformType {
      * 钉钉认证
      */
     dingtalk,
+
+    /**
+     * 支付宝认证
+     */
+    alipay
 }

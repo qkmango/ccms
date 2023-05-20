@@ -31,12 +31,12 @@ public class Test {
         PermissionType p = PermissionType.admin;
         String id = "1";
         if (session == null) {
-            account = new Account(id, null, "芒果小洛", p, null,null,null);
+            account = new Account(id, null, "芒果小洛",PermissionType.admin,null);
             request.getSession(true).setAttribute("account", account);
         } else {
             account = (Account) request.getSession().getAttribute("account");
             if (account == null) {
-                account = new Account(id, null, "芒果小洛", p, null,null,null);
+                account = new Account(id, null, "芒果小洛",PermissionType.admin,null);
                 request.getSession(true).setAttribute("account", account);
             }
         }

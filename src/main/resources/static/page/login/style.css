@@ -193,13 +193,13 @@ select {
     cursor: pointer;
 }
 
-.authentication.label > div:first-child {
-    margin-right: 8px;
+.authentication.label > div:nth-child(2) {
+    margin: 0 8px;
 }
 
 .authentication.label > div > img {
-    height: 35px;
-    margin: 4px 8px;
+    height: 25px;
+    margin: 4px 3px;
 }
 
 .authentication.label > a > img:hover {

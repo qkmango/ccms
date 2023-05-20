@@ -3,9 +3,11 @@ package cn.qkmango.ccms.config;
 import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.security.cache.DefaultStateCache;
 import cn.qkmango.ccms.security.cache.StateCache;
+import cn.qkmango.ccms.security.client.AlipayAuthHttpClient;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
 import cn.qkmango.ccms.security.client.DingtalkAuthHttpClient;
 import cn.qkmango.ccms.security.client.GiteeAuthHttpClient;
+import cn.qkmango.ccms.security.config.AlipayAppConfig;
 import cn.qkmango.ccms.security.config.AppConfig;
 import cn.qkmango.ccms.security.encoder.BCryptPasswordEncoder;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
@@ -66,6 +68,17 @@ public class SecurityConfig {
         return new AppConfig();
     }
 
+    /**
+     * Alipay 第三方平台配置
+     *
+     * @return 配置
+     */
+    @Bean("alipayConfig")
+    @ConfigurationProperties(prefix = "ccms.authentication.alipay")
+    public AlipayAppConfig alipayConfig() {
+        return new AlipayAppConfig();
+    }
+
     // Gitee 第三方平台授权登陆客户端
     @Bean("giteeAuthHttpClient")
     public AuthHttpClient giteeHttpRequest() {
@@ -76,5 +89,10 @@ public class SecurityConfig {
     @Bean("dingtalkAuthHttpClient")
     public AuthHttpClient dingtalkHttpRequest() {
         return new DingtalkAuthHttpClient(dingtalkConfig(), stateCache(), messageSource);
+    }
+
+    @Bean("alipayAuthHttpClient")
+    public AuthHttpClient alipayHttpRequest() {
+        return new AlipayAuthHttpClient(alipayConfig(), stateCache(), messageSource);
     }
 }

@@ -12,7 +12,7 @@
         </choose>
 
         WHERE
-        id=(SELECT account FROM t_open_platform WHERE type = #{platform} and uid = #{uid})
+        id=(SELECT account FROM t_open_platform WHERE type = #{platform} and uid = #{uid} and account_type = #{permission})
 
         <if test="permission == @cn.qkmango.ccms.domain.bind.PermissionType@user">and unsubscribe = 0;</if>
     </select>
@@ -40,19 +40,12 @@
     </insert>
 
 
-    <update id="unbind">
-        update
-        <choose>
-            <when test="account.permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">t_user</when>
-            <when test="account.permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">t_admin</when>
-        </choose>
-        set
-        <choose>
-            <when test="platform == @cn.qkmango.ccms.domain.auth.PlatformType@gitee">gitee_uid = null</when>
-            <when test="platform == @cn.qkmango.ccms.domain.auth.PlatformType@dingtalk">dingtalk_uid = null</when>
-        </choose>
-        where id = #{account.id}
-    </update>
+    <delete id="unbind">
+        DELETE FROM t_open_platform
+        WHERE account=#{account.id}
+        AND account_type=#{account.permissionType}
+        AND type=#{platform}
+    </delete>
 
     <select id="openPlatformBindState" resultType="cn.qkmango.ccms.domain.entity.OpenPlatform">
         SELECT 'dingtalk' as type, IF(COUNT(*),TRUE,FALSE) as state
@@ -68,6 +61,14 @@
         WHERE account=#{id}
         and account_type=#{permissionType}
         and type='gitee'
+
+        UNION ALL
+
+        SELECT 'alipay' as type, IF(COUNT(*),TRUE,FALSE) as state
+        FROM t_open_platform
+        WHERE account=#{id}
+        and account_type=#{permissionType}
+        and type='alipay'
     </select>
 
     <select id="isBind" resultType="java.lang.Boolean">

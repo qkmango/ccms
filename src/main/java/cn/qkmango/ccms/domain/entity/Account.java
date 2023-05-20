@@ -35,21 +35,15 @@ public class Account implements Serializable {
 
     private String email;
 
-    private String giteeUID;
-
-    private String dingtalkUID;
-
     public Account() {
     }
 
-    public Account(String id, String password, String name, PermissionType permissionType, String email, String giteeUID, String dingtalkUID) {
+    public Account(String id, @NotNull(groups = Login.class) String password, String name, @NotNull(groups = Login.class) PermissionType permissionType, String email) {
         this.id = id;
         this.password = password;
         this.name = name;
         this.permissionType = permissionType;
         this.email = email;
-        this.giteeUID = giteeUID;
-        this.dingtalkUID = dingtalkUID;
     }
 
     public String getId() {
@@ -92,21 +86,6 @@ public class Account implements Serializable {
         this.email = email;
     }
 
-    public String getGiteeUID() {
-        return giteeUID;
-    }
-
-    public void setGiteeUID(String giteeUID) {
-        this.giteeUID = giteeUID;
-    }
-
-    public String getDingtalkUID() {
-        return dingtalkUID;
-    }
-
-    public void setDingtalkUID(String dingtalkUID) {
-        this.dingtalkUID = dingtalkUID;
-    }
 
     @Override
     public String toString() {
@@ -116,8 +95,6 @@ public class Account implements Serializable {
                 ", name='" + name + '\'' +
                 ", permissionType=" + permissionType +
                 ", email='" + email + '\'' +
-                ", giteeUID='" + giteeUID + '\'' +
-                ", dingtalkUID='" + dingtalkUID + '\'' +
                 '}';
     }
 }

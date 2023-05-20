@@ -43,7 +43,7 @@ public interface AuthHttpClient {
     UserInfo getUserInfo(Object... params);
 
 
-    AuthenticationResult authentication(String code, String state, Object... params);
+    AuthenticationResult authentication(String state, String code, Object... params);
 
 
     AppConfig getAppConfig();

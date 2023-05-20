@@ -44,17 +44,8 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
 
     @Override
     public String authorize(AuthenticationAccount authAccount, String state, Object... params) {
-
-        stateCache.setState(state, (String) params[0]);
-
         PurposeType purpose = authAccount.getPurpose();
-
         RequestURL authorize = config.getAuthorize();
-        // RequestURL callback = config.urls.get(switch (purpose) {
-        //     case login -> "callbackLogin";
-        //     case bind -> "callbackBind";
-        //     case unbind -> null;
-        // });
 
         String callback = config.getCallback().builder()
                 .with("purpose", purpose.name())
@@ -82,18 +73,9 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
         String code = (String) params[0];
         PurposeType purpose = (PurposeType) params[1];
 
-        //判断授权用途，设置相应的回调地址
-        // RequestURL callback = config.urls.get(switch (purpose) {
-        //     case login -> "callbackLogin";
-        //     case bind -> "callbackBind";
-        //     default -> throw new IllegalStateException("Unexpected value: " + purpose);
-        // });
-
         String callback = config.getCallback().builder()
                 .with("purpose", purpose.name())
                 .build().url();
-
-        // String redirect = callback.url();
 
         RequestURL accessToken = config.getAccessToken();
         String url = accessToken.builder()
