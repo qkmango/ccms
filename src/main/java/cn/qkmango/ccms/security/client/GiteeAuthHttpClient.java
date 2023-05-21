@@ -4,7 +4,6 @@ import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.UserInfo;
-import cn.qkmango.ccms.security.cache.StateCache;
 import cn.qkmango.ccms.security.config.AppConfig;
 import cn.qkmango.ccms.security.request.RequestURL;
 import com.alibaba.fastjson2.JSONObject;
@@ -30,15 +29,12 @@ import java.util.Locale;
  */
 public class GiteeAuthHttpClient implements AuthHttpClient {
 
-    private StateCache stateCache;
+    private final AppConfig config;
 
-    private AppConfig config;
+    private final ReloadableResourceBundleMessageSource messageSource;
 
-    private ReloadableResourceBundleMessageSource messageSource;
-
-    public GiteeAuthHttpClient(AppConfig config, StateCache stateCache, ReloadableResourceBundleMessageSource messageSource) {
+    public GiteeAuthHttpClient(AppConfig config, ReloadableResourceBundleMessageSource messageSource) {
         this.config = config;
-        this.stateCache = stateCache;
         this.messageSource = messageSource;
     }
 

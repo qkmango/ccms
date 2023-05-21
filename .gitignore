@@ -32,3 +32,6 @@ out
 /src/main/java/cn/qkmango/ccms/mvc/dao/TestDao.java
 /src/main/java/cn/qkmango/ccms/mvc/dao/TestDao.xml
 /src/main/resources/rebel.xml
+
+/src/main/resources/static/lib/layui-v2.6.3/
+/src/main/resources/static/lib/layui-v2.8.3/

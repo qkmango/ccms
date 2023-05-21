@@ -32,23 +32,17 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
     private static final Config reqConfig = new Config().setProtocol("https").setRegionId("central");
 
     //钉钉配置
-    private AppConfig config;
+    private final AppConfig config;
 
-    // state缓存
-    private StateCache stateCache;
+    private final ReloadableResourceBundleMessageSource messageSource;
 
-    private ReloadableResourceBundleMessageSource messageSource;
-
-    public DingtalkAuthHttpClient(AppConfig config, StateCache stateCache, ReloadableResourceBundleMessageSource messageSource) {
+    public DingtalkAuthHttpClient(AppConfig config, ReloadableResourceBundleMessageSource messageSource) {
         this.config = config;
-        this.stateCache = stateCache;
         this.messageSource = messageSource;
     }
 
     @Override
     public String authorize(AuthenticationAccount authAccount, String state, Object... params) {
-
-        // stateCache.setState(state, (String) params[0]);
 
         PurposeType purpose = authAccount.getPurpose();
         RequestURL authorize = config.getAuthorize();

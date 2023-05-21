@@ -4,10 +4,8 @@ import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.UserInfo;
-import cn.qkmango.ccms.security.cache.StateCache;
 import cn.qkmango.ccms.security.config.AlipayAppConfig;
 import cn.qkmango.ccms.security.config.AppConfig;
-import com.alibaba.fastjson2.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
@@ -29,16 +27,13 @@ import java.util.Locale;
  */
 public class AlipayAuthHttpClient implements AuthHttpClient {
 
-    private AlipayAppConfig config;
+    private final AlipayAppConfig config;
 
-    private StateCache stateCache;
-
-    private ReloadableResourceBundleMessageSource messageSource;
+    private final ReloadableResourceBundleMessageSource messageSource;
 
 
-    public AlipayAuthHttpClient(AlipayAppConfig config, StateCache stateCache, ReloadableResourceBundleMessageSource messageSource) {
+    public AlipayAuthHttpClient(AlipayAppConfig config, ReloadableResourceBundleMessageSource messageSource) {
         this.config = config;
-        this.stateCache = stateCache;
         this.messageSource = messageSource;
     }
 

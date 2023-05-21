@@ -1,8 +1,5 @@
 package cn.qkmango.ccms.config;
 
-import cn.qkmango.ccms.common.util.RedisUtil;
-import cn.qkmango.ccms.security.cache.DefaultStateCache;
-import cn.qkmango.ccms.security.cache.StateCache;
 import cn.qkmango.ccms.security.client.AlipayAuthHttpClient;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
 import cn.qkmango.ccms.security.client.DingtalkAuthHttpClient;
@@ -28,14 +25,14 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 public class SecurityConfig {
 
     // redis工具类
-    @Resource(name = "redisUtil")
-    private RedisUtil redisUtil;
+    // @Resource(name = "redisUtil")
+    // private RedisUtil redisUtil;
 
     // 认证 state 缓存工具
-    @Bean
-    public StateCache stateCache() {
-        return new DefaultStateCache(redisUtil, 60 * 5);
-    }
+    // @Bean
+    // public StateCache stateCache() {
+    //     return new DefaultStateCache(redisUtil, 60 * 5);
+    // }
 
     // 密码加密器
     @Bean
@@ -82,17 +79,17 @@ public class SecurityConfig {
     // Gitee 第三方平台授权登陆客户端
     @Bean("giteeAuthHttpClient")
     public AuthHttpClient giteeHttpRequest() {
-        return new GiteeAuthHttpClient(giteeConfig(), stateCache(), messageSource);
+        return new GiteeAuthHttpClient(giteeConfig(), messageSource);
     }
 
     // Dingtalk 第三方平台授权登陆客户端
     @Bean("dingtalkAuthHttpClient")
     public AuthHttpClient dingtalkHttpRequest() {
-        return new DingtalkAuthHttpClient(dingtalkConfig(), stateCache(), messageSource);
+        return new DingtalkAuthHttpClient(dingtalkConfig(), messageSource);
     }
 
     @Bean("alipayAuthHttpClient")
     public AuthHttpClient alipayHttpRequest() {
-        return new AlipayAuthHttpClient(alipayConfig(), stateCache(), messageSource);
+        return new AlipayAuthHttpClient(alipayConfig(), messageSource);
     }
 }
