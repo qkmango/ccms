@@ -21,8 +21,7 @@ import java.net.URLEncoder;
 import java.util.Locale;
 
 /**
- * 描述
- * <p></p>
+ * 支付宝认证客户端
  *
  * @author qkmango
  * @version 1.0
@@ -66,12 +65,12 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
     @Override
     public String getAccessToken(Object... params) {
         AlipayClient alipayClient = new DefaultAlipayClient(
-                config.getGateway(),
-                config.getId(),
-                config.getAppPrivateKey(),
+                config.gateway,
+                config.id,
+                config.appPrivateKey,
                 "json",
                 "utf-8",
-                config.getAlipayPublicKey(),
+                config.alipayPublicKey,
                 "RSA2");
 
         String code = (String) params[0];
@@ -94,7 +93,7 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
      *
      * @param params 参数
      *               params[0] = accessToken
-     * @return
+     * @return 用户信息
      */
     @Override
     public UserInfo getUserInfo(Object... params) {
@@ -135,12 +134,17 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
      *
      * @param state  防止CSRF攻击
      * @param code   临时授权码
-     * @param params 0：locale
-     * @return
+     * @param params params[0] = AuthenticationAccount
+     *               params[1] = locale
+     * @return 认证结果
      */
     @Override
     public AuthenticationResult authentication(String state, String code, Object... params) {
-        Locale locale = (Locale) params[0];
+        AuthenticationAccount account = (AuthenticationAccount) params[0];
+        Locale locale = (Locale) params[1];
+
+        //获取授权用途
+        PurposeType purpose = account.getPurpose();
 
         String message = messageSource.getMessage("response.authentication.failure", null, locale);
 
@@ -153,20 +157,6 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
             result.setMessage(message);
             return result;
         }
-
-        //判断state是否有效，防止CSRF攻击
-        String value = stateCache.getState(state);
-        stateCache.deleteState(state);
-        if (value == null) {
-            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
-            result.setMessage(message);
-            return result;
-        }
-
-        //获取redis中存储的授权信息
-        AuthenticationAccount account = JSONObject.parseObject(value, AuthenticationAccount.class);
-        //获取授权用途
-        PurposeType purpose = account.getPurpose();
 
         //获取 access_token
         String accessToken = this.getAccessToken(code, purpose);

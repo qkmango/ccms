@@ -125,10 +125,17 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
         return null;
     }
 
+    /**
+     * 钉钉授权登陆
+     *
+     * @param state  防止CSRF攻击
+     * @param code   临时授权码
+     * @param params params[0] locale
+     * @return
+     */
     @Override
     public AuthenticationResult authentication(String state, String code, Object... params) {
         Locale locale = (Locale) params[0];
-        // String error = (String) params[1];
 
         String message = messageSource.getMessage("response.authentication.failure", null, locale);
 
@@ -138,15 +145,6 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
 
         //如果用户拒绝授权
         if (code == null) {
-            result.setMessage(message);
-            return result;
-        }
-
-        //判断state是否有效，防止CSRF攻击
-        String value = stateCache.getState(state);
-        stateCache.deleteState(state);
-        if (value == null) {
-            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
             result.setMessage(message);
             return result;
         }

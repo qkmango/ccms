@@ -171,17 +171,17 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
     /**
      * @param state  state
      * @param code   code
-     * @param params params[0] Locale
-     *               params[1] error
-     *               params[2] error_description
-     *               params[3] HttpServletRequest
+     * @param params params[0] error
+     *               params[1] authAccount
+     *               params[2] locale
      * @return
      */
     @Override
     public AuthenticationResult authentication(String state, String code, Object... params) {
 
-        Locale locale = (Locale) params[0];
-        String error = (String) params[1];
+        String error = (String) params[0];
+        Locale locale = (Locale) params[2];
+        AuthenticationAccount account = (AuthenticationAccount) params[1];
 
         String message = messageSource.getMessage("response.authentication.failure", null, locale);
 
@@ -195,22 +195,8 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
             return result;
         }
 
-        //判断state是否有效，防止CSRF攻击
-        String value = stateCache.getState(state);
-        stateCache.deleteState(state);
-        if (value == null) {
-            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
-            result.setMessage(message);
-            return result;
-        }
-
-        //获取redis中存储的授权信息
-        AuthenticationAccount account = JSONObject.parseObject(value, AuthenticationAccount.class);
-        //获取授权用途
-        PurposeType purpose = account.getPurpose();
-
         //获取 access_token
-        String accessToken = this.getAccessToken(code, purpose);
+        String accessToken = this.getAccessToken(code, account.getPurpose());
 
         //获取 userInfo 信息
         UserInfo userInfo = this.getUserInfo(accessToken);

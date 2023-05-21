@@ -16,7 +16,6 @@ import cn.qkmango.ccms.security.client.AuthHttpClient;
 import cn.qkmango.ccms.security.request.RequestURL;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -61,6 +60,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Resource(name = "alipayAuthHttpClient")
     private AuthHttpClient alipayAuthHttpClient;
+
+    //意外情况下的跳转页面
+    private static final String ACCIDENT_REDIRECT_LOGIN_PAGE = "redirect:/page/login/index.html";
 
     /**
      * 获取授权登陆地址
@@ -116,8 +118,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .with("purpose", purpose.name());
 
         //检查state是否存在
-        String value = redis.get(state);
-        if (value == null) {
+        AuthenticationAccount authAccount = this.checkState(state);
+        if (authAccount == null) {
             message = messageSource.getMessage("response.authentication.state.failure", null, locale);
             return builder
                     .with("success", false)
@@ -125,11 +127,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .build().url();
         }
 
-        //获取redis中存储的授权信息,获取权限类型
-        AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
-
         //获取第三方认证结果
-        AuthenticationResult result = giteeAuthHttpClient.authentication(state, code, locale, error);
+        AuthenticationResult result = giteeAuthHttpClient.authentication(state, code, error, authAccount, locale);
 
         //如果第三方认证失败
         if (!result.success) {
@@ -181,7 +180,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .build().url();
             }
         }
-        return "redirect:/page/login/index.html";
+        return ACCIDENT_REDIRECT_LOGIN_PAGE;
     }
 
 
@@ -207,17 +206,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
         //检查state是否存在
-        String value = redis.get(state);
-        if (value == null) {
+        AuthenticationAccount authAccount = this.checkState(state);
+        if (authAccount == null) {
             message = messageSource.getMessage("response.authentication.state.failure", null, locale);
             return builder
                     .with("success", false)
                     .with("message", URLEncoder.encode(message))
                     .build().url();
         }
-
-        //获取redis中存储的授权信息,获取权限类型
-        AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
 
         //获取第三方认证结果
         AuthenticationResult result = dingtalkAuthHttpClient.authentication(state, code, locale);
@@ -275,23 +271,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
         }
 
-        return "redirect:/page/login/index.html";
-
+        return ACCIDENT_REDIRECT_LOGIN_PAGE;
     }
 
 
     /**
      * alipay 回调 登陆/绑定
      *
-     * @param purpose
-     * @param authCode
-     * @param state
-     * @param appId
-     * @param source
-     * @param scope
-     * @param locale
-     * @return
-     * @throws UpdateException
+     * @param purpose  用途
+     * @param authCode 授权码
+     * @param state    状态
+     * @param appId    应用id
+     * @param source   来源
+     * @param scope    作用域
+     * @param locale   语言环境
+     * @return 返回重定向页面
+     * @throws UpdateException 更新异常
      */
     @Override
     public String alipayCallback(PurposeType purpose, String authCode, String state, String appId, String source, String scope, Locale locale) throws UpdateException {
@@ -304,8 +299,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .with("purpose", purpose.name());
 
         //检查state是否存在
-        String value = redis.get(state);
-        if (value == null) {
+        AuthenticationAccount authAccount = this.checkState(state);
+        if (authAccount == null) {
             message = messageSource.getMessage("response.authentication.state.failure", null, locale);
             return builder
                     .with("success", false)
@@ -313,10 +308,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .build().url();
         }
 
-        AuthenticationAccount authAccount = JSONObject.parseObject(value, AuthenticationAccount.class);
-
         //获取第三方认证结果
-        AuthenticationResult result = alipayAuthHttpClient.authentication(state, authCode, locale);
+        AuthenticationResult result = alipayAuthHttpClient.authentication(state, authCode, authAccount, locale);
 
 
         //如果第三方认证失败
@@ -371,7 +364,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
         }
 
-        return "redirect:/page/login/index.html";
+        return ACCIDENT_REDIRECT_LOGIN_PAGE;
     }
 
     /**
@@ -454,6 +447,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new UpdateException(messageSource.getMessage("db.update.authentication.unbind.failure", null, locale));
         }
         return R.success(messageSource.getMessage("db.update.authentication.unbind.success", null, locale));
+    }
+
+    /**
+     * 检查state是否存在
+     *
+     * @param state 状态
+     * @return 返回state对应的认证账户
+     */
+    public AuthenticationAccount checkState(String state) {
+        String value = redis.get(state);
+        if (value == null) {
+            return null;
+        }
+        return JSONObject.parseObject(value, AuthenticationAccount.class);
     }
 
 }
