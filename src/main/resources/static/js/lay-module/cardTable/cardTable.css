@@ -2,7 +2,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    background-color: var(--maize-yellow);
+    /* background-color: var(--maize-yellow); */
 }
 .datetime {
     float: left;

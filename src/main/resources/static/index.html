@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
     <link rel="icon" href="./images/favicon.ico">
-    <link rel="stylesheet" href="lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="lib/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="css/layuimini.css?v=2.0.4.2" media="all">
     <link rel="stylesheet" href="css/themes/default.css" media="all">
     <link rel="stylesheet" href="lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
@@ -20,7 +20,7 @@
     <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style id="layuimini-bg-color"></style>
-	<script src="lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+	<script src="lib/layui/layui.js" charset="utf-8"></script>
 	<script type="text/javascript">
 		if (window.top!==window) {
 			window.top.location=window.location;
@@ -46,7 +46,7 @@
             top: 0;
             bottom: 0;
             margin: auto;
-            background-image: url("lib/layui-v2.6.3/css/modules/layer/default/loading-1.gif");
+            background-image: url("lib/layui/css/modules/layer/default/loading-1.gif");
         }
     </style>
 </head>
@@ -116,9 +116,9 @@
     <!--<div class="layuimini-loader">-->
     <!--    <div class="layuimini-loader-inner"></div>-->
     <!--</div>-->
-    <div class="layuimini-loader">
+    <!-- <div class="layuimini-loader">
         <div class="my-loader-inner"></div>
-    </div>
+    </div> -->
 
     <!--手机端遮罩层-->
     <div class="layuimini-make"></div>
@@ -166,7 +166,9 @@
         const layer = layui.layer;
         const miniAdmin = layui.miniAdmin;
 
+
         $.ajax({
+				// url:"test/testLogin.json",
 				url:"test/testLogin.do",
 				type:"post",
 				dataType:"json",
