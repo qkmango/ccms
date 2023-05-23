@@ -17,7 +17,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import java.io.IOException;
-// import java.net.URLEncoder;
+import java.net.URLEncoder;
 import java.util.Locale;
 
 /**
@@ -52,7 +52,7 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
                 .with("scope", "user_info")
                 .with("client_id", config.id)
                 .with("state", state)
-                .with("redirect_uri", callback)
+                .with("redirect_uri", URLEncoder.encode(callback))
                 .build().url();
     }
 
@@ -79,7 +79,7 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
                 .with("client_secret", config.secret)
                 .with("grant_type", "authorization_code")
                 .with("code", code)
-                .with("redirect_uri", callback)
+                .with("redirect_uri", URLEncoder.encode(callback))
                 .build().url();
 
         CloseableHttpClient client = HttpClients.createDefault();
