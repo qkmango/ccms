@@ -2,12 +2,12 @@
 <html lang="zh">
 <head>
     <meta charset="utf-8">
-    <title>账户信息</title>
+    <title>授权平台</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="../../../lib/layui/css/layui.css" media="all">
-    <link rel="stylesheet" href="../../../css/public.css" media="all">
+    <link rel="stylesheet" href="../../../css/color.css">
     <link rel="stylesheet" href="../../../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
     <style>
         table > thead > tr > th {
@@ -103,7 +103,7 @@
                                        style="font-size: 8px;color: var(${item.state ? '--green' : '--red'})"></i>
                                     <span>${item.state ? '使用中' : '未绑定'}</span></td>
                                 <td>
-                                    <a class="layui-btn layui-btn-xs layui-btn-blue-tint"
+                                    <a class="layui-btn layui-btn-primary layui-btn-xs layui-border-green"
                                        onClick="auth('${item.type}','${item.state ? 'unbind' : 'bind'}','${account.permissionType}')">${item.state ? '解除绑定' : '绑定账号'}</a>
                                 </td>
                             </tr>`

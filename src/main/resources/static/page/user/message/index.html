@@ -15,10 +15,6 @@
             font-size: 12px;
             float: right;
         }
-
-        /*.layui-card {*/
-        /*    border: 2px solid var(--green_30);*/
-        /*}*/
     </style>
 </head>
 
@@ -70,8 +66,10 @@
             elemClass: 'layui-anim layui-anim-scale',
             method: 'post',
             request:{
-                titleName: 'authorName' //标题名称，默认：title
-                , timeName: 'createTime' //时间名称，默认：time
+                // 标题名称 默认：title
+                // 时间名称 默认：time
+                titleName: 'authorName',
+                timeName: 'createTime'
             },
             response:{
                 statusName: 'success',
@@ -80,7 +78,7 @@
                 countName: 'count',
                 dataName: 'data'
             },
-            // 完 成 函 数
+            // 完成函数
             done: function () {
                 //将时间渲染成 xx前
                 timeago.render(document.querySelectorAll('.timeago'));
@@ -89,18 +87,17 @@
             clickEvent: function(item) {
                 $.ajax({
                     url:'../../../message/one/detail.do',
+                    // url:'detail.test.json',
                     data:{id:item.id},
                     dataType:'json',
                     success:function(res) {
                         const data = res.data;
                         if(res.success) {
                             let html =
-                            `<div style="padding:15px 20px; text-align:justify; line-height: 22px;border-bottom:1px solid #e2e2e2;">
-                                <div style="font-size: 14px;line-height: 2">${data.content}</div>
-                            </div>`;
+                            `<div style="">${data.content}</div>`;
                             layer.open({
                                 type: 1,
-                                title: `<i class="fa fa-commenting-o"></i> ${data.authorName}<span style="float: right;right: 1px;font-style: italic">${layui.util.toDateString(data.createTime, 'yyyy-MM-dd HH:mm:ss')}</span>`,
+                                title: `<i class="fa fa-commenting-o"></i> ${data.authorName}<span style="float: right;right: 1px;font-style: italic;font-weight: initial;font-size:14px;">${layui.util.toDateString(data.createTime, 'yyyy-MM-dd HH:mm:ss')}</span>`,
                                 area: '400px;',
                                 shade: 0.8,
                                 btnAlign: 'c',

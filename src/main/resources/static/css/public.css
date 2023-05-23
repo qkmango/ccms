@@ -186,10 +186,10 @@ body {
     background-color: var(--orange);
 }
 
-/*自定义弹出层样式*/
+/* 自定义弹出层样式 layui-layer-green-tint */
 .layui-layer-green-tint .layui-layer-title {
-    background-color: var(--green2-tint);
-    color: var(--green2);
+    background-color: var(--green-tint);
+    color: var(--green);
     border: none;
     font-weight: bold;
     font-size: 16px;
@@ -201,10 +201,17 @@ body {
 }
 
 .layui-layer-green-tint .layui-layer-content {
-    color: var(--green2);
-    background-color: var(--maize-yellow);
+    color: var(--green);
+    /* background-color: var(--maize-yellow); */
 }
 
 .layui-layer-green-tint .layui-layer-btn .layui-layer-btn1 {
     background: var(--green-tint)
+}
+
+.layui-layer-green-tint .layui-layer-content {
+    padding:15px 20px;
+    text-align:justify;
+    font-size: 14px;
+    line-height: 2;
 }
