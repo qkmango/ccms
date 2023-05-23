@@ -42,7 +42,7 @@ public interface AuthenticationService {
      * @return 返回重定向页面
      * @throws UpdateException
      */
-    String giteeCallback(String state, String code, String error, String error_description, PurposeType purpose, Locale locale) throws UpdateException, UnsupportedEncodingException;
+    String giteeCallback(String state, String code, String error, String error_description, PurposeType purpose, Locale locale) throws UpdateException;
 
     /**
      * 钉钉回调地址
