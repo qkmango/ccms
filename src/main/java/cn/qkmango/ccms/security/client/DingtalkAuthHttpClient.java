@@ -4,7 +4,6 @@ import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.UserInfo;
-import cn.qkmango.ccms.security.cache.StateCache;
 import cn.qkmango.ccms.security.config.AppConfig;
 import cn.qkmango.ccms.security.request.RequestURL;
 import com.aliyun.dingtalkcontact_1_0.models.GetUserHeaders;
@@ -28,8 +27,8 @@ import java.util.Locale;
  */
 public class DingtalkAuthHttpClient implements AuthHttpClient {
 
-    //钉钉 库请求自用
-    private static final Config reqConfig = new Config().setProtocol("https").setRegionId("central");
+    //钉钉 请求配置
+    private static final Config REQUEST_CONFIG = new Config().setProtocol("https").setRegionId("central");
 
     //钉钉配置
     private final AppConfig config;
@@ -66,14 +65,14 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
      *
      * @param params 参数
      *               params[0] code
-     * @return
+     * @return accessToken
      */
     @Override
-    public String getAccessToken(Object... params) {
+    public String accessToken(Object... params) {
         String code = (String) params[0];
         GetUserTokenResponse response = null;
         try {
-            Client client = new Client(reqConfig);
+            Client client = new Client(REQUEST_CONFIG);
             GetUserTokenRequest getUserTokenRequest = new GetUserTokenRequest()
                     .setClientId(this.config.id)
                     .setClientSecret(this.config.secret)
@@ -93,14 +92,14 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
      *
      * @param params 参数
      *               params[0] accessToken
-     * @return
+     * @return 用户信息
      */
     @Override
-    public UserInfo getUserInfo(Object... params) {
+    public UserInfo userInfo(Object... params) {
         String accessToken = (String) params[0];
         //获取accessToken
         try {
-            com.aliyun.dingtalkcontact_1_0.Client client = new com.aliyun.dingtalkcontact_1_0.Client(reqConfig);
+            com.aliyun.dingtalkcontact_1_0.Client client = new com.aliyun.dingtalkcontact_1_0.Client(REQUEST_CONFIG);
             GetUserHeaders getUserHeaders = new GetUserHeaders();
             getUserHeaders.xAcsDingtalkAccessToken = accessToken;
             //获取用户个人信息，如需获取当前授权人的信息，unionId参数必须传me
@@ -125,7 +124,7 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
      * @param state  防止CSRF攻击
      * @param code   临时授权码
      * @param params params[0] locale
-     * @return
+     * @return 认证结果
      */
     @Override
     public AuthenticationResult authentication(String state, String code, Object... params) {
@@ -144,10 +143,10 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
         }
 
         //获取 access_token
-        String accessToken = this.getAccessToken(code);
+        String accessToken = this.accessToken(code);
 
         //获取 userInfo 信息
-        UserInfo userInfo = this.getUserInfo(accessToken);
+        UserInfo userInfo = this.userInfo(accessToken);
 
         //查询数据库中是否存在该用户
         //如果code无效，则Gitee返回的结果中没有 id

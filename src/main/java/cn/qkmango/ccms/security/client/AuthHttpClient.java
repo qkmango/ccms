@@ -32,7 +32,7 @@ public interface AuthHttpClient {
      * @param params 参数
      * @return AccessToken
      */
-    String getAccessToken(Object... params);
+    String accessToken(Object... params);
 
     /**
      * 获取用户信息
@@ -40,12 +40,25 @@ public interface AuthHttpClient {
      * @param params 参数
      * @return 用户信息
      */
-    UserInfo getUserInfo(Object... params);
+    UserInfo userInfo(Object... params);
 
 
+    /**
+     * 认证
+     *
+     * @param state  用于防止CSRF攻击
+     * @param code   用于获取AccessToken
+     * @param params 参数
+     * @return 认证结果
+     */
     AuthenticationResult authentication(String state, String code, Object... params);
 
 
+    /**
+     * 获取配置信息
+     *
+     * @return 配置信息
+     */
     AppConfig getAppConfig();
 
 }

@@ -11,10 +11,9 @@ import cn.qkmango.ccms.security.request.RequestURL;
  */
 public class AppConfig {
 
-
     // 第三方平台的 id 和 secret
-    public String id;
-    public String secret;
+    public String     id;
+    public String     secret;
     public RequestURL authorize;
     public RequestURL accessToken;
     public RequestURL userInfo;

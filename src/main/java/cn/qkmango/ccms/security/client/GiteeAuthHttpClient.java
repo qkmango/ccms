@@ -65,7 +65,7 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
      * @return 用户信息
      */
     @Override
-    public String getAccessToken(Object... params) {
+    public String accessToken(Object... params) {
         String code = (String) params[0];
         PurposeType purpose = (PurposeType) params[1];
 
@@ -118,7 +118,7 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
      * @return 用户信息
      */
     @Override
-    public UserInfo getUserInfo(Object... params) {
+    public UserInfo userInfo(Object... params) {
 
         String accessToken = (String) params[0];
         CloseableHttpClient client = HttpClients.createDefault();
@@ -192,10 +192,10 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
         }
 
         //获取 access_token
-        String accessToken = this.getAccessToken(code, account.getPurpose());
+        String accessToken = this.accessToken(code, account.getPurpose());
 
         //获取 userInfo 信息
-        UserInfo userInfo = this.getUserInfo(accessToken);
+        UserInfo userInfo = this.userInfo(accessToken);
 
         //查询数据库中是否存在该用户
         //如果code无效，则Gitee返回的结果中没有 id

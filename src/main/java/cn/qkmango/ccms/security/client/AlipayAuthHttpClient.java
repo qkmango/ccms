@@ -55,10 +55,10 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
      * @param params 参数
      *               params[0] = code
      *               params[1] = purpose
-     * @return
+     * @return accessToken
      */
     @Override
-    public String getAccessToken(Object... params) {
+    public String accessToken(Object... params) {
         AlipayClient alipayClient = new DefaultAlipayClient(
                 config.gateway,
                 config.id,
@@ -91,7 +91,7 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
      * @return 用户信息
      */
     @Override
-    public UserInfo getUserInfo(Object... params) {
+    public UserInfo userInfo(Object... params) {
 
         String accessToken = (String) params[0];
 
@@ -154,10 +154,10 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
         }
 
         //获取 access_token
-        String accessToken = this.getAccessToken(code, purpose);
+        String accessToken = this.accessToken(code, purpose);
 
         //获取 userInfo 信息
-        UserInfo userInfo = this.getUserInfo(accessToken);
+        UserInfo userInfo = this.userInfo(accessToken);
 
         //查询数据库中是否存在该用户
         //如果code无效，则Gitee返回的结果中没有 id
