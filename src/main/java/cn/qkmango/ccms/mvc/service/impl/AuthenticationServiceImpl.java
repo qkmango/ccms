@@ -123,7 +123,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             message = messageSource.getMessage("response.authentication.state.failure", null, locale);
             return builder
                     .with("success", false)
-                    .with("message", URLEncoder.encode(message))
+                    .with("message", message)
                     .build().url();
         }
 
