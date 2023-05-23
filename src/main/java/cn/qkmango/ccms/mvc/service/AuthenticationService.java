@@ -8,6 +8,7 @@ import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
 
@@ -41,7 +42,7 @@ public interface AuthenticationService {
      * @return 返回重定向页面
      * @throws UpdateException
      */
-    String giteeCallback(String state, String code, String error, String error_description, PurposeType purpose, Locale locale) throws UpdateException;
+    String giteeCallback(String state, String code, String error, String error_description, PurposeType purpose, Locale locale) throws UpdateException, UnsupportedEncodingException;
 
     /**
      * 钉钉回调地址

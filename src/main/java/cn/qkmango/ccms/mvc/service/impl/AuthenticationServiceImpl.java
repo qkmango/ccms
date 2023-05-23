@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -134,7 +135,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!result.success) {
             return builder
                     .with("success", false)
-                    .with("message", URLEncoder.encode(result.message))
+                    .with("message", URLEncoder.encode(result.message, StandardCharsets.UTF_8))
                     .build().url();
         }
 
@@ -151,7 +152,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     message = messageSource.getMessage("response.authentication.success", null, locale);
                     return builder
                             .with("success", true)
-                            .with("message", URLEncoder.encode(message))
+                            .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                             .build().url();
                 }
                 //如果登陆失败
@@ -159,7 +160,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     message = messageSource.getMessage("db.user.gitee.uid.failure@notExist", null, locale);
                     return builder
                             .with("success", false)
-                            .with("message", URLEncoder.encode(message))
+                            .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                             .build().url();
                 }
             }
@@ -176,7 +177,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
                 return builder
                         .with("success", true)
-                        .with("message", URLEncoder.encode(message))
+                        .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                         .build().url();
             }
         }
@@ -211,7 +212,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             message = messageSource.getMessage("response.authentication.state.failure", null, locale);
             return builder
                     .with("success", false)
-                    .with("message", URLEncoder.encode(message))
+                    .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                     .build().url();
         }
 
@@ -222,7 +223,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!result.success) {
             return builder
                     .with("success", false)
-                    .with("message", URLEncoder.encode(result.message))
+                    .with("message", URLEncoder.encode(result.message, StandardCharsets.UTF_8))
                     .build().url();
         }
 
@@ -238,7 +239,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     message = messageSource.getMessage("response.authentication.success", null, locale);
                     return builder
                             .with("success", true)
-                            .with("message", URLEncoder.encode(message))
+                            .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                             .build().url();
                 }
                 //如果登陆成功
@@ -246,7 +247,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     message = messageSource.getMessage("db.user.dingtalk.uid.failure@notExist", null, locale);
                     return builder
                             .with("success", false)
-                            .with("message", URLEncoder.encode(message))
+                            .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                             .build().url();
                 }
             }
@@ -265,7 +266,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
                 return builder
                         .with("success", true)
-                        .with("message", URLEncoder.encode(message))
+                        .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
 
                         .build().url();
             }
@@ -304,7 +305,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             message = messageSource.getMessage("response.authentication.state.failure", null, locale);
             return builder
                     .with("success", false)
-                    .with("message", URLEncoder.encode(message))
+                    .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                     .build().url();
         }
 
@@ -316,7 +317,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!result.success) {
             return builder
                     .with("success", false)
-                    .with("message", URLEncoder.encode(result.message))
+                    .with("message", URLEncoder.encode(result.message, StandardCharsets.UTF_8))
                     .build().url();
         }
 
@@ -332,7 +333,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     message = messageSource.getMessage("response.authentication.success", null, locale);
                     return builder
                             .with("success", true)
-                            .with("message", URLEncoder.encode(message))
+                            .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                             .build().url();
                 }
                 //如果登陆成功
@@ -340,7 +341,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     message = messageSource.getMessage("db.user.alipay.uid.failure@notExist", null, locale);
                     return builder
                             .with("success", false)
-                            .with("message", URLEncoder.encode(message))
+                            .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                             .build().url();
                 }
             }
@@ -359,7 +360,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
                 return builder
                         .with("success", true)
-                        .with("message", URLEncoder.encode(message))
+                        .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                         .build().url();
             }
         }
