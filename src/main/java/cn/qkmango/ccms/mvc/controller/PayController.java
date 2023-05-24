@@ -181,11 +181,11 @@ public class PayController {
      * @throws QueryException  支付失败
      */
     @Permission(PermissionType.user)
-    @PostMapping("/record/one/topay.do")
-    public R topay(String id, HttpSession session, Locale locale) throws UpdateException, QueryException, InsertException {
+    @PostMapping("/record/one/toPayment.do")
+    public R toPayment(String id, HttpSession session, Locale locale) throws UpdateException, QueryException, InsertException {
         Account account = (Account) session.getAttribute("account");
         String user = account.getId();
-        service.topay(id, user, locale);
+        service.toPayment(id, user, locale);
         return R.success(messageSource.getMessage("db.record.topay.success", null, Locale.getDefault()));
     }
 

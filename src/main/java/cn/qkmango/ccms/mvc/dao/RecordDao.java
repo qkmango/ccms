@@ -61,7 +61,7 @@ public interface RecordDao {
      * @param record 缴费记录，包含缴费记录项目ID和缴费时间
      * @return int 影响的记录数
      */
-    int topay(Record record);
+    int toPayment(Record record);
 
     /**
      * 删除缴费记录

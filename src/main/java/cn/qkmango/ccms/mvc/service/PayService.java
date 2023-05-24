@@ -94,7 +94,7 @@ public interface PayService {
      * @param locale 语言环境
      * @throws UpdateException 支付失败
      */
-    void topay(String id, String user, Locale locale) throws UpdateException, QueryException, InsertException;
+    void toPayment(String id, String user, Locale locale) throws UpdateException, QueryException, InsertException;
 
     /**
      * 删除缴费记录

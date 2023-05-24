@@ -48,7 +48,7 @@ public class SecurityConfig {
      *
      * @return 配置
      */
-    @Bean("giteeConfig")
+    @Bean("giteeAuthConfig")
     @ConfigurationProperties(prefix = "ccms.authentication.gitee")
     public AppConfig giteeConfig() {
         return new AppConfig();
@@ -59,7 +59,7 @@ public class SecurityConfig {
      *
      * @return 配置
      */
-    @Bean("dingtalkConfig")
+    @Bean("dingtalkAuthConfig")
     @ConfigurationProperties(prefix = "ccms.authentication.dingtalk")
     public AppConfig dingtalkConfig() {
         return new AppConfig();
@@ -70,7 +70,7 @@ public class SecurityConfig {
      *
      * @return 配置
      */
-    @Bean("alipayConfig")
+    @Bean("alipayAuthConfig")
     @ConfigurationProperties(prefix = "ccms.authentication.alipay")
     public AlipayAppConfig alipayConfig() {
         return new AlipayAppConfig();

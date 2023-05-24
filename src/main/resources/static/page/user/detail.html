@@ -94,6 +94,9 @@
             <button type="button" lay-submit lay-filter="consume" class="layui-btn layui-bg-green">
                 <i class="fa fa-bar-chart"></i> 消费查询
             </button>
+            <button type="button" lay-submit lay-filter="recharge" class="layui-btn layui-bg-green">
+                <i class="fa fa-jpy"></i> 充值
+            </button>
             <button class="layui-btn layui-bg-green" lay-submit lay-filter="searchBtn"
                     id="searchBtn"><i class="fa fa-search"></i> 查询
             </button>
@@ -130,9 +133,10 @@
         form.on('submit(searchBtn)', function (data) {
             console.log(data.field);
             $.ajax({
-                url: '../../card/one/detail.do',
+                // url: '../../card/one/detail.do',
+                url: './detail.test.json',
                 data: {'user': data.field.id},
-                type: 'post',
+                // type: 'post',
                 dataType: 'json',
                 success: function (res) {
                     if (!res.success) {
@@ -253,6 +257,41 @@
             })
         })
 
+        //充值
+        form.on('submit(recharge)', function (data) {
+            console.log(data)
+            if (!loaded) {
+                layer.msg("请先查询", {icon: 2});
+                return false
+            }
+
+            const user = data.field.id;
+
+            layer.prompt({title: '充值', formType: 0}, function(amount, index){
+                //判断是否为金额
+                if (!isAmount(amount)) {
+                    layer.msg('不是金额', {icon: 2});
+                    return false;
+                }
+
+                //判断小数位数是否为1或2位
+                const dl = decimalLength(amount);
+                if (!(dl<=2 && dl>=0)) {
+                    layer.msg(`小数点后最多两位(${dl})`, {icon: 2});
+                    return false;
+                }
+
+                if (!amountInRange(amount,1,1000)) {
+                    layer.msg(`充值金额在 1~1000 元(${amount})`, {icon: 2});
+                    return false;
+                }
+                alipay(user,amountMulti(amount,2));
+                layer.close(index)
+                // subject=xxx&traceNo=xxx&totalAmount=xxx
+                window.location.href=`http://localhost/pay/alipay/pay.do?subject=用户支付宝充值&traceNo=${user}&totalAmount=${amountMulti(amount,2)}`;
+            });
+        })
+
         form.on('submit(consume)', function (data) {
             console.log(data)
             //关闭之前打开的详情页
@@ -349,9 +388,10 @@
      * 充值
      * @param user 学号
      */
-    function recharge(user, balance) {
+    function alipay(user, balance) {
         $.ajax({
-            url: '../../admin/card/update/recharge.do',
+            // url: '../../admin/card/update/recharge.do',
+            url: '../../pay/alipay/pay.do',
             data: {user,balance},
             type: 'post',
             dataType: 'json',

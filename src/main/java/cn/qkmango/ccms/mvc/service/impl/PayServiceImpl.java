@@ -331,7 +331,7 @@ public class PayServiceImpl implements PayService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void topay(String id, String user, Locale locale) throws UpdateException, QueryException, InsertException {
+    public void toPayment(String id, String user, Locale locale) throws UpdateException, QueryException, InsertException {
         //查询缴费记录详情
         Record record = recordDao.baseById(id);
         if (record == null) {
@@ -358,7 +358,7 @@ public class PayServiceImpl implements PayService {
         Record topayRecord = new Record();
         topayRecord.setId(id);
         topayRecord.setCreateTime(new Date());
-        int affectedRows = recordDao.topay(topayRecord);
+        int affectedRows = recordDao.toPayment(topayRecord);
         if (affectedRows != 1) {
             throw new UpdateException(messageSource.getMessage("db.record.topay.failure", null, locale));
         }

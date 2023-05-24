@@ -154,7 +154,7 @@
         where id = #{id}
     </select>
 
-    <update id="topay">
+    <update id="toPayment">
         update t_record
         set state      = 'PAID',
             createTime = #{createTime}

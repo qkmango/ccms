@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.qkmango.ccms.mvc.dao.PayDao">
+
+    <insert id="insert">
+        insert into t_pay (id, user, amount, type, createTime, done, info)
+        values (#{id},#{user},#{amount},#{type},#{createTime},#{done},#{info})
+    </insert>
+
+    <update id="update">
+        UPDATE t_pay
+        SET amount=#{amount},
+        tradeNo=#{tradeNo},
+        done=#{done},
+        detail=#{detail}
+        WHERE id=#{id}
+    </update>
+
+    <delete id="delete">
+        delete from t_pay where id=#{id}
+    </delete>
+</mapper>
