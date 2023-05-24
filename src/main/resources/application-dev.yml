@@ -2,12 +2,26 @@ spring:
   config:
     activate:
       on-profile: dev
+
+  mail:
+    host: smtp.qiye.aliyun.com
+    port: 25
+    username: youEmailAddress
+    password: youEmailPassword
+    default-encoding: UTF-8
+    from: nickname<youEmailAddress>
+    properties:
+      mail:
+        smtp:
+          socketFactoryClass: javax.net.ssl.SSLSocketFactory
+        debug: true
+
 # 以下是自定义配置
 ccms:
   authentication:
     gitee:
-      id: 06c9956bdfd279c5c0a81f187711cc7137f268331f701fcf53382e40e9f69cee
-      secret: adc73ff714c0b29d0af634c2d0f20187d089eb7fdbfc7809a26afa85932010e1
+      id:
+      secret:
       authorize: https://gitee.com/oauth/authorize
       accessToken: https://gitee.com/oauth/token
       userInfo: https://gitee.com/api/v5/user
@@ -15,24 +29,20 @@ ccms:
       redirect: redirect:/page/common/authentication/result.html
 
     dingtalk:
-      id: dingfi9mcuubqqqkgbec
-      secret: 2EF6rPtFpWN3dgMKIqihFGknDCbE6ceGKk2RmBfpP5hTvdcsFZGz9N6uqyvItWd7
+      id:
+      secret:
       authorize: https://login.dingtalk.com/oauth2/auth
       accessToken: https://oapi.dingtalk.com/gettoken
       userInfo: https://oapi.dingtalk.com/sns/getuserinfo_bycode
       callback: http://localhost/auth/dingtalk/callback.do
       redirect: redirect:/page/common/authentication/result.html
 
+    #支付宝开发环境使用沙箱
     alipay:
-      id: 2021000122602075
-      secret:
-      #authorize: https://openauth.alipay.com/oauth2/publicAppAuthorize.htm
+      id:
       authorize: https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm
-      accessToken:
-      userInfo:
       callback: http://localhost/auth/alipay/callback.do
       redirect: redirect:/page/common/authentication/result.html
-      #gateway: https://openapi.alipay.com/gateway.do
       gateway: https://openapi.alipaydev.com/gateway.do
-      appPrivateKey: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCGfGJTl9w3hLjWUNKe81FyxbLfILTQc6/s3iL5jGN9LH/RdD6LG4F9eBKfStkNzViwSrponxp1QqT/QZMk4K/czMQbhb6cloUlAA/+12RRlgJGHvC6K+pwgfA7hR6yEjBTCZjWwzRazXLCbCG5wUO2QAyn1ZOIiSZ4bzdvnMwSd3LxqnqNPj3QUEfPaHLn3CbcgRo1fkGF/JDlbPKDhoYE145L2I7srLSftQkhA3PYypBOG8vnvhM5UJnWzqZfXOWxZKkeZN3J2H0VbNeZ7MMSE023lVhaXQKbKbDcmXzWBPUfVqQ7Xk/pX7xUI2EoRN6nhJhFq84XyHTbJlta/gVNAgMBAAECggEASByICLTEE0zqY5ig5zQm9zjEydnaum9d5M/TxyWc7zCeNOx04NhV3bY1ng5fRoRWSuk2/QRbBoc+u9QolzyXb/ioKu3TIFmheQ6IhShvlUOvYnQStnD3224BJ5kgtXEFUnEx7+5ps0q4f0HF77mOmjnLz265FhwccbWI7yMPVdLILBH03Vx7i8Ryrl2azOEZMaORPEfDUg2FoQk4IuodP9s7W2e0lrjyRPx9qarO/E7y+FNo69G5g+JjavT3ZS/LPorenXAhznixZJNcVzw9FgWc6T4e2U80q2fzQCc8yK5pwyoLPusgvy3HcobV+q4DC6eq2or2KH4cVrEl8woxgQKBgQDTp/h0097q0VbqnL6tnaeMwU/FVLHKwg6cPu1X7RjnV8+GSJz8ccaO09+1lvgsxJNZtNdjvFAUUAm5NohOO/gPUaX2+pR80RZMcu+xPb0bmqRit1/KyMiFNUAJ3s7CqxTshoUln4dLdn5Z8ljY0D66AqcJACtYEPr6JgoeQw/rLQKBgQCiqXC+FOttxgrWXMK/36ZA9lyenC6O+1jhBynUahrVJUXmla5tMy6j3q5iM+G0fZfAUYW6qaEVI/NRJ2wSBuL1WNwcfY8YwHE9oQxZuMublxapVAHyIlTTsOY7G6Rbn9hJ6rH2XbnOpbJA5BKqE55VtAUtwPfgv2LuWZnEnSJWoQKBgQC/f0cFdLhInnTUOlMuw+hXKoPhFxrxRxhu92RIXEVe8ozZgxM+ODac/Ud3hYsu/gAPdtY176hIaI4TnCpBFnL+cTIGvnrgX1CchJUnOKPDuOuoQR8TWwxJsX8qLwPFD4MT6TXIb4i6lxAEk4cdS3SlWUcFlrigqmRZNVeMP8LEVQKBgC302Vma53k4Ps+ZnZxAP+SStlBJqA3VjaLmNzdAUxxtT3Z6S7GmiELcI0Czj81CvqEjZzj5u/0RDymajbn6IB1ZYbba8pb3qAbVfXvL7hqjcU+d4H7cnELC9Ak3IhSQ8LbRjD4i9OAhiF81EODkchOcrOnkXyQsbnMQ9ZTLIGyBAoGAZi7ovAyTeJ53013hO16aDXG1MoDrlaIESezgbAgp2uZ/YPYteAlqedqV/TJ9tU2I7EPWjdZWhF68a0yf4xsNqCyz1cG5JQsZ84S2jRXAR3cnWFzCbb8aKDKLyb+pgO3eX+6qIHBEgkI+CXd46BwlXGBPAmB8w5OtKhY/E658jc0=
-      alipayPublicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlCo19SBLhxFwc/mEn9sRDPO9uozQBLXI06FOkGuU351d3c5XGz1YpKL5DKdvFN9Yph8gFdQ4ksV8NJFz4belGjWsV0k0cwXr0dyrnYkjxAOMaUP8C1pypp+J2cJvxtdPVUx+hXDDTFaAPEhqdg4sCScfzz6ugM2SabKOPT0nZioTpXOxsI4S/WYjYHz0885Vw8kimTx58MNs/88XLDPY9MybvpruOeWu01HbnWnRKD1UfJnSoeSNl2t6XP/fIbADENFZ8PcnYc6Cx7AxFpDss1Xnu+MK18o7WZjfxnt+1nsL4ZpG5ZPW0M6SOFKibpOXRl9dhrgZgykonk8cXWbZvQIDAQAB
+      appPrivateKey:
+      alipayPublicKey:

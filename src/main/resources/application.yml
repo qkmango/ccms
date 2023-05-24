@@ -7,8 +7,6 @@ server:
       force: true
 
 spring:
-#  profiles:
-#    active: prd
   datasource:
     druid:
       initial-size: 1

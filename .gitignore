@@ -34,3 +34,7 @@ out
 
 /src/main/resources/static/lib/layui-v2.6.3/
 /src/main/resources/static/lib/layui-v2.8.3/
+
+# 这两个文件包含第三方平台配置信息，不能上传到仓库
+/src/main/resources/application-prd_provate.yml
+/src/main/resources/application-dev_private.yml
