@@ -24,7 +24,7 @@ ccms:
       redirect: redirect:/page/common/authentication/result.html
 
     alipay:
-      id: 2021000122602075
+      id: 2021003193641972
       secret:
       authorize: https://openauth.alipay.com/oauth2/publicAppAuthorize.htm
 #      authorize: https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm
