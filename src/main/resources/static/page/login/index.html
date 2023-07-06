@@ -6,6 +6,11 @@
     <link rel="icon" href="/favicon.ico" sizes="32x32">
     <script src="../../lib/layui/layui.js" charset="utf-8"></script>
     <link rel="stylesheet" type="text/css" href="../../page/login/style.css"/>
+    <style>
+        body, .tip {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -19,26 +24,26 @@
     <img src="../../images/logo.svg" class="logo_img" alt="logo"/>
 </div>
 
-<h1 class="title">Sign in to System</h1>
+<h1 class="title" i18n="title">Sign in to System</h1>
 
 <div class="main">
     <form class="form">
-        <label for="id">账号 <span class="tip"></span></label>
+        <label for="id"><span i18n="account">账号</span> <span class="tip" i18n="account_tip"></span></label>
         <input type="text" id="id" value="1"/>
 
-        <label for="password">密码<span class="tip"></span></label>
+        <label for="password"><span i18n="password">密码</span><span class="tip" i18n="password_tip"></span></label>
         <input type="password" id="password" value="1"/>
 
-        <label for="permissionType">类型</label>
+        <label for="permissionType" i18n="type">类型</label>
         <select id="permissionType">
-            <option value="user">用户</option>
-            <option value="admin" selected>管理员</option>
-            <option value="pos">刷卡机</option>
+            <option value="user" i18n="user">用户</option>
+            <option value="admin" selected i18n="admin">管理员</option>
+            <option value="pos" i18n="pos">刷卡机</option>
         </select>
 
-        <input type="button" id="login_btn" value="Sign in">
+        <input type="button" id="login_btn" value="Sign in" i18n="login">
     </form>
-    <!-- <div class="label">账号为10位数字<br/>密码为8-16位大小写字母数字特殊字符</div> -->
+     <!--<div class="label">账号为10位数字<br/>密码为8-16位大小写字母数字特殊字符</div>-->
 </div>
 
 <div class="authentication label">
@@ -48,6 +53,47 @@
 </div>
 </body>
 </html>
+<script type="text/javascript" src="../../lib/i18n/internationalization.js"></script>
+<script>
+    const language = {
+        zh_CN: {
+            "title": "登陆系统",
+            "account": "账号",
+            "password": "密码",
+            "type": "类型",
+            "login": "登陆",
+            "user": "用户",
+            "admin": "管理员",
+            "pos": "刷卡机",
+            "account_tip": "账号为10位数字",
+            "password_tip": "密码为8-16位大小写字母数字特殊字符",
+        },
+        en_US: {
+            "title": "Sign in to System",
+            "account": "account",
+            "password": "password",
+            "type": "type",
+            "login": "Sign in",
+            "user": "user",
+            "admin": "admin",
+            "pos": "pos",
+            "account_tip": "account is 10 digits",
+            "password_tip": "password is 8-16 digits, including uppercase and lowercase letters, numbers and special characters",
+        }
+    };
+
+    const i18n = new Internationalization({
+        defaultLang: "en",
+        ignoreEmptyElement: false,
+        increment: true,
+        cookieName: "locale",
+        prop: language,
+        callback: function () {
+            document.querySelector('body').style.display = "block";
+        }
+    })
+    i18n.convert();
+</script>
 <script type="text/javascript" src="../../lib/util/layui_verify_config.js"></script>
 <script type="text/javascript" src="../../lib/util/js.cookie.min.js"></script>
 <script type="text/javascript" src="../../page/login/script.js"></script>

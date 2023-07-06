@@ -22,10 +22,10 @@ layui.use(['jquery', 'layer'], function () {
         const result = layui_verify_config.id(id.value);
         console.log(result);
         if (result === false) {
-            id_error_tip.innerText = '';
+            id_error_tip.style.display = 'none';
             return true;
         }
-        id_error_tip.innerText = result;
+        id_error_tip.style.display = 'block';
         return false;
     }
 
@@ -34,10 +34,10 @@ layui.use(['jquery', 'layer'], function () {
         const result = layui_verify_config.password(password.value);
         console.log(result);
         if (result === false) {
-            pwd_error_tip.innerText = '';
+            pwd_error_tip.style.display = 'none';
             return true;
         }
-        pwd_error_tip.innerText = result;
+        pwd_error_tip.style.display = 'block';
         return false;
     }
 
@@ -113,5 +113,3 @@ function changeLocale(locale) {
     Cookies.set('locale', locale, {expires: 7});
     window.location.reload();
 }
-
-
