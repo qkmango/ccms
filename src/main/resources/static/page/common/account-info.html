@@ -63,7 +63,7 @@
                 if (res.success) {
                     const data = res.data;
 
-                    if (data.account.permissionType === 'user') {
+                    if (data.account.role === 'user') {
                         document.querySelector('#account_info').innerHTML = `
                         <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
                             账号 : ${data.account.id}<br>
@@ -103,7 +103,7 @@
                         return
                     }
 
-                    if (data.account.permissionType === 'admin') {
+                    if (data.account.role === 'admin') {
                         document.querySelector('#account_info').innerHTML = `
                         <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
                             账号 : ${data.account.id}<br>

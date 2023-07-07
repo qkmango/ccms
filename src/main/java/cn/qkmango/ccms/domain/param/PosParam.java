@@ -30,7 +30,7 @@ public class PosParam extends Pos {
                 ", id='" + getId() + '\'' +
                 ", password='" + getPassword() + '\'' +
                 ", name='" + getName() + '\'' +
-                ", permissionType=" + getPermissionType() +
+                ", role=" + getRole() +
                 '}';
     }
 }

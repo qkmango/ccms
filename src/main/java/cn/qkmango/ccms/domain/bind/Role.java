@@ -7,7 +7,7 @@ import java.io.Serializable;
  *
  * @author qkmango
  */
-public enum PermissionType implements Serializable {
+public enum Role implements Serializable {
     /**
      * 用户
      */

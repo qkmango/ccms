@@ -21,7 +21,7 @@
                     <div class="layui-form-item">
 
                         <div class="layui-inline">
-                            <label class="layui-form-label">学号</label>
+                            <label class="layui-form-label">账号</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="user" autocomplete="off" class="layui-input"
                                        lay-verify="id">
@@ -132,7 +132,7 @@
             defaultToolbar: ['filter', 'exports', 'print'],
             cols: [[
                 {field: 'id', title: 'ID', sort: true,fixed:'left', templet: d=>{return d.id}},
-                {field: 'user', title: '学号', templet: d=> {return d.user}},
+                {field: 'user', title: '账号', templet: d=> {return d.user}},
                 {field: 'createTime', title: '时间', templet: d=> {return dateFormat(d.createTime)}},
                 {field: 'price', title: '金额', align: 'right', templet: d=> {
                         return d.type === 'r' ? `<span style="color:#00965e;">${d.price / 100}</span>` : d.price / 100}},

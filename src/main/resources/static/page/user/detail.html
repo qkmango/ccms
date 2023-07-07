@@ -24,7 +24,7 @@
     <div class="layuimini-main">
         <form class="layui-form layui-form-pane" action="" lay-filter="details">
     <div class="layui-form-item">
-        <label class="layui-form-label">学号</label>
+        <label class="layui-form-label">账号</label>
         <div class="layui-input-block">
             <input type="text" name="id" lay-verify="required|id" class="layui-input" readonly value="1932101149"
                    oninput="idOnEdit(event)">
@@ -313,8 +313,8 @@
     });
 
     /**
-     * 学号输入框编辑监听
-     * 修改学号输入框时将其他输入框重置
+     * 账号输入框编辑监听
+     * 修改账号输入框时将其他输入框重置
      * @param e
      */
     function idOnEdit(e) {
@@ -359,7 +359,7 @@
 
     /**
      * 注销
-     * @param user 学号
+     * @param user 账号
      */
     function unsubscribe(user) {
         $.ajax({
@@ -386,7 +386,7 @@
 
     /**
      * 充值
-     * @param user 学号
+     * @param user 账号
      */
     function alipay(user, balance) {
         $.ajax({

@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
             SQLException.class,
             LoginException.class,
             SystemException.class,
-            PermissionException.class,
+            RoleException.class,
             UpdateException.class,
             InsertException.class,
             DeleteException.class,

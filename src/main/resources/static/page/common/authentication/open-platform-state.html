@@ -59,7 +59,7 @@
         $ = layui.jquery;
 
         // 认证，传入认证地址
-        auth = function (platform, purpose, permission) {
+        auth = function (platform, purpose, role) {
 
             switch (purpose) {
                 case 'unbind': {
@@ -74,7 +74,7 @@
                     break;
 
                 case 'bind': {
-                    $.get(`../../../auth/${platform}/authorize.do?purpose=${purpose}&permission=${permission}`, (res, status) => {
+                    $.get(`../../../auth/${platform}/authorize.do?purpose=${purpose}&role=${role}`, (res, status) => {
                         if (res.success) {
                             window.open(res.data);
                             return;
@@ -104,7 +104,7 @@
                                     <span>${item.state ? '使用中' : '未绑定'}</span></td>
                                 <td>
                                     <a class="layui-btn layui-btn-primary layui-btn-xs layui-border-green"
-                                       onClick="auth('${item.type}','${item.state ? 'unbind' : 'bind'}','${account.permissionType}')">${item.state ? '解除绑定' : '绑定账号'}</a>
+                                       onClick="auth('${item.type}','${item.state ? 'unbind' : 'bind'}','${account.role}')">${item.state ? '解除绑定' : '绑定账号'}</a>
                                 </td>
                             </tr>`
                     })

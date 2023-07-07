@@ -7,7 +7,7 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Delete;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Query;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Notice;
 import cn.qkmango.ccms.domain.pagination.Pagination;
@@ -47,7 +47,7 @@ public class NoticeController {
      * @param locale 语言环境
      * @return 插入结果
      */
-    @Permission(PermissionType.admin)
+    @Permission(Role.admin)
     @PostMapping("one/insert.do")
     public R<Object> insert(@Validated(Insert.class) Notice notice, HttpSession session, Locale locale) throws InsertException {
         Account account = (Account) session.getAttribute("account");
@@ -64,7 +64,7 @@ public class NoticeController {
      * @param notice 公告
      * @param locale 语言环境
      */
-    @Permission(PermissionType.admin)
+    @Permission(Role.admin)
     @PostMapping("one/delete.do")
     public R<Object> delete(@Validated(Delete.class) Notice notice, Locale locale) throws DeleteException {
         service.delete(notice, locale);
@@ -78,7 +78,7 @@ public class NoticeController {
      * @param pagination 分页查询条件
      * @return 分页列表
      */
-    @Permission({PermissionType.user, PermissionType.admin})
+    @Permission({Role.user, Role.admin})
     @PostMapping("pagination/list.do")
     public R<List<Notice>> list(@RequestBody Pagination<Notice> pagination) {
         return service.list(pagination);

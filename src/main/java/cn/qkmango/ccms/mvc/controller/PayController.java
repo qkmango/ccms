@@ -9,7 +9,7 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.common.validate.group.Update;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.dto.PaymentDto;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Payment;
@@ -40,7 +40,7 @@ import java.util.Locale;
  */
 @RestController
 @RequestMapping("pay")
-@Permission(PermissionType.admin)
+@Permission(Role.admin)
 public class PayController {
 
     @Resource
@@ -124,15 +124,15 @@ public class PayController {
      * @param pagination 分页查询条件
      * @return 分页查询结果
      */
-    @Permission({PermissionType.admin, PermissionType.user})
+    @Permission({Role.admin, Role.user})
     @PostMapping("/record/pagination/list.do")
     public R<List<RecordVO>> listRecord(@RequestBody @Validated(Query.class)
                                         Pagination<PaymentAndRecordParam> pagination,
                                         HttpSession session) {
         // 如果是普通用户，只能查询自己的缴费记录
         Account account = (Account) session.getAttribute("account");
-        PermissionType type = account.getPermissionType();
-        if (type == PermissionType.user) {
+        Role type = account.getRole();
+        if (type == Role.user) {
             PaymentAndRecordParam param = pagination.getParam();
             if (param == null) {
                 param = new PaymentAndRecordParam();
@@ -180,7 +180,7 @@ public class PayController {
      * @throws InsertException 支付失败
      * @throws QueryException  支付失败
      */
-    @Permission(PermissionType.user)
+    @Permission(Role.user)
     @PostMapping("/record/one/toPayment.do")
     public R toPayment(String id, HttpSession session, Locale locale) throws UpdateException, QueryException, InsertException {
         Account account = (Account) session.getAttribute("account");

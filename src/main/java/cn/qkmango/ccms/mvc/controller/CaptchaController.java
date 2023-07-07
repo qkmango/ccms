@@ -2,7 +2,7 @@ package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.mvc.service.CaptchaService;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Email;
@@ -39,7 +39,7 @@ public class CaptchaController {
      * @param email 邮箱
      * @return 发送验证码结果
      */
-    @Permission({PermissionType.admin, PermissionType.user})
+    @Permission({Role.admin, Role.user})
     @GetMapping("send/change/email.do")
     public R sendChangeEmail(@NotBlank(message = "{valid.email.notBlank}")
                              @Email(message = "{valid.email.illegal}") String email,

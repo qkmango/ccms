@@ -5,7 +5,7 @@ import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Delete;
 import cn.qkmango.ccms.common.validate.group.Insert;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Message;
 import cn.qkmango.ccms.domain.pagination.Pagination;
@@ -69,7 +69,7 @@ public class MessageController {
     public R delete(@Validated(Delete.class) Message message, HttpSession session, Locale locale) throws DeleteException {
 
         Account account = (Account) session.getAttribute("account");
-        if (account.getPermissionType() == PermissionType.user) {
+        if (account.getRole() == Role.user) {
             message.setAuthor(account.getId());
         }
 

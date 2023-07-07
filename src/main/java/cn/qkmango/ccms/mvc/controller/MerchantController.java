@@ -7,7 +7,7 @@ import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Update;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Area;
 import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.entity.Store;
@@ -35,7 +35,7 @@ import java.util.Locale;
  * @version 1.0
  * @date 2023-01-13 16:11
  */
-@Permission(PermissionType.admin)
+@Permission(Role.admin)
 @RestController
 @RequestMapping("merchant")
 public class MerchantController {
@@ -250,7 +250,7 @@ public class MerchantController {
      * @param id 刷卡机id
      * @return 刷卡机详细信息
      */
-    @Permission({PermissionType.admin, PermissionType.pos})
+    @Permission({Role.admin, Role.pos})
     @GetMapping("pos/one/detail.do")
     public R<PosVO> detailPos(@RequestParam String id) {
         PosVO detail = posService.detail(id);

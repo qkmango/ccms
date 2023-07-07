@@ -21,7 +21,7 @@
                         <div class="layui-form-item">
 
                             <div class="layui-inline">
-                                <label class="layui-form-label">学号</label>
+                                <label class="layui-form-label">账号</label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="id" autocomplete="off" class="layui-input">
                                 </div>
@@ -90,7 +90,7 @@
                 toolbar: '#toolbarDemo',
                 defaultToolbar: ['filter', 'exports', 'print'],
                 cols: [[
-                    { field: 'id', width: 120, title: '学号', sort: true,fixed:'left', templet: d=> { return d.user.id } },
+                    { field: 'id', width: 120, title: '账号', sort: true,fixed:'left', templet: d=> { return d.user.id } },
                     { field: 'name', width: 100, title: '姓名', templet: d=> { return d.user.name } },
                     { field: 'idCard', width: 200, title: '身份证', templet: d=> { return d.user.idCard } },
                     { field: 'faculty', title: '学院', templet: d=> { return d.user.faculty } },

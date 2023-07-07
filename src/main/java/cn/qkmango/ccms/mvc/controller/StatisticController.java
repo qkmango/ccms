@@ -2,7 +2,7 @@ package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.ConsumeStatistic;
 import cn.qkmango.ccms.domain.param.DatetimeRange;
 import cn.qkmango.ccms.mvc.service.StatisticService;
@@ -38,7 +38,7 @@ public class StatisticController {
      *              如果不传入时间，则默认统计最近一周的数据
      * @return 最近一周消费金额和消费次数
      */
-    @Permission(PermissionType.admin)
+    @Permission(Role.admin)
     @GetMapping("consume/statistic-price-by-day-and-type.do")
     public R<List> consumeStatistic(@RequestParam("range") DatetimeRange range) {
         List<ConsumeStatistic> date = service.consumeStatistic(range);

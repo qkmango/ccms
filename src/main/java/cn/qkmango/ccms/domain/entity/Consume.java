@@ -24,7 +24,7 @@ public class Consume implements Serializable {
     private Integer id;
 
     /**
-     * 学号
+     * 账号
      */
     @NotEmpty(groups = {Insert.class})
     @Pattern(regexp = "^\\d{10}$", groups = {Insert.class})

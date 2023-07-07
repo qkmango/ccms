@@ -22,8 +22,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Value("${ccms.response.NO_LOGIN_JSON}")
     private String NO_LOGIN_JSON;
 
-    @Value("${ccms.response.OPERATION_WITHOUT_PERMISSION_JSON}")
-    private String OPERATION_WITHOUT_PERMISSION_JSON;
+    @Value("${ccms.response.OPERATION_WITHOUT_ROLE_JSON}")
+    private String OPERATION_WITHOUT_ROLE_JSON;
 
     public void addInterceptors(InterceptorRegistry registry) {
 
@@ -45,7 +45,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/test/**/*.do");
 
 
-        PermissionsInterceptor permissionsInterceptor = new PermissionsInterceptor(LOGIN_URL,OPERATION_WITHOUT_PERMISSION_JSON);
+        PermissionsInterceptor permissionsInterceptor = new PermissionsInterceptor(LOGIN_URL, OPERATION_WITHOUT_ROLE_JSON);
         registry.addInterceptor(permissionsInterceptor)
                 .addPathPatterns("/**/*.do")
                 .excludePathPatterns("/account/login.do")

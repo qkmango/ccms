@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.mvc.dao;
 
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.vo.AccountInfoVO;
@@ -34,14 +34,14 @@ public interface AccountDao {
      * @param id 账户id
      * @return 账户密码
      */
-    String getAccountPassword(String id, PermissionType type);
+    String getAccountPassword(String id, Role type);
 
     /**
      * 修改密码
      *
      * @return 数据库影响的行数
      */
-    int updatePassword(String id, String password, PermissionType type);
+    int updatePassword(String id, String password, Role type);
 
     /**
      * 刷卡机登陆

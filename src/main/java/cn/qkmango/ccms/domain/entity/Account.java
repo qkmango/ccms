@@ -3,7 +3,7 @@ package cn.qkmango.ccms.domain.entity;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Query.Login;
 import cn.qkmango.ccms.common.validate.group.Update;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.mvc.service.CardService;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -31,18 +31,18 @@ public class Account implements Serializable {
     private String name;
 
     @NotNull(groups = Login.class)
-    private PermissionType permissionType;
+    private Role role;
 
     private String email;
 
     public Account() {
     }
 
-    public Account(String id, @NotNull(groups = Login.class) String password, String name, @NotNull(groups = Login.class) PermissionType permissionType, String email) {
+    public Account(String id, @NotNull(groups = Login.class) String password, String name, @NotNull(groups = Login.class) Role role, String email) {
         this.id = id;
         this.password = password;
         this.name = name;
-        this.permissionType = permissionType;
+        this.role = role;
         this.email = email;
     }
 
@@ -70,12 +70,12 @@ public class Account implements Serializable {
         this.name = name;
     }
 
-    public PermissionType getPermissionType() {
-        return permissionType;
+    public Role getRole() {
+        return role;
     }
 
-    public void setPermissionType(PermissionType permissionType) {
-        this.permissionType = permissionType;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getEmail() {
@@ -93,7 +93,7 @@ public class Account implements Serializable {
                 "id='" + id + '\'' +
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
-                ", permissionType=" + permissionType +
+                ", role=" + role +
                 ", email='" + email + '\'' +
                 '}';
     }

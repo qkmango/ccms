@@ -179,7 +179,7 @@
 					}
                     sessionStorage.account = JSON.stringify(res.data)
                     document.querySelector('#name').innerText = res.data.name;
-					let iniUrl = `api/init_${res.data.permissionType}.json`;
+					let iniUrl = `api/init_${res.data.role}.json`;
 
 					miniAdmin.render({
 						iniUrl: iniUrl,    // 初始化接口

@@ -99,7 +99,7 @@ public class User extends Account {
                 ", id='" + getId() + '\'' +
                 ", password='" + getPassword() + '\'' +
                 ", name='" + getName() + '\'' +
-                ", permissionType=" + getPermissionType() +
+                ", role=" + getRole() +
                 ", email='" + getEmail() + '\'' +
                 '}';
     }

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>登陆</title>
     <link rel="icon" href="/favicon.ico" sizes="32x32">
-    <script src="../../lib/layui/layui.js" charset="utf-8"></script>
     <link rel="stylesheet" type="text/css" href="../../page/login/style.css"/>
+    <link rel="stylesheet" href="../../lib/layui/css/layui.css" media="all">
     <style>
         body, .tip {
             display: none;
@@ -34,8 +34,8 @@
         <label for="password"><span i18n="password">密码</span><span class="tip" i18n="password_tip"></span></label>
         <input type="password" id="password" value="1"/>
 
-        <label for="permissionType" i18n="type">类型</label>
-        <select id="permissionType">
+        <label for="role" i18n="role">类型</label>
+        <select id="role">
             <option value="user" i18n="user">用户</option>
             <option value="admin" selected i18n="admin">管理员</option>
             <option value="pos" i18n="pos">刷卡机</option>
@@ -47,12 +47,13 @@
 </div>
 
 <div class="authentication label">
-    <div onclick="auth('gitee','login',document.querySelector('#permissionType').value)"><img src="../../images/icon/gitee.svg"/></div>
-    <div onclick="auth('dingtalk','login',document.querySelector('#permissionType').value)"><img src="../../images/icon/dingtalk.svg"/></div>
-    <div onclick="auth('alipay','login',document.querySelector('#permissionType').value)"><img src="../../images/icon/alipay.svg"/></div>
+    <div onclick="auth('gitee','login',document.querySelector('#role').value)"><img src="../../images/icon/gitee.svg"/></div>
+    <div onclick="auth('dingtalk','login',document.querySelector('#role').value)"><img src="../../images/icon/dingtalk.svg"/></div>
+    <div onclick="auth('alipay','login',document.querySelector('#role').value)"><img src="../../images/icon/alipay.svg"/></div>
 </div>
 </body>
 </html>
+<script src="../../lib/layui/layui.js" charset="utf-8"></script>
 <script type="text/javascript" src="../../lib/i18n/internationalization.js"></script>
 <script>
     const language = {
@@ -60,7 +61,7 @@
             "title": "登陆系统",
             "account": "账号",
             "password": "密码",
-            "type": "类型",
+            "role": "角色",
             "login": "登陆",
             "user": "用户",
             "admin": "管理员",
@@ -72,7 +73,7 @@
             "title": "Sign in to System",
             "account": "account",
             "password": "password",
-            "type": "type",
+            "role": "role",
             "login": "Sign in",
             "user": "user",
             "admin": "admin",
@@ -83,7 +84,7 @@
     };
 
     const i18n = new Internationalization({
-        defaultLang: "en",
+        defaultLang: "zh_CN",
         ignoreEmptyElement: false,
         increment: true,
         cookieName: "locale",

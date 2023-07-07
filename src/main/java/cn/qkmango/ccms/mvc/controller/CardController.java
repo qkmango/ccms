@@ -7,7 +7,7 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.common.validate.group.Update;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.User;
@@ -53,7 +53,7 @@ public class CardController {
      * @return 开卡结果
      * @throws InsertException 开卡失败
      */
-    @Permission(PermissionType.admin)
+    @Permission(Role.admin)
     @PostMapping("one/insert.do")
     public R<Card> insert(@Validated({Insert.class, CardService.class}) User user, Locale locale) throws InsertException {
         Card addCard = service.insert(user, locale);
@@ -66,7 +66,7 @@ public class CardController {
      * @param pagination 分页查询条件
      * @return 卡信息列表
      */
-    @Permission(PermissionType.admin)
+    @Permission(Role.admin)
     @PostMapping("pagination/list.do")
     public R<List<UserAndCardVO>> list(@RequestBody Pagination<CardInfoParam> pagination) {
         return service.list(pagination);
@@ -100,7 +100,7 @@ public class CardController {
 
         //如果是学生，仅可以查询自己的卡信息
         Account account = (Account) session.getAttribute("account");
-        if (account.getPermissionType() == PermissionType.user) {
+        if (account.getRole() == Role.user) {
             card.setUser(account.getId());
         }
 
@@ -118,7 +118,7 @@ public class CardController {
      * @param card 传入卡号和充值金额
      * @return 充值结果
      */
-    @Permission(PermissionType.admin)
+    @Permission(Role.admin)
     @PostMapping(value = "update/recharge.do")
     public R recharge(@Validated(Card.UpdateRecharge.class) Card card, Locale locale) throws UpdateException {
         service.recharge(card, locale);

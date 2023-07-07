@@ -24,7 +24,7 @@ public interface AuthenticationDao {
      * 根据授权信息查询账户信息
      *
      * @param authentication 授权信息
-     *                       <li>用户权限 permission
+     *                       <li>用户角色 role
      *                       <li>认证类型 Type
      *                       <li>认证用途 purpose
      *                       <li>三方平台返回的用户唯一标识 uid

@@ -118,7 +118,7 @@
             defaultToolbar: ['filter', 'exports', 'print'],
             cols: [[
                 {field: 'id', title: 'ID', sort: true, templet: d=> {return d.id}},
-                {field: 'user', title: '学号',hide:true, templet: d=> {return d.user}},
+                {field: 'user', title: '账号',hide:true, templet: d=> {return d.user}},
                 {field: 'createTime', title: '时间', templet: d=> {return timestampToTime(d.createTime)}},
                 {field: 'price', title: '金额', align: 'right', templet: d=> {
                     return d.type === 'RECHARGE' ?

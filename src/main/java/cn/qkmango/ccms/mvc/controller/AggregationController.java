@@ -3,7 +3,7 @@ package cn.qkmango.ccms.mvc.controller;
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.UserSession;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.mvc.service.AggregationService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +33,7 @@ public class AggregationController {
      *
      * @return 用户首页所需的数据
      */
-    @Permission(PermissionType.user)
+    @Permission(Role.user)
     @GetMapping("user/welcome.do")
     public R<Map<String, Object>> userWelcome() {
         String id = UserSession.getAccountId();

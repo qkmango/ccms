@@ -4,10 +4,10 @@ import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.common.validate.group.Query;
-import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
@@ -97,7 +97,7 @@ public class AccountController {
     public R<Object> updatePassword(@Validated UpdatePasswordParam param, HttpSession session, Locale locale) throws UpdateException {
 
         Account account = (Account) session.getAttribute("account");
-        param.setPermissionType(account.getPermissionType());
+        param.setRole(account.getRole());
         param.setId(account.getId());
 
         service.updatePassword(param, locale);
@@ -115,7 +115,7 @@ public class AccountController {
      * @return 响应结果
      * @throws UpdateException 更新异常
      */
-    @Permission(PermissionType.admin)
+    @Permission(Role.admin)
     @PostMapping(value = "update/resetPassword.do")
     public R<Object> resetPassword(@Validated(Query.class) Card card, Locale locale) throws UpdateException {
         userService.resetPassword(card, locale);
@@ -131,7 +131,7 @@ public class AccountController {
      * @return 响应结果
      * @throws UpdateException 更新异常
      */
-    @Permission({PermissionType.admin, PermissionType.user})
+    @Permission({Role.admin, Role.user})
     @PostMapping(value = "update/unsubscribe.do")
     public R<Object> unsubscribe(@Validated(Query.class) Card card, Locale locale) throws UpdateException {
         userService.unsubscribe(card, locale);
@@ -143,7 +143,7 @@ public class AccountController {
      *
      * @return 用户信息
      */
-    @Permission({PermissionType.admin, PermissionType.user})
+    @Permission({Role.admin, Role.user})
     @GetMapping("one/info.do")
     public R userInfo() {
         Account account = UserSession.getAccount();
@@ -159,7 +159,7 @@ public class AccountController {
      * @return 修改结果
      * @throws UpdateException 修改失败
      */
-    @Permission({PermissionType.admin, PermissionType.user})
+    @Permission({Role.admin, Role.user})
     @PostMapping("user/update/email.do")
     public R updateEmail(@NotBlank(message = "{valid.email.notBlank}")
                          @Email(message = "{valid.email.illegal}") String email,

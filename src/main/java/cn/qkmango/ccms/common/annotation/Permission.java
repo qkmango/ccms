@@ -1,7 +1,7 @@
 package cn.qkmango.ccms.common.annotation;
 
 
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,9 +19,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Permission {
 
-    PermissionType[] value() default {
-            PermissionType.user,
-            PermissionType.admin,
-            PermissionType.pos
+    Role[] value() default {
+            Role.user,
+            Role.admin,
+            Role.pos
     };
 }

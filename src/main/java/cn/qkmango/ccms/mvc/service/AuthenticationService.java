@@ -33,7 +33,7 @@ public interface AuthenticationService {
      * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
      *
      * @param state             授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
-     *                          在redis中有效期为5分钟, 拼接为 authentication:PermissionType:UUID
+     *                          在redis中有效期为5分钟, 拼接为 authentication:Role:UUID
      * @param code              授权码
      * @param error             有错误时返回
      * @param error_description 错误描述

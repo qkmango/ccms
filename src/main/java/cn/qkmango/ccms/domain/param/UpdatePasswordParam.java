@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.domain.param;
 
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 
 import jakarta.validation.constraints.NotEmpty;
 
@@ -19,13 +19,13 @@ public class UpdatePasswordParam {
     @NotEmpty
     private String newPassword;
 
-    private PermissionType permissionType;
+    private Role role;
 
-    public UpdatePasswordParam(String oldPassword, String newPassword, String id, PermissionType permissionType) {
+    public UpdatePasswordParam(String oldPassword, String newPassword, String id, Role role) {
         this.oldPassword = oldPassword;
         this.newPassword = newPassword;
         this.id = id;
-        this.permissionType = permissionType;
+        this.role = role;
     }
 
     public UpdatePasswordParam() {
@@ -55,12 +55,12 @@ public class UpdatePasswordParam {
         this.id = id;
     }
 
-    public PermissionType getPermissionType() {
-        return permissionType;
+    public Role getRole() {
+        return role;
     }
 
-    public void setPermissionType(PermissionType permissionType) {
-        this.permissionType = permissionType;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class UpdatePasswordParam {
                 "oldPassword='" + oldPassword + '\'' +
                 ", newPassword='" + newPassword + '\'' +
                 ", id=" + id +
-                ", permissionType=" + permissionType +
+                ", role=" + role +
                 '}';
     }
 }

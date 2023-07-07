@@ -10,7 +10,7 @@ layui.use(['jquery', 'layer'], function () {
     const id = document.querySelector('#id');
     const password = document.querySelector('#password');
     const button = document.querySelector('#login_btn');
-    let permissionType = document.querySelector('#permissionType');
+    let role = document.querySelector('#role');
     const id_error_tip = document.querySelectorAll('.tip')[0];
     const pwd_error_tip = document.querySelectorAll('.tip')[1];
 
@@ -74,7 +74,7 @@ layui.use(['jquery', 'layer'], function () {
             data: {
                 id: id.value.trim(),
                 password: password.value.trim(),
-                permissionType: permissionType.value.trim()
+                role: role.value.trim()
             },
             type: "post",
             dataType: "json",
@@ -94,8 +94,8 @@ layui.use(['jquery', 'layer'], function () {
 
 
     // 认证，传入认证地址
-    auth = function (platform, purpose, permission) {
-        $.get(`../../auth/${platform}/authorize.do?purpose=${purpose}&permission=${permission}`, (res, status) => {
+    auth = function (platform, purpose, role) {
+        $.get(`../../auth/${platform}/authorize.do?purpose=${purpose}&role=${role}`, (res, status) => {
             if (res.success) {
                 window.location.href = res.data;
                 return;

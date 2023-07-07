@@ -7,7 +7,7 @@ import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import jakarta.annotation.Resource;
@@ -38,24 +38,24 @@ public class AuthenticationController {
     /**
      * Gitee / 钉钉 / 支付宝 授权登陆地址（认证地址）
      *
-     * @param permission 权限类型
+     * @param role 权限类型
      * @param purpose    授权目的
      * @param platform   平台类型
      * @return 返回授权地址
      */
     @ResponseBody
     @RequestMapping("{platform}/authorize.do")
-    @Permission({PermissionType.admin, PermissionType.user})
-    public R authorize(@NotNull PermissionType permission,
+    @Permission({Role.admin, Role.user})
+    public R authorize(@NotNull Role role,
                        @NotNull PurposeType purpose,
                        @PathVariable PlatformType platform) {
 
         //如果是绑定第三方平台，则说明已经登陆过了，则不信任前端传的权限，从session中获取
         if (purpose == PurposeType.bind) {
-            permission = UserSession.getAccount().getPermissionType();
+            role = UserSession.getAccount().getRole();
         }
 
-        AuthenticationAccount authAccount = new AuthenticationAccount(permission, platform, purpose);
+        AuthenticationAccount authAccount = new AuthenticationAccount(role, platform, purpose);
         String url = service.authorize(authAccount);
         return R.success().setData(url);
     }
@@ -69,7 +69,7 @@ public class AuthenticationController {
      *
      * @param purpose          授权目的
      * @param state            授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
-     *                         在redis中有效期为5分钟, 拼接为 authentication:PermissionType:UUID
+     *                         在redis中有效期为5分钟, 拼接为 authentication:Role:UUID
      * @param code             授权码
      * @param error            有错误时返回
      * @param errorDescription 错误描述

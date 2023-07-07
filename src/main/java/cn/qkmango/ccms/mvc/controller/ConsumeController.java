@@ -5,7 +5,7 @@ import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.QueryException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Insert;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Consume;
 import cn.qkmango.ccms.domain.entity.Pos;
@@ -48,7 +48,7 @@ public class ConsumeController {
      * @param locale 语言环境
      * @return 添加结果
      */
-    @Permission(PermissionType.pos)
+    @Permission(Role.pos)
     @PostMapping("pos/one/insert.do")
     public R<Object> insert(@Validated(Insert.class) Consume consume, HttpSession session, Locale locale) throws InsertException, QueryException {
         //设置刷卡机ID
@@ -68,12 +68,12 @@ public class ConsumeController {
      * @param pagination 分页查询条件
      * @return 消费记录
      */
-    @Permission({PermissionType.admin, PermissionType.pos, PermissionType.user})
+    @Permission({Role.admin, Role.pos, Role.user})
     @PostMapping("pagination/list.do")
     public R<List<Consume>> list(@RequestBody Pagination<ConsumeParam> pagination, HttpSession session) {
         Account account = (Account) session.getAttribute("account");
         //如果是学生，则只能查询自己的消费信息
-        if (account.getPermissionType() == PermissionType.user) {
+        if (account.getRole() == Role.user) {
             ConsumeParam param = pagination.getParam();
             if (param == null) {
                 param = new ConsumeParam();
@@ -93,12 +93,12 @@ public class ConsumeController {
      * @param session 会话
      * @return 消费记录详情
      */
-    @Permission({PermissionType.admin, PermissionType.pos, PermissionType.user})
+    @Permission({Role.admin, Role.pos, Role.user})
     @GetMapping("one/detail.do")
     public R<ConsumeDetailsVO> detail(@Validated Consume consume, HttpSession session) {
         Account account = (Account) session.getAttribute("account");
         //如果是学生，则只能查询自己的消费信息
-        if (account.getPermissionType() == PermissionType.user) {
+        if (account.getRole() == Role.user) {
             consume.setUser(account.getId());
         }
         ConsumeDetailsVO vo = service.detail(consume);

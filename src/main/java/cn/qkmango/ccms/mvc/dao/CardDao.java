@@ -42,9 +42,9 @@ public interface CardDao {
     int insert(Card card);
 
     /**
-     * 根据学号查询校园卡信息
+     * 根据账号查询校园卡信息
      *
-     * @param user 学号
+     * @param user 账号
      * @return 校园卡信息
      */
     Card getCardByUserId(String user);
@@ -76,7 +76,7 @@ public interface CardDao {
     /**
      * 充值
      *
-     * @param card 校园卡（学号，充值金额）
+     * @param card 校园卡（账号，充值金额）
      * @return
      */
     int recharge(Card card);

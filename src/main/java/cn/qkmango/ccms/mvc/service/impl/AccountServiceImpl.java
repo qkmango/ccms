@@ -2,10 +2,10 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.common.validate.group.Query;
-import cn.qkmango.ccms.domain.bind.PermissionType;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
 import cn.qkmango.ccms.domain.vo.AccountInfoVO;
@@ -58,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
         Account loginAccount = null;
 
         //判断用户类型
-        switch (account.getPermissionType()) {
+        switch (account.getRole()) {
             case pos -> loginAccount = dao.loginPos(account);
             case user -> loginAccount = dao.loginUser(account);
             case admin -> loginAccount = dao.loginAdmin(account);
@@ -80,7 +80,7 @@ public class AccountServiceImpl implements AccountService {
         loginAccount.setPassword(null);
 
         //将登陆用户信息存入session
-        loginAccount.setPermissionType(account.getPermissionType());
+        loginAccount.setRole(account.getRole());
         return loginAccount;
     }
 
@@ -98,7 +98,7 @@ public class AccountServiceImpl implements AccountService {
 
         String id = param.getId();
         String oldRawPassword = param.getOldPassword();
-        PermissionType type = param.getPermissionType();
+        Role type = param.getRole();
         String newRawPassword = param.getNewPassword();
 
         //判断输入的旧密码和数据库的旧密码是否一致
@@ -125,9 +125,9 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public AccountInfoVO accountInfo(Account account) {
-        if (account.getPermissionType() == PermissionType.admin) {
+        if (account.getRole() == Role.admin) {
             return dao.adminAccountInfo(account.getId());
-        } else if (account.getPermissionType() == PermissionType.user) {
+        } else if (account.getRole() == Role.user) {
             return dao.userAccountInfo(account.getId());
         }
         return null;
@@ -146,7 +146,7 @@ public class AccountServiceImpl implements AccountService {
     public void updateEmail(Account account, String email, String captcha, Locale locale) throws UpdateException {
         // 生成redis key
         String key = String.format("captcha:change:email:%s:%s:%s",
-                account.getPermissionType(),
+                account.getRole(),
                 account.getId(), email);
 
         // 获取redis中的验证码

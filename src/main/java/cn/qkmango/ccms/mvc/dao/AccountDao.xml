@@ -6,13 +6,13 @@
     <select id="getAccountPassword" resultType="java.lang.String">
         select password
         from
-        <if test="type == @cn.qkmango.ccms.domain.bind.PermissionType@user">
+        <if test="type == @cn.qkmango.ccms.domain.bind.Role@user">
             t_user
         </if>
-        <if test="type == @cn.qkmango.ccms.domain.bind.PermissionType@admin">
+        <if test="type == @cn.qkmango.ccms.domain.bind.Role@admin">
             t_admin
         </if>
-        <if test="type == @cn.qkmango.ccms.domain.bind.PermissionType@pos">
+        <if test="type == @cn.qkmango.ccms.domain.bind.Role@pos">
             t_pos
         </if>
         where id = #{id}
@@ -21,13 +21,13 @@
 
     <update id="updatePassword">
         update
-        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">
+        <if test="role == @cn.qkmango.ccms.domain.bind.Role@user">
             t_user
         </if>
-        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">
+        <if test="role == @cn.qkmango.ccms.domain.bind.Role@admin">
             t_admin
         </if>
-        <if test="permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@pos">
+        <if test="role == @cn.qkmango.ccms.domain.bind.Role@pos">
             t_pos
         </if>
         set password = #{newPassword}
@@ -57,7 +57,7 @@
         select u.id as account_id,
         u.name as account_name,
         u.email as account_email,
-        'user' as account_type,
+        'user' as account_role,
 
         u.idCard as user_idcard,
         u.unsubscribe as user_unsubscribe,
@@ -87,10 +87,10 @@
 
     <update id="updateEmail">
         update
-        <if test="account.permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@user">
+        <if test="account.role == @cn.qkmango.ccms.domain.bind.Role@user">
             t_user
         </if>
-        <if test="account.permissionType == @cn.qkmango.ccms.domain.bind.PermissionType@admin">
+        <if test="account.role == @cn.qkmango.ccms.domain.bind.Role@admin">
             t_admin
         </if>
         set email = #{email}
@@ -109,7 +109,7 @@
             <id property="id" column="account_id"/>
             <result property="name" column="account_name"/>
             <result property="email" column="account_email"/>
-            <result property="permissionType" column="account_type"/>
+            <result property="role" column="account_role"/>
         </association>
         <association property="user">
             <result property="idCard" column="user_idcard"/>
@@ -135,7 +135,7 @@
             <id property="id" column="id"/>
             <result property="name" column="name"/>
             <result property="email" column="email"/>
-            <result property="permissionType" column="type"/>
+            <result property="role" column="type"/>
         </association>
     </resultMap>
 

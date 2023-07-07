@@ -4,7 +4,7 @@ import cn.qkmango.ccms.common.util.CaptchaUtil;
 import cn.qkmango.ccms.common.util.EmailUtil;
 import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.common.util.UserSession;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.mvc.service.CaptchaService;
 import jakarta.annotation.Resource;
@@ -50,7 +50,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
         //获取用户id和用户类型
         String id = account.getId();
-        PermissionType type = account.getPermissionType();
+        Role type = account.getRole();
 
         //生成验证码
         String captcha = CaptchaUtil.generate();

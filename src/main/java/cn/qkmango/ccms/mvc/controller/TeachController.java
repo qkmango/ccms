@@ -7,7 +7,7 @@ import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Update;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Clazz;
 import cn.qkmango.ccms.domain.entity.Faculty;
 import cn.qkmango.ccms.domain.entity.Specialty;
@@ -32,7 +32,7 @@ import java.util.Locale;
  * @date 2023-01-11 11:06
  */
 @RestController
-@Permission(PermissionType.admin)
+@Permission(Role.admin)
 @RequestMapping("teach")
 public class TeachController {
 

@@ -31,7 +31,7 @@ const layui_verify_config = {
         return '日期时间取值范围为2000-01-01 00:00:00 - 2099-12-31 23:59:59';
     },
 
-    //学号
+    //账号
     id: function (value, item) {
         if (value === '' || value === null) {
             return false;

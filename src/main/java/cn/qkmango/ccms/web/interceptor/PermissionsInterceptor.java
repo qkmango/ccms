@@ -2,7 +2,7 @@ package cn.qkmango.ccms.web.interceptor;
 
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.util.ResponseUtil;
-import cn.qkmango.ccms.domain.bind.PermissionType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,11 +25,11 @@ import java.lang.reflect.Method;
 public class PermissionsInterceptor implements HandlerInterceptor {
 
     private final String loginApi;
-    private final String OPERATION_WITHOUT_PERMISSION_JSON;
+    private final String OPERATION_WITHOUT_ROLE_JSON;
 
-    public PermissionsInterceptor(String loginApi,String OPERATION_WITHOUT_PERMISSION_JSON) {
+    public PermissionsInterceptor(String loginApi,String OPERATION_WITHOUT_ROLE_JSON) {
         this.loginApi = loginApi;
-        this.OPERATION_WITHOUT_PERMISSION_JSON = OPERATION_WITHOUT_PERMISSION_JSON;
+        this.OPERATION_WITHOUT_ROLE_JSON = OPERATION_WITHOUT_ROLE_JSON;
     }
 
     @Override
@@ -50,27 +50,27 @@ public class PermissionsInterceptor implements HandlerInterceptor {
 
         //获取用户的权限类型
         Account account = (Account) request.getSession().getAttribute("account");
-        PermissionType permissionType = account.getPermissionType();
+        Role role = account.getRole();
 
         //判断方法是否有注解
         if (method.isAnnotationPresent(Permission.class)) {
-            boolean pass = methodHasPermissionAnnotation(method, permissionType);
+            boolean pass = methodHasPermissionAnnotation(method, role);
             if (pass) {
                 return true;
             }
             response.setStatus(401);
-            ResponseUtil.responseJson(response, OPERATION_WITHOUT_PERMISSION_JSON);
+            ResponseUtil.responseJson(response, OPERATION_WITHOUT_ROLE_JSON);
             return false;
         }
 
         //判断类是否有注解
         else if (clazz.isAnnotationPresent(Permission.class)) {
-            boolean pass = classHasPermissionAnnotation(clazz, permissionType);
+            boolean pass = classHasPermissionAnnotation(clazz, role);
             if (pass) {
                 return true;
             }
             response.setStatus(401);
-            ResponseUtil.responseJson(response, OPERATION_WITHOUT_PERMISSION_JSON);
+            ResponseUtil.responseJson(response, OPERATION_WITHOUT_ROLE_JSON);
             return false;
         }
 
@@ -85,15 +85,15 @@ public class PermissionsInterceptor implements HandlerInterceptor {
      * 判断类是否由指定用户权限的注解
      *
      * @param clazz                  类
-     * @param thisUserPermissionType 用户权限
+     * @param thisUserRole 用户权限
      * @return true 有权限，false 无权限
      */
-    private boolean classHasPermissionAnnotation(Class<?> clazz, PermissionType thisUserPermissionType) {
+    private boolean classHasPermissionAnnotation(Class<?> clazz, Role thisUserRole) {
         if (clazz.isAnnotationPresent(Permission.class)) {
             Permission annotation = clazz.getAnnotation(Permission.class);
-            PermissionType[] value = annotation.value();
-            for (PermissionType permissionType : value) {
-                if (permissionType == thisUserPermissionType) {
+            Role[] value = annotation.value();
+            for (Role role : value) {
+                if (role == thisUserRole) {
                     return true;
                 }
             }
@@ -105,15 +105,15 @@ public class PermissionsInterceptor implements HandlerInterceptor {
      * 判断方法是否由指定用户权限的注解
      *
      * @param method                 方法
-     * @param thisUserPermissionType 用户权限
+     * @param thisUserRole 用户权限
      * @return true 有权限，false 无权限
      */
-    private boolean methodHasPermissionAnnotation(Method method, PermissionType thisUserPermissionType) {
+    private boolean methodHasPermissionAnnotation(Method method, Role thisUserRole) {
         if (method.isAnnotationPresent(Permission.class)) {
             Permission annotation = method.getAnnotation(Permission.class);
-            PermissionType[] value = annotation.value();
-            for (PermissionType permissionType : value) {
-                if (permissionType == thisUserPermissionType) {
+            Role[] value = annotation.value();
+            for (Role role : value) {
+                if (role == thisUserRole) {
                     return true;
                 }
             }
