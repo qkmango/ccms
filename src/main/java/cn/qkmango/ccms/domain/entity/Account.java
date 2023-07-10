@@ -1,8 +1,8 @@
 package cn.qkmango.ccms.domain.entity;
 
-import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Query.Login;
 import cn.qkmango.ccms.common.validate.group.Update;
+import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.mvc.service.CardService;
 import jakarta.validation.constraints.NotEmpty;
@@ -27,23 +27,19 @@ public class Account implements Serializable {
     @NotNull(groups = Login.class)
     private String password;
 
-    @NotEmpty(groups = {Insert.class}, message = "名不能为空")
-    private String name;
-
     @NotNull(groups = Login.class)
     private Role role;
 
-    private String email;
+    private AccountState state;
 
     public Account() {
     }
 
-    public Account(String id, @NotNull(groups = Login.class) String password, String name, @NotNull(groups = Login.class) Role role, String email) {
+    public Account(String id, @NotNull(groups = Login.class) String password, @NotNull(groups = Login.class) Role role, AccountState state) {
         this.id = id;
         this.password = password;
-        this.name = name;
         this.role = role;
-        this.email = email;
+        this.state = state;
     }
 
     public String getId() {
@@ -62,14 +58,6 @@ public class Account implements Serializable {
         this.password = password;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Role getRole() {
         return role;
     }
@@ -78,23 +66,21 @@ public class Account implements Serializable {
         this.role = role;
     }
 
-    public String getEmail() {
-        return email;
+    public AccountState getState() {
+        return state;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setState(AccountState state) {
+        this.state = state;
     }
-
 
     @Override
     public String toString() {
         return "Account{" +
                 "id='" + id + '\'' +
                 ", password='" + password + '\'' +
-                ", name='" + name + '\'' +
                 ", role=" + role +
-                ", email='" + email + '\'' +
+                ", state=" + state +
                 '}';
     }
 }

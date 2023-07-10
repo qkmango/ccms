@@ -17,9 +17,7 @@ import cn.qkmango.ccms.mvc.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -110,15 +108,17 @@ public class AccountController {
      * 重置密码
      * 重置密码为身份证后6位
      *
-     * @param card   校园卡
-     * @param locale 语言环境
+     * @param account 账户 ID
+     * @param locale  语言环境
      * @return 响应结果
      * @throws UpdateException 更新异常
      */
     @Permission(Role.admin)
     @PostMapping(value = "update/resetPassword.do")
-    public R<Object> resetPassword(@Validated(Query.class) Card card, Locale locale) throws UpdateException {
-        userService.resetPassword(card, locale);
+    public R<Object> resetPassword(@NotEmpty String account, Locale locale) throws UpdateException {
+//        userService.resetPassword(card, locale);
+//        service.resetPassword(account);
+        service.resetPassword(account, locale);
         return R.success(messageSource.getMessage("db.resetPassword.success", null, locale));
     }
 
@@ -126,15 +126,16 @@ public class AccountController {
     /**
      * 注销账户
      *
-     * @param card   校园卡
-     * @param locale 语言环境
+     * @param account 账户
+     * @param locale  语言环境
      * @return 响应结果
      * @throws UpdateException 更新异常
      */
     @Permission({Role.admin, Role.user})
-    @PostMapping(value = "update/unsubscribe.do")
-    public R<Object> unsubscribe(@Validated(Query.class) Card card, Locale locale) throws UpdateException {
-        userService.unsubscribe(card, locale);
+    @PostMapping(value = "update/canceled.do")
+    public R<Object> canceled(@NotEmpty String account, Locale locale) throws UpdateException {
+        // userService.canceled(card, locale);
+        service.canceled(account, locale);
         return R.success(messageSource.getMessage("db.account.unsubscribe.success", null, locale));
     }
 

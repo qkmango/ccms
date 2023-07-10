@@ -1,6 +1,7 @@
 package cn.qkmango.ccms.domain.param;
 
 import cn.qkmango.ccms.domain.BaseDomain;
+import cn.qkmango.ccms.domain.bind.CardState;
 import io.micrometer.common.util.StringUtils;
 
 import java.io.Serializable;
@@ -15,8 +16,7 @@ import java.io.Serializable;
 public class CardInfoParam implements Serializable, BaseDomain {
     private String id;
     private String name;
-    private String idCard;
-    private Boolean lock;
+    private CardState state;
 
     public CardInfoParam() {
     }
@@ -39,32 +39,15 @@ public class CardInfoParam implements Serializable, BaseDomain {
         this.name = name;
     }
 
-    public String getIdCard() {
-        return idCard;
+    public CardState getState() {
+        return state;
     }
 
-    public void setIdCard(String idCard) {
-        if ("".equals(idCard)) return;
-        this.idCard = idCard;
+    public void setState(CardState state) {
+        this.state = state;
     }
 
-    public Boolean getLock() {
-        return lock;
-    }
 
-    public void setLock(Boolean lock) {
-        this.lock = lock;
-    }
-
-    @Override
-    public String toString() {
-        return "CardInfoParam{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", idCard='" + idCard + '\'' +
-                ", lock=" + lock +
-                '}';
-    }
 
     /**
      * 判断属性是否全为空
@@ -73,7 +56,6 @@ public class CardInfoParam implements Serializable, BaseDomain {
     public boolean isAllNull() {
         return StringUtils.isBlank(id) &&
                 StringUtils.isBlank(name) &&
-                StringUtils.isBlank(idCard) &&
-                null == lock;
+                null == state;
     }
 }

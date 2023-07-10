@@ -28,7 +28,7 @@ public interface CardService {
      * @return 插入异常
      * @throws InsertException 插入异常
      */
-    Card insert(User user, Locale locale) throws InsertException;
+//    Card insert(User user, Locale locale) throws InsertException;
 
     /**
      * 分页查询卡信息
@@ -36,7 +36,7 @@ public interface CardService {
      * @param pagination 分页查询条件
      * @return 分页查询结果
      */
-    R<List<UserAndCardVO>> list(Pagination<CardInfoParam> pagination);
+    R<List<Card>> list(Pagination<Card> pagination);
 
     /**
      * 更新卡状态
@@ -45,15 +45,15 @@ public interface CardService {
      * @param locale 语言环境
      * @throws UpdateException 更新异常
      */
-    void state(Card card, Locale locale) throws UpdateException;
+//    void state(Card card, Locale locale) throws UpdateException;
 
     /**
      * 根据用户ID查询卡详细信息
      *
-     * @param card 校园卡（user ID）
+     * @param account 用户ID
      * @return 详细信息
      */
-    UserAndCardVO detail(Card card);
+    Card detail(String account);
 
     /**
      * 充值

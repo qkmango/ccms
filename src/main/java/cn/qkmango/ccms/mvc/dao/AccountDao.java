@@ -26,7 +26,7 @@ public interface AccountDao {
      * @param account 登陆账户
      * @return 已登陆的账户信息
      */
-    Account loginUser(Account account);
+//    Account loginUser(Account account);
 
     /**
      * 获取账户密码
@@ -49,7 +49,7 @@ public interface AccountDao {
      * @param account 登陆账户
      * @return 已登陆的账户信息
      */
-    Pos loginPos(Account account);
+//    Pos loginPos(Account account);
 
     /**
      * 管理员登陆
@@ -57,7 +57,7 @@ public interface AccountDao {
      * @param account 登陆账户
      * @return 已登陆的账户信息
      */
-    Account loginAdmin(Account account);
+//    Account loginAdmin(Account account);
 
     /**
      * 获取用户信息
@@ -94,4 +94,27 @@ public interface AccountDao {
     List<Account> groupUser(String id);
 
 
+    /**
+     * 账户详情
+     *
+     * @param id
+     * @return
+     */
+    Account getRecordById(String id);
+
+
+    /**
+     * 更新账户信息
+     *
+     * @param updateAccount 更新的账户信息
+     * @return 数据库影响的行数
+     */
+    int update(Account updateAccount);
+
+    /**
+     * 登陆
+     * @param account
+     * @return
+     */
+    Account login(Account account);
 }

@@ -1,6 +1,5 @@
 package cn.qkmango.ccms.mvc.dao;
 
-import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -23,7 +22,7 @@ public interface UserDao {
 
     int resetPassword(User user);
 
-    int unsubscribe(Card card);
+    // int unsubscribe(Card card);
 
     boolean isUnsubscribe(String id);
 
@@ -42,4 +41,12 @@ public interface UserDao {
      * @return user id
      */
     List<String> getUserIdByClazzIds(@Param("clazzIds") List<String> clazzIds);
+
+    /**
+     * 获取用户详情
+     *
+     * @param account
+     * @return
+     */
+    User getRecordByAccount(String account);
 }

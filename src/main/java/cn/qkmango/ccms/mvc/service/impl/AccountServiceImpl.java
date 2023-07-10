@@ -2,7 +2,15 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.domain.bind.AccountState;
+import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.domain.entity.Card;
+import cn.qkmango.ccms.domain.entity.Department;
+import cn.qkmango.ccms.domain.entity.User;
+import cn.qkmango.ccms.mvc.dao.CardDao;
+import cn.qkmango.ccms.mvc.dao.UserDao;
+import cn.qkmango.ccms.mvc.service.DepartmentService;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.common.validate.group.Query;
@@ -19,6 +27,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,6 +49,15 @@ public class AccountServiceImpl implements AccountService {
     private AccountDao dao;
 
     @Resource
+    private UserDao userDao;
+
+    @Resource
+    private CardDao cardDao;
+
+    @Resource
+    private DepartmentService departmentService;
+
+    @Resource
     private StringRedisTemplate srt;
 
     @Resource
@@ -55,14 +73,8 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public Account login(@Validated(Query.Login.class) Account account, Locale locale) throws LoginException {
-        Account loginAccount = null;
 
-        //判断用户类型
-        switch (account.getRole()) {
-            case pos -> loginAccount = dao.loginPos(account);
-            case user -> loginAccount = dao.loginUser(account);
-            case admin -> loginAccount = dao.loginAdmin(account);
-        }
+        Account loginAccount = dao.login(account);
 
         //判断用户是否存在
         if (loginAccount == null) {
@@ -125,12 +137,32 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public AccountInfoVO accountInfo(Account account) {
-        if (account.getRole() == Role.admin) {
-            return dao.adminAccountInfo(account.getId());
-        } else if (account.getRole() == Role.user) {
-            return dao.userAccountInfo(account.getId());
+        String accountId = account.getId();
+
+        Account accountRecord = null;
+        Card cardRecord = null;
+        User userRecord = null;
+        LinkedList<Department> departmentChain = null;
+
+
+        //获取账户信息
+        accountRecord = dao.getRecordById(accountId);
+
+        //获 取卡信息/用户信息, 如果是user角色才有卡信息
+
+        if (account.getRole() == Role.user) {
+            cardRecord = cardDao.getRecordByAccount(accountId);
+            userRecord = userDao.getRecordByAccount(accountId);
+            departmentChain = departmentService.departmentChain(userRecord.getDepartment());
         }
-        return null;
+
+        AccountInfoVO vo = new AccountInfoVO();
+        vo.setAccount(accountRecord);
+        vo.setUser(userRecord);
+        vo.setCard(cardRecord);
+        vo.setDepartmentChain(departmentChain);
+
+        return vo;
     }
 
     /**
@@ -174,5 +206,74 @@ public class AccountServiceImpl implements AccountService {
     public List<Account> groupUser() {
         String id = UserSession.getAccountId();
         return dao.groupUser(id);
+    }
+
+    /**
+     * 注销账户
+     *
+     * @param accountId 账户 ID
+     * @param locale    语言环境
+     * @throws UpdateException
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void canceled(String accountId, Locale locale) throws UpdateException {
+
+        Card card = cardDao.getRecordByAccount(accountId);
+        // 账户不存在
+        if (card != null) {
+            throw new UpdateException(messageSource.getMessage("db.account.canceled.failure", null, locale));
+        }
+
+        // 判断金额是否为0
+        if (card.getBalance() != 0) {
+            throw new UpdateException(messageSource.getMessage("db.account.canceled.failure@balance", null, locale));
+        }
+
+        // 获取账户信息
+        Account account = dao.getRecordById(accountId);
+
+        //判断是否已经注销
+        if (AccountState.canceled == account.getState()) {
+            throw new UpdateException(messageSource.getMessage("db.account.canceled.failure@canceled", null, locale));
+        }
+
+
+        //注销账户
+        int affectedRows = 0;
+        // 1. 将账户状态改为注销
+        Account updateAccount = new Account();
+        updateAccount.setId(accountId);
+        updateAccount.setState(AccountState.canceled);
+        affectedRows = dao.update(updateAccount);
+        if (affectedRows != 1) {
+            throw new UpdateException(messageSource.getMessage("db.account.canceled.failure", null, locale));
+        }
+
+        // 2. 将账户下的卡片状态改为注销
+        affectedRows = cardDao.updateState(accountId, CardState.canceled);
+        if (affectedRows != 1) {
+            throw new UpdateException(messageSource.getMessage("db.account.canceled.failure", null, locale));
+        }
+    }
+
+    /**
+     * 重置密码
+     * 默认密码为123456
+     *
+     * @param account 账户ID
+     * @param locale
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void resetPassword(String account, Locale locale) throws UpdateException {
+        Account updateAccount = new Account();
+        updateAccount.setId(account);
+        updateAccount.setPassword(passwordEncoder.encode("123456"));
+
+        int affectedRows = dao.update(updateAccount);
+        if (affectedRows != 1) {
+            throw new UpdateException(messageSource.getMessage("db.account.update.failure", null, locale));
+        }
     }
 }

@@ -178,7 +178,7 @@
 						return;
 					}
                     sessionStorage.account = JSON.stringify(res.data)
-                    document.querySelector('#name').innerText = res.data.name;
+                    document.querySelector('#name').innerText = res.data.id;
 					let iniUrl = `api/init_${res.data.role}.json`;
 
 					miniAdmin.render({

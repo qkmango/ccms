@@ -14,6 +14,10 @@ import jakarta.validation.constraints.NotNull;
  */
 public class Pos extends Account {
 
+    private Integer posId;
+
+    private String name;
+
     @NotEmpty(groups = {Insert.class})
     private String address;
 
@@ -42,6 +46,22 @@ public class Pos extends Account {
         this.type = type;
     }
 
+    public Integer getPosId() {
+        return posId;
+    }
+
+    public void setPosId(Integer posId) {
+        this.posId = posId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getStore() {
         return store;
     }
@@ -53,13 +73,11 @@ public class Pos extends Account {
     @Override
     public String toString() {
         return "Pos{" +
-                "address='" + address + '\'' +
+                "posId=" + posId +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
                 ", type=" + type +
-                ", store='" + store + '\'' +
-                ", id='" + getId() + '\'' +
-                ", password='" + getPassword() + '\'' +
-                ", name='" + getName() + '\'' +
-                ", role=" + getRole() +
+                ", storeId='" + store + '\'' +
                 '}';
     }
 }

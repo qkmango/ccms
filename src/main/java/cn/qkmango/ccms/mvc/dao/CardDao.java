@@ -1,10 +1,9 @@
 package cn.qkmango.ccms.mvc.dao;
 
+import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.Consume;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-import cn.qkmango.ccms.domain.param.CardInfoParam;
-import cn.qkmango.ccms.domain.vo.UserAndCardVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -60,10 +59,10 @@ public interface CardDao {
     /**
      * 查询校园卡详细信息
      *
-     * @param card 校园卡
+     * @param account 账户 id
      * @return 校园卡详细信息
      */
-    UserAndCardVO detail(Card card);
+    Card getRecordByAccount(String account);
 
     /**
      * 更新校园卡余额
@@ -87,5 +86,14 @@ public interface CardDao {
      * @param pagination 分页信息
      * @return 校园卡信息
      */
-    List<UserAndCardVO> list(Pagination<CardInfoParam> pagination);
+    List<Card> list(Pagination<Card> pagination);
+
+    /**
+     * 修改校园卡状态
+     *
+     * @param accountId 账户id
+     * @param cardState 校园卡状态
+     * @return
+     */
+    int updateState(String accountId, CardState cardState);
 }

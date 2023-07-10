@@ -21,33 +21,29 @@
                         <div class="layui-form-item">
 
                             <div class="layui-inline">
-                                <label class="layui-form-label">账号</label>
+                                <label class="layui-form-label">ID</label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="id" autocomplete="off" class="layui-input">
                                 </div>
                             </div>
+                            
 
                             <div class="layui-inline">
-                                <label class="layui-form-label">姓名</label>
+                                <label class="layui-form-label">账号</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="name" autocomplete="off" class="layui-input">
+                                    <input type="text" name="account" autocomplete="off" class="layui-input">
                                 </div>
                             </div>
 
-                            <div class="layui-inline">
-                                <label class="layui-form-label">身份证</label>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="idCard" autocomplete="off" class="layui-input">
-                                </div>
-                            </div>
 
                             <div class="layui-inline">
                                 <label class="layui-form-label">状态</label>
                                 <div class="layui-input-inline">
-                                    <select name="lock" id="lock">
+                                    <select name="state" id="state">
                                         <option value="">全部</option>
-                                        <option value="true">锁定/注销</option>
-                                        <option value="false">正常</option>
+                                        <option value="normal">正常</option>
+                                        <option value="canceled">注销</option>
+                                        <option value="loss">丢失</option>
                                     </select>
                                 </div>
                             </div>
@@ -86,18 +82,20 @@
                 elem: '#currentTableId',
                 url: '../../../card/pagination/list.do',
                 // url: './index.index.test.json',
-                method: 'post',
+                method: 'POST',
                 toolbar: '#toolbarDemo',
                 defaultToolbar: ['filter', 'exports', 'print'],
                 cols: [[
-                    { field: 'id', width: 120, title: '账号', sort: true,fixed:'left', templet: d=> { return d.user.id } },
-                    { field: 'name', width: 100, title: '姓名', templet: d=> { return d.user.name } },
-                    { field: 'idCard', width: 200, title: '身份证', templet: d=> { return d.user.idCard } },
-                    { field: 'faculty', title: '学院', templet: d=> { return d.user.faculty } },
-                    { field: 'specialized', title: '专业', templet: d=> { return d.user.specialized } },
-                    { field: 'clazz', title: '班级', templet: d=> { return d.user.clazz } },
-                    { field: 'balance', width: 100, title: '余额', align: 'right', templet: d=> { return d.card.balance/100 } },
-                    { field: 'lock', width: 100, title: '状态',align: 'center', templet: d=> { return d.user.unsubscribe?'<i class="fa fa-close" style="color:var(--gray_5)"></i>':(d.card.lock ? '<i class="fa fa-lock" style="color:var(--red)"></i>' : '<i class="fa fa-check" style="color:var(--green2)"></i>') } },
+                    { field: 'id', width: 120, title: 'ID', sort: true,fixed:'left', templet: d=> { return d.id } },
+                    { field: 'account', title: '账号', templet: d=> { return d.account } },
+                    { field: 'balance', width: 100, title: '余额', align: 'right', templet: d=> { return d.balance/100 } },
+                    { field: 'state', width: 100, title: '状态',align: 'center', templet: d=> { 
+                        switch(d.state) {
+                            case 'normal':return '<i class="fa fa-check" style="color:var(--green2)"></i>';
+                            case 'canceled':return '<i class="fa fa-close" style="color:var(--gray_5)"></i>';
+                            case 'loss':return '<i class="fa fa-lock" style="color:var(--red)"></i>';
+                        }
+                    } },
 
                     { title: '操作', width: 150,align: 'center',fixed:'right', templet: d=> {return `<a class="layui-btn layui-btn-primary layui-btn-xs layui-border-green" lay-event="info"><i class="fa fa-info-circle"></i> 详情</a>`;}}
                 ]],
@@ -119,7 +117,6 @@
             // 监听搜索操作
             form.on('submit(data-search-btn)', function (data) {
                 //执行搜索重载
-                console.log(data.field)
                 table.reload('currentTableId', {
                     page: { curr: 1 },
                     where: { "param": data.field },

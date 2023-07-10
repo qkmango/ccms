@@ -2,6 +2,7 @@ package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,12 +30,12 @@ public class Test {
         Role p = Role.admin;
         String id = "1";
         if (session == null) {
-            account = new Account(id, null, "芒果小洛", Role.admin,null);
+            account = new Account(id, null, Role.admin, AccountState.normal);
             request.getSession(true).setAttribute("account", account);
         } else {
             account = (Account) request.getSession().getAttribute("account");
             if (account == null) {
-                account = new Account(id, null, "芒果小洛", Role.admin,null);
+                account = new Account(id, null, Role.admin, AccountState.normal);
                 request.getSession(true).setAttribute("account", account);
             }
         }

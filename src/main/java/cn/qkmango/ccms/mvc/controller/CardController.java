@@ -17,6 +17,7 @@ import cn.qkmango.ccms.domain.vo.UserAndCardVO;
 import cn.qkmango.ccms.mvc.service.CardService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,12 +54,12 @@ public class CardController {
      * @return 开卡结果
      * @throws InsertException 开卡失败
      */
-    @Permission(Role.admin)
-    @PostMapping("one/insert.do")
-    public R<Card> insert(@Validated({Insert.class, CardService.class}) User user, Locale locale) throws InsertException {
-        Card addCard = service.insert(user, locale);
-        return R.success(addCard,messageSource.getMessage("db.card.insert.success", null, locale));
-    }
+//    @Permission(Role.admin)
+//    @PostMapping("one/insert.do")
+//    public R<Card> insert(@Validated({Insert.class, CardService.class}) User user, Locale locale) throws InsertException {
+//        Card addCard = service.insert(user, locale);
+//        return R.success(addCard,messageSource.getMessage("db.card.insert.success", null, locale));
+//    }
 
     /**
      * 查询卡信息列表
@@ -68,7 +69,7 @@ public class CardController {
      */
     @Permission(Role.admin)
     @PostMapping("pagination/list.do")
-    public R<List<UserAndCardVO>> list(@RequestBody Pagination<CardInfoParam> pagination) {
+    public R<List<Card>> list(@RequestBody Pagination<Card> pagination) {
         return service.list(pagination);
     }
 
@@ -80,36 +81,40 @@ public class CardController {
      * @return 更改结果
      * @throws UpdateException 更改失败
      */
-    @PostMapping(value = "update/state.do")
-    public R state(@Validated(Update.class) Card card, Locale locale) throws UpdateException {
-        service.state(card, locale);
-        return R.success(messageSource.getMessage("db.updateCardState.success", null, locale));
-    }
+//    @PostMapping(value = "update/state.do")
+//    public R state(@Validated(Update.class) Card card, Locale locale) throws UpdateException {
+//        service.state(card, locale);
+//        return R.success(messageSource.getMessage("db.updateCardState.success", null, locale));
+//    }
 
 
     /**
      * 查询卡详细信息
      *
-     * @param card    传入卡号
-     * @param session 会话
-     * @param locale  语言环境
+     * @param accountId 账户
+     * @param session   会话
+     * @param locale    语言环境
      * @return 卡详细信息
      */
     @PostMapping(value = "one/detail.do")
-    public R detail(@Validated(Query.class) Card card, HttpSession session, Locale locale) {
+    public R detail(@NotEmpty String accountId, HttpSession session, Locale locale) {
 
         //如果是学生，仅可以查询自己的卡信息
         Account account = (Account) session.getAttribute("account");
-        if (account.getRole() == Role.user) {
-            card.setUser(account.getId());
+
+
+        Card detail = service.detail(accountId);
+
+        if (detail == null) {
+            return R.fail(messageSource.getMessage("db.card.detail.failure", null, locale));
         }
 
-        UserAndCardVO detail = service.detail(card);
-
-        if (detail != null) {
-            return R.success(detail);
+        //如果不是admin但查出的卡号不是自己的卡号，返回错误信息
+        if (account.getRole() != Role.admin && !accountId.equals(detail.getAccount())) {
+            return R.fail(messageSource.getMessage("db.card.detail.failure", null, locale));
         }
-        return R.fail(messageSource.getMessage("db.card.detail.failure", null, locale));
+
+        return R.success(detail);
     }
 
     /**

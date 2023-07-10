@@ -273,6 +273,7 @@ public class PayServiceImpl implements PayService {
     }
 
     /**
+     * TODO 退款
      * 缴费项目退款
      * 1. 修改缴费项目记录状态为退款
      * 2. 往用户账户里面加钱
@@ -297,7 +298,7 @@ public class PayServiceImpl implements PayService {
 
         // 往用户一卡通账户里面加钱
         Card card = new Card();
-        card.setUser(record.getUser());
+//        card.setUser(record.getUser());
         card.setBalance(payment.getPrice());
         affectedRows = cardDao.recharge(card);
         if (affectedRows != 1) {
@@ -307,7 +308,7 @@ public class PayServiceImpl implements PayService {
 
         // 往用户消费明细里面加记录
         Consume consume = new Consume();
-        consume.setUser(card.getUser());
+//        consume.setUser(card.getUser());
         consume.setPrice(card.getBalance());
         consume.setCreateTime(new Date());
         consume.setInfo(payment.getTitle());

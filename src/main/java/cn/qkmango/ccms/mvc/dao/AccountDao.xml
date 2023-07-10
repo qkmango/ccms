@@ -34,24 +34,24 @@
         where id = #{id} and password = #{oldPassword}
     </update>
 
-    <select id="loginUser" resultType="cn.qkmango.ccms.domain.entity.User">
-        select id, name, password
-        from t_user
-        where id = #{id}
-        and unsubscribe = 0;
-    </select>
+<!--    <select id="loginUser" resultType="cn.qkmango.ccms.domain.entity.User">-->
+<!--        select id, name, password-->
+<!--        from t_user-->
+<!--        where id = #{id}-->
+<!--        and unsubscribe = 0;-->
+<!--    </select>-->
 
-    <select id="loginPos" resultType="cn.qkmango.ccms.domain.entity.Pos">
-        select id, name, type, password
-        from t_pos
-        where id = #{id}
-    </select>
+<!--    <select id="loginPos" resultType="cn.qkmango.ccms.domain.entity.Pos">-->
+<!--        select id, name, type, password-->
+<!--        from t_pos-->
+<!--        where id = #{id}-->
+<!--    </select>-->
 
-    <select id="loginAdmin" resultType="cn.qkmango.ccms.domain.entity.Account">
-        select id, name, password
-        from t_admin
-        where id = #{id}
-    </select>
+<!--    <select id="loginAdmin" resultType="cn.qkmango.ccms.domain.entity.Account">-->
+<!--        select id, name, password-->
+<!--        from t_admin-->
+<!--        where id = #{id}-->
+<!--    </select>-->
 
     <select id="userAccountInfo" resultMap="UserAccountInfoVO">
         select u.id as account_id,
@@ -97,10 +97,40 @@
         where id = #{account.id}
     </update>
 
+    <update id="update">
+        update
+            t_account
+        <if test="password != null and password != ''">
+            set password = #{password}
+        </if>
+        <if test="state != null">
+            set state = #{state}
+        </if>
+        where id = #{id}
+    </update>
+
     <select id="groupUser" resultType="cn.qkmango.ccms.domain.entity.Account">
         select id, name, email
         from t_user
         where clazz = (select clazz from t_user where id = #{id})
+    </select>
+
+    <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Account">
+        select id,
+               state,
+               role
+        from t_account
+        where id = #{id}
+    </select>
+
+    <select id="login" resultType="cn.qkmango.ccms.domain.entity.Account">
+        select id,
+               password,
+               state,
+               role
+        from t_account
+        where id = #{id}
+          and role = #{role}
     </select>
 
 

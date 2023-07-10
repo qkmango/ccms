@@ -9,15 +9,16 @@ import java.io.Serializable;
  */
 public enum Role implements Serializable {
     /**
+     * 管理员
+     */
+    admin,
+    /**
      * 用户
      */
     user,
     /**
      * POS刷卡机
      */
-    pos,
-    /**
-     * 管理员
-     */
-    admin
+    pos
+
 }

@@ -30,10 +30,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="layui-col-md6 layui-col-sm12 layui-col-xs12" id="teach_info_box">
+                <div class="layui-col-md6 layui-col-sm12 layui-col-xs12" id="department_info_box">
                     <div class="layui-card layui-row">
                         <div class="layui-card-header layui-bg-sf-green-dark">教学单位信息</div>
-                        <div class="layui-card-body" id="teach_info">
+                        <div class="layui-card-body" id="department_info">
                             <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
                             加载中
                         </div>
@@ -58,6 +58,7 @@
 
         $.ajax({
             url: "../../account/one/info.do",
+            // url: "./index.test.json",
             dataType: "json",
             success: function (res) {
                 if (res.success) {
@@ -66,41 +67,44 @@
                     if (data.account.role === 'user') {
                         document.querySelector('#account_info').innerHTML = `
                         <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
-                            账号 : ${data.account.id}<br>
-                            姓名 : ${data.account.name}
+                            账户 : ${data.account.id}<br>
+                            姓名 : ${data.user.name}
                         </div>
                         <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
                             卡状态 : ${
-                            data.card.lock === true ?
-                                `<span class="layui-badge-rim layui-bg-red-tint">挂失</span>` :
-                                `<span class="layui-badge-rim layui-bg-green2-tint">正常</span>`
-                        }<br>
+                                data.card.state==='normal'?`<span class="layui-badge-rim layui-bg-green2-tint">正常</span>`:
+                                data.card.state==='loss'?`<span class="layui-badge-rim layui-bg-red-tint">挂失</span>`:
+                                data.card.state==='canceled'?`<span class="layui-badge-rim layui-bg-red-tint">注销</span>`:''
+                            }
+                            <br>
                             卡余额 : ${data.card.balance / 100} 元
                         </div>
                         <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
                             账户状态 : ${
-                            data.user.unsubscribe === true ?
-                                `<span class="layui-badge-rim layui-bg-red-tint">注销</span>` :
-                                `<span class="layui-badge-rim layui-bg-green2-tint">正常</span>`
+                            data.account.state==='normal'?`<span class="layui-badge-rim layui-bg-green2-tint">正常</span>`:
+                            data.account.state==='frozen'?`<span class="layui-badge-rim layui-bg-orange-tint">冻结</span>`:
+                            data.account.state==='canceled'?`<span class="layui-badge-rim layui-bg-red-tint">注销</span>`:''
                         }<br>
                             账户类型 : 用户
                         </div>
                         <div class="layui-col-md4 layui-col-sm4 layui-col-xs12">
-                        邮箱 : ${data.account.email || ''}
-                        </div>
-                    `
-                        document.querySelector('#teach_info').innerHTML = `
-                        <div class="layui-col-md6 layui-col-sm4 layui-col-xs12">
-                            学院 : ${data.faculty.name}
-                        </div>
-                        <div class="layui-col-md6 layui-col-sm4 layui-col-xs12">
-                            专业 : ${data.specialty.name}
-                        </div>
-                        <div class="layui-col-md6 layui-col-sm4 layui-col-xs12">
-                            班级 : ${data.clazz.name}
-                        </div>
-                    `
-                        return
+                        邮箱 : ${data.user.email || ''}
+                        </div>`
+                        
+
+                        let department_info = '';
+                        data.departmentChain.forEach(item => {
+                            department_info += 
+                            `<div class="layui-col-md6 layui-col-sm4 layui-col-xs12">
+                                ${
+                                    item.type==='faculty'?'学院':
+                                    item.type==='major'?'专业':
+                                    item.type==='clazz'?'班级':''
+                                } : ${item.name}
+                            </div>`;
+                        });
+                        document.querySelector('#department_info').innerHTML = department_info;
+                        return;
                     }
 
                     if (data.account.role === 'admin') {
@@ -115,7 +119,7 @@
                         邮箱 : ${data.account.email || ''}
                         </div>
                     `
-                        document.querySelector('#teach_info_box').style.display = 'none'
+                        document.querySelector('#department_info_box').style.display = 'none'
                         return;
                     }
 

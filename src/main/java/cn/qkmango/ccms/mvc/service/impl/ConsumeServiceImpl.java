@@ -46,6 +46,7 @@ public class ConsumeServiceImpl implements ConsumeService {
 
 
     /**
+     * TODO 添加消费记录
      * 添加通过POS机消费记录
      * 余额不足限制在数据库层面控制（无符号）
      *
@@ -66,14 +67,14 @@ public class ConsumeServiceImpl implements ConsumeService {
         }
 
         //判断账户是否锁定
-        if (card.getLock()) {
-            boolean is = userDao.isUnsubscribe(consume.getUser());
-            //如果账户锁定了，再判断账户是否注销
-            if (is) {
-                throw new QueryException(messageSource.getMessage("db.account.unsubscribe", null, locale));
-            }
-            throw new QueryException(messageSource.getMessage("db.account.lock", null, locale));
-        }
+//        if (card.getLock()) {
+//            boolean is = userDao.isUnsubscribe(consume.getUser());
+//            //如果账户锁定了，再判断账户是否注销
+//            if (is) {
+//                throw new QueryException(messageSource.getMessage("db.account.unsubscribe", null, locale));
+//            }
+//            throw new QueryException(messageSource.getMessage("db.account.lock", null, locale));
+//        }
 
         //判断余额是否充足
         if (card.getBalance() < consume.getPrice()) {

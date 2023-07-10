@@ -61,4 +61,19 @@ public interface AccountService {
      * @return 同组用户列表
      */
     List<Account> groupUser();
+
+    /**
+     * 注销账户
+     *
+     * @param account 账户 ID
+     * @param locale  语言环境
+     */
+    void canceled(String account, Locale locale) throws UpdateException;
+
+    /**
+     * 重置密码
+     *
+     * @param account 账户ID
+     */
+    void resetPassword(String account, Locale locale) throws UpdateException;
 }

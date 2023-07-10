@@ -29,8 +29,14 @@
         update t_card
         set balance = balance + #{balance}
         where user = #{user}
-          and `lock` = 0
-          and (select unsubscribe from t_user where id = #{user}) = 0
+        and `lock` = 0
+        and (select unsubscribe from t_user where id = #{user}) = 0
+    </update>
+
+    <update id="updateState">
+        update t_card
+        set state = #{state}
+        where account = #{account}
     </update>
 
     <select id="lastInsertId" resultType="java.lang.Integer">
@@ -43,54 +49,37 @@
         where user = #{user}
     </select>
 
-    <select id="detail" resultType="cn.qkmango.ccms.domain.vo.UserAndCardVO" resultMap="UserAndCardVO">
-        select c.user,
-               c.balance,
-               c.`lock`,
-               u.id,
-               u.name,
-               u.clazz,
-               u.specialized,
-               u.faculty,
-               u.idCard,
-               u.unsubscribe
-        from t_card c,
-             t_user u
-        where c.user = u.id
-          and u.id = #{user};
+    <select id="getRecordByAccount" resultType="cn.qkmango.ccms.domain.entity.Card">
+        select
+        id,
+        balance,
+        state,
+        account
+        from t_card
+        where account = #{account}
     </select>
 
-    <select id="list" resultMap="UserAndCardVO">
+    <select id="list" resultType="cn.qkmango.ccms.domain.entity.Card">
         select SQL_CALC_FOUND_ROWS
-        u.id,
-        u.name,
-        u.clazz,
-        u.specialized,
-        u.faculty,
-        u.idCard,
-        u.unsubscribe,
-        c.balance,
-        c.lock
-        from
-        t_user u, t_card c
+            id,
+            balance,
+            state,
+            account
+        from t_card
         <where>
-            c.user = u.id
             <if test="param != null">
                 <if test="param.id != null and param.id != ''">
-                    and u.id=#{param.id}
+                    id=#{param.id}
                 </if>
-                <if test="param.name != null and param.name != ''">
-                    and u.name like '%' #{param.name} '%'
+                <if test="param.state != null">
+                    and state = #{param.state}
                 </if>
-                <if test="param.idCard != null and param.idCard != ''">
-                    and u.idCard = #{param.idCard}
-                </if>
-                <if test="param.lock != null">
-                    and c.`lock` = #{param.lock}
+                <if test="param.account != null and param.account != ''">
+                    and account = #{param.account}
                 </if>
             </if>
         </where>
-        order by u.id asc
+        order by id asc
         <if test="pagination == true">
             LIMIT #{skipCount},#{limit}
         </if>
@@ -101,15 +90,15 @@
         <association property="user" javaType="cn.qkmango.ccms.domain.entity.User">
             <result column="id" property="id"/>
             <result column="name" property="name"/>
-            <result column="clazz" property="clazz"/>
-            <result column="specialized" property="specialized"/>
-            <result column="faculty" property="faculty"/>
-            <result column="idCard" property="idCard"/>
-            <result column="unsubscribe" property="unsubscribe"/>
+            <result column="department" property="department"/>
+            <result column="email" property="email"/>
+            <result column="card" property="card"/>
         </association>
         <association property="card" javaType="cn.qkmango.ccms.domain.entity.Card">
+            <id column="id" property="id"/>
             <result column="balance" property="balance"/>
-            <result column="lock" property="lock"/>
+            <result column="state" property="state"/>
+            <result column="account" property="account"/>
         </association>
     </resultMap>
 

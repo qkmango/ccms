@@ -2,6 +2,7 @@ package cn.qkmango.ccms.domain.entity;
 
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.common.validate.group.Update;
+import cn.qkmango.ccms.domain.bind.CardState;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -18,37 +19,39 @@ import java.io.Serializable;
  */
 public class Card implements Serializable {
 
-    @NotEmpty(groups = {Update.class, Query.class,UpdateRecharge.class})
-    @Pattern(regexp = "^\\d{10}$",groups = {Update.class, Query.class})
-    private String user;
+//    @NotEmpty(groups = {Update.class, Query.class, UpdateRecharge.class})
+//    @Pattern(regexp = "^\\d{10}$", groups = {Update.class, Query.class})
+//    private String user;
 
-    @NotNull(message = "不能为空",groups = {UpdateRecharge.class})
+    private String id;
+
+    private String account;
+
+    @NotNull(groups = {Update.class})
+    private CardState state;
+
+    @NotNull(message = "不能为空", groups = {UpdateRecharge.class})
     @Range(message = "充值金额在 1~1000 元", groups = {UpdateRecharge.class}, min = 100, max = 100000)
     private Integer balance;
 
-    @NotNull(groups = {Update.class})
-    private Boolean lock;
 
     public Card() {
     }
 
-    public Card(String user, Integer balance, Boolean lock) {
-        this.user = user;
-        this.balance = balance;
-        this.lock = lock;
+    public String getAccount() {
+        return account;
     }
 
-    public Card(String user, Integer balance) {
-        this.user = user;
-        this.balance = balance;
+    public void setAccount(String account) {
+        this.account = account;
     }
 
-    public String getUser() {
-        return user;
+    public CardState getState() {
+        return state;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setState(CardState state) {
+        this.state = state;
     }
 
     public Integer getBalance() {
@@ -59,28 +62,28 @@ public class Card implements Serializable {
         this.balance = balance;
     }
 
-    public Boolean getLock() {
-        return lock;
+    public String getId() {
+        return id;
     }
 
-
-
-    public void setLock(Boolean lock) {
-        this.lock = lock;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
     public String toString() {
-        return "Card{" +
-                "user='" + user + '\'' +
-                ", balance=" + balance +
-                ", lock=" + lock +
+        return "{" +
+                "\"id\":\"" + id + '\"' +
+                ", \"account\":\"" + account + '\"' +
+                ", \"state\":\"" + state + '\"' +
+                ", \"balance\":" + balance +
                 '}';
     }
 
     /**
      * 分组校验接口
      */
-    public interface UpdateRecharge{}
+    public interface UpdateRecharge {
+    }
 
 }

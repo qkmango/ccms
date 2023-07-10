@@ -21,14 +21,6 @@ public interface UserService {
      * @param locale 语言环境
      * @throws UpdateException 更新异常
      */
-    void resetPassword(Card card, Locale locale) throws UpdateException;
+//    void resetPassword(Card card, Locale locale) throws UpdateException;
 
-    /**
-     * 注销账户
-     *
-     * @param card   校园卡
-     * @param locale 语言环境
-     * @throws UpdateException 更新异常
-     */
-    void unsubscribe(Card card, Locale locale) throws UpdateException;
 }

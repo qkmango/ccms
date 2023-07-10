@@ -1,106 +1,77 @@
 package cn.qkmango.ccms.domain.entity;
 
 
-import cn.qkmango.ccms.common.validate.group.Insert;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-
 /**
  * 用户实体类
  * <p>
- * 继承自父类 {@link Account} 的属性
- * <li>protected Integer id;
- * <li>protected String password;
- * <li>protected String name;
+ * 继承自父类 {@link Account}
  *
  * @author qkmango
  */
 public class User extends Account {
 
-    /**
-     * 所属学院
-     */
-    private Integer faculty;
-    /**
-     * 所属专业
-     */
-    private Integer specialized;
-    /**
-     * 所属班级
-     */
-    private Integer clazz;
+    private String userId;
 
-    /**
-     * 是否注销
-     */
-    private Boolean unsubscribe;
+    private Integer card;
 
+    private String name;
 
-    /**
-     * 身份证号
-     */
-    @NotEmpty(groups = {Insert.class})
-    @Pattern(groups = {Insert.class}, regexp = "^[1-9]\\d{5}(18|19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$")
-    private String idCard;
+    private String email;
+
+    private Integer department;
 
 
     public User() {
     }
 
-    public Integer getClazz() {
-        return clazz;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setClazz(Integer clazz) {
-        this.clazz = clazz;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public Integer getSpecialized() {
-        return specialized;
+    public String getName() {
+        return name;
     }
 
-    public void setSpecialized(Integer specialized) {
-        this.specialized = specialized;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getIdCard() {
-        return idCard;
+    public String getEmail() {
+        return email;
     }
 
-    public void setIdCard(String idCard) {
-        this.idCard = idCard.toUpperCase();
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public Integer getFaculty() {
-        return faculty;
+    public Integer getDepartment() {
+        return department;
     }
 
-    public void setFaculty(Integer faculty) {
-        this.faculty = faculty;
+    public void setDepartment(Integer department) {
+        this.department = department;
     }
 
-    public Boolean getUnsubscribe() {
-        return unsubscribe;
+    public Integer getCard() {
+        return card;
     }
 
-    public void setUnsubscribe(Boolean unsubscribe) {
-        this.unsubscribe = unsubscribe;
+    public void setCard(Integer card) {
+        this.card = card;
     }
+
 
 
     @Override
     public String toString() {
         return "User{" +
-                "faculty=" + faculty +
-                ", specialized=" + specialized +
-                ", clazz=" + clazz +
-                ", unsubscribe=" + unsubscribe +
-                ", idCard='" + idCard + '\'' +
-                ", id='" + getId() + '\'' +
-                ", password='" + getPassword() + '\'' +
-                ", name='" + getName() + '\'' +
-                ", role=" + getRole() +
-                ", email='" + getEmail() + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", department=" + department +
                 '}';
     }
 }

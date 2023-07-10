@@ -36,7 +36,7 @@ public class SecurityConfig {
 
     // 密码加密器
     @Bean
-    public PasswordEncoder BCryptPasswordEncoder() {
+    public PasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
