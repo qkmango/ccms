@@ -104,12 +104,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      *                          在redis中有效期为5分钟, 拼接为 authentication:Role:UUID
      * @param code              授权码
      * @param error             有错误时返回
-     * @param error_description 错误描述
+     * @param errorDescription 错误描述
      * @param locale            语言环境
      * @return 返回重定向页面
      */
     @Override
-    public String giteeCallback(String state, String code, String error, String error_description, PurposeType purpose, Locale locale) throws UpdateException {
+    public String giteeCallback(String state, String code, String error, String errorDescription, PurposeType purpose, Locale locale) throws UpdateException {
 
         String message = null;
 
