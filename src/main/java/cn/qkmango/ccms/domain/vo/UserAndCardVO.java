@@ -6,6 +6,7 @@ import cn.qkmango.ccms.domain.entity.User;
 import java.io.Serializable;
 
 /**
+ * TODO 可以使用 AccountInfoVO 代替
  * 用户和校园卡信息的合集视图对象
  *
  * @author qkmango

@@ -132,13 +132,11 @@ public class AccountServiceImpl implements AccountService {
     /**
      * 获取用户信息
      *
-     * @param account 用户ID
+     * @param accountId 用户ID
      * @return 用户信息
      */
     @Override
-    public AccountInfoVO accountInfo(Account account) {
-        String accountId = account.getId();
-
+    public AccountInfoVO accountInfo(String accountId) {
         Account accountRecord = null;
         Card cardRecord = null;
         User userRecord = null;
@@ -150,7 +148,7 @@ public class AccountServiceImpl implements AccountService {
 
         //获 取卡信息/用户信息, 如果是user角色才有卡信息
 
-        if (account.getRole() == Role.user) {
+        if (accountRecord.getRole() == Role.user) {
             cardRecord = cardDao.getRecordByAccount(accountId);
             userRecord = userDao.getRecordByAccount(accountId);
             departmentChain = departmentService.departmentChain(userRecord.getDepartment());

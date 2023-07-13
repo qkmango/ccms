@@ -39,10 +39,10 @@ public interface AccountService {
     /**
      * 获取用户信息
      *
-     * @param account 用户ID
+     * @param accountId 用户ID
      * @return 用户信息
      */
-    AccountInfoVO accountInfo(Account account);
+    AccountInfoVO accountInfo(String accountId);
 
     /**
      * 更新用户email

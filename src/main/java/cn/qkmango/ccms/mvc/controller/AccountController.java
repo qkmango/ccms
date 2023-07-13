@@ -140,14 +140,28 @@ public class AccountController {
     }
 
     /**
-     * 获取用户信息
+     * 获取当前登陆账户信息
      *
      * @return 用户信息
      */
-    @Permission({Role.admin, Role.user})
-    @GetMapping("one/info.do")
-    public R userInfo() {
+//    @Permission({Role.admin, Role.user})
+    @GetMapping("one/current-account-info.do")
+    public R currentAccountInfo() {
         Account account = UserSession.getAccount();
+        AccountInfoVO info = service.accountInfo(account.getId());
+        return R.success(info);
+    }
+
+    /**
+     * 获取用户账户详情
+     * 功能和 {@link AccountController#currentAccountInfo()} 一样，只是做了权限控制
+     *
+     * @param account 账户ID
+     * @return
+     */
+    @Permission(Role.admin)
+    @GetMapping("one/account-info.do")
+    public R accountInfo(@NotEmpty String account, Locale locale) {
         AccountInfoVO info = service.accountInfo(account);
         return R.success(info);
     }

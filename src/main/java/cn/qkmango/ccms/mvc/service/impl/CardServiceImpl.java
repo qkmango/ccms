@@ -89,7 +89,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public R<List<Card>> list(Pagination<Card> pagination) {
 
-        String key = redis.key("card:pagination", pagination, "user", "card");
+        String key = redis.key("card:pagination", pagination, "card");
         R r = redis.get(key, R.class);
         if (r == null) {
             // 如果缓存中没有数据, 就从数据库中查询
@@ -158,6 +158,7 @@ public class CardServiceImpl implements CardService {
     /**
      * 充值
      * TODO
+     *
      * @param card 校园卡
      */
     @Override
@@ -187,7 +188,7 @@ public class CardServiceImpl implements CardService {
     }
 
     /**
-     * 根据用户ID查询卡详细信息
+     * 根据账户ID查询卡信息
      *
      * @param account
      * @return 卡详细信息

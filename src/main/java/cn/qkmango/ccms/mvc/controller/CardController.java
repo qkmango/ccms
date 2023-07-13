@@ -102,7 +102,6 @@ public class CardController {
         //如果是学生，仅可以查询自己的卡信息
         Account account = (Account) session.getAttribute("account");
 
-
         Card detail = service.detail(accountId);
 
         if (detail == null) {
