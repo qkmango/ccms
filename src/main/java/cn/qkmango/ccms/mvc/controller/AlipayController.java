@@ -31,6 +31,7 @@ public class AlipayController {
     private AlipayService service;
 
 
+    // TODO 应该改为交易
     @GetMapping("/createPay.do")
     private R createPay(
             @RequestParam String subject,

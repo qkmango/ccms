@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.domain.entity;
 
-import cn.qkmango.ccms.domain.bind.DepartmentType;
-
 /**
  * 教学部门
  * 院系 专业 班级
@@ -14,18 +12,16 @@ public class Department {
     private Integer id;
     private String name;
     private String description;
-    private DepartmentType type;
     private Integer parent;
     private String grade;
 
     public Department() {
     }
 
-    public Department(Integer id, String name, String description, DepartmentType type, Integer parent, String grade) {
+    public Department(Integer id, String name, String description, Integer parent, String grade) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.type = type;
         this.parent = parent;
         this.grade = grade;
     }
@@ -54,14 +50,6 @@ public class Department {
         this.description = description;
     }
 
-    public DepartmentType getType() {
-        return type;
-    }
-
-    public void setType(DepartmentType type) {
-        this.type = type;
-    }
-
     public Integer getParent() {
         return parent;
     }
@@ -81,11 +69,10 @@ public class Department {
     @Override
     public String toString() {
         return "Department{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", type=" + type +
-                ", parent='" + parent + '\'' +
+                ", parent=" + parent +
                 ", grade='" + grade + '\'' +
                 '}';
     }

@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.domain.vo;
 
 import cn.qkmango.ccms.domain.entity.Payment;
-import cn.qkmango.ccms.domain.entity.Record;
 
 import java.io.Serializable;
 

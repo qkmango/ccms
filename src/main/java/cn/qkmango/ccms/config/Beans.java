@@ -1,5 +1,6 @@
 package cn.qkmango.ccms.config;
 
+import cn.qkmango.ccms.common.util.SnowFlake;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -73,6 +74,11 @@ public class Beans {
 
         // return FileUtils.readFileToString(file, "UTF-8");
         return sb.toString();
+    }
+
+    @Bean(name = "snowFlake")
+    public SnowFlake snowFlake() {
+        return new SnowFlake();
     }
 
 }

@@ -25,11 +25,10 @@ import java.lang.reflect.Method;
 public class PermissionsInterceptor implements HandlerInterceptor {
 
     private final String loginApi;
-    private final String OPERATION_WITHOUT_ROLE_JSON;
+    private final String OPERATION_WITHOUT_ROLE_JSON = "{\"success\":false,\"message\":\"无权操作\"}";
 
-    public PermissionsInterceptor(String loginApi,String OPERATION_WITHOUT_ROLE_JSON) {
+    public PermissionsInterceptor(String loginApi) {
         this.loginApi = loginApi;
-        this.OPERATION_WITHOUT_ROLE_JSON = OPERATION_WITHOUT_ROLE_JSON;
     }
 
     @Override

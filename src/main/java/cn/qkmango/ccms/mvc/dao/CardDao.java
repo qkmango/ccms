@@ -2,7 +2,6 @@ package cn.qkmango.ccms.mvc.dao;
 
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.entity.Card;
-import cn.qkmango.ccms.domain.entity.Consume;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -64,13 +63,6 @@ public interface CardDao {
      */
     Card getRecordByAccount(String account);
 
-    /**
-     * 更新校园卡余额
-     *
-     * @param consume 消费信息
-     * @return
-     */
-    int updateBalance(Consume consume);
 
     /**
      * 充值

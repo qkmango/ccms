@@ -19,11 +19,6 @@
         where user = #{user}
     </update>
 
-    <update id="updateBalance">
-        update t_card
-        set balance = balance - #{price}
-        where user = #{user} and balance >= #{price} and `lock` = 0
-    </update>
 
     <update id="recharge">
         update t_card

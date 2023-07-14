@@ -90,7 +90,7 @@ public class CardController {
 
     /**
      * 查询卡详细信息
-     *
+     * @deprecated 该方法已经被 {@link cn.qkmango.ccms.mvc.controller.AccountController#accountInfo(String, Locale)} 取代
      * @param accountId 账户
      * @param session   会话
      * @param locale    语言环境
@@ -125,7 +125,7 @@ public class CardController {
     @Permission(Role.admin)
     @PostMapping(value = "update/recharge.do")
     public R recharge(@Validated(Card.UpdateRecharge.class) Card card, Locale locale) throws UpdateException {
-        service.recharge(card, locale);
+//        service.recharge(card, locale);
         return R.success(messageSource.getMessage("db.update.recharge.success", null, locale));
     }
 

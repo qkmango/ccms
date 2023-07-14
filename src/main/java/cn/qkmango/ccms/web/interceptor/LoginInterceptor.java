@@ -15,16 +15,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class LoginInterceptor implements HandlerInterceptor {
 
     private final String LOGIN_URL;
-    private final String NO_LOGIN_JSON;
 
-    public LoginInterceptor() {
-        this.LOGIN_URL = "/account/login.do";
-        this.NO_LOGIN_JSON = "{\"success\":false,\"message\":\"未登录\"}";
-    }
-
-    public LoginInterceptor(String login, String noLoginJSON) {
+    public LoginInterceptor(String login) {
         this.LOGIN_URL = login;
-        this.NO_LOGIN_JSON = noLoginJSON;
     }
 
     @Override
@@ -45,7 +38,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         response.setStatus(401);
-        ResponseUtil.responseJson(response, NO_LOGIN_JSON);
+        ResponseUtil.responseJson(response, "{\"success\":false,\"message\":\"未登录\"}");
         return false;
 
     }

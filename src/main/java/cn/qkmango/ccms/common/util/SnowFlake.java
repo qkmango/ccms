@@ -1,113 +1,131 @@
 package cn.qkmango.ccms.common.util;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import java.util.UUID;
 
 /**
- * twitter的snowflake算法 -- java实现
+ * 雪花算法
+ * <p> 经过修改调整, 以便获得更长久的使用时间</p>
+ * <p> ID结构如下所示<br>
+ * 0 | 000000000000000000 | 00000 | 000 | 000000000000
+ * </p>
+ * <p>
+ * 其中, 共64位, 从左到右依次表示:
+ * <ul>
+ *     <li>符号位(1位):始终为0</li>
+ *     <li>时间戳(43位):记录毫秒级的时间戳, 支持 278.48年</li>
+ *     <li>工作机器ID(8位):标识不同的机器节点, 支持2^8=256个节点</li>
+ *     <li>序列号(12位):每台机器每毫秒可生成的序列号, 支持每个节点每毫秒产生4096个ID</li>
+ * </ul>
+ * </p>
  *
- * @author beyond
- * @date 2016/11/26
+ * @author qkmango
+ * @version 1.0
+ * @date 2023-07-14 18:09
  */
-@Component("snowFlake")
 public class SnowFlake {
-
-    @Value(value = "${ccms.snowflake.data-center-id}")
-    private long datacenterId;  //数据中心
-    @Value(value = "${ccms.snowflake.machine-id}")
-    private long machineId;     //机器标识
-
     /**
-     * 起始的时间戳
+     * 起始时间戳
+     * 一经定义并投入使用后不可修改,否则可能造成ID冲突
      * 2023-01-01 00:00:00
      */
-    private final static long START_STAMP = 1672502400000L;
+    private static final long START_TIMESTAMP = 1672502400000L;
 
     /**
-     * 每一部分占用的位数
+     * 工作机器ID
+     * 用于标识不同的机器节点
      */
-    private final static long SEQUENCE_BIT = 12; //序列号占用的位数
-    private final static long MACHINE_BIT = 5;   //机器标识占用的位数
-    private final static long DATACENTER_BIT = 5;//数据中心占用的位数
+    private final long workerId;
+    /**
+     * 序列号
+     * 用于在同一毫秒内区分不同的ID
+     */
+    private long sequence;
 
     /**
-     * 每一部分的最大值
+     * 上一次时间戳
+     * 上一次生成ID的时间戳
      */
-    private final static long MAX_DATACENTER_NUM = ~(-1L << DATACENTER_BIT);
-    private final static long MAX_MACHINE_NUM = ~(-1L << MACHINE_BIT);
-    private final static long MAX_SEQUENCE = ~(-1L << SEQUENCE_BIT);
+    private long lastTimestamp = -1L;
 
     /**
-     * 每一部分向左的位移
+     * 工作机器ID占据的位数
+     * 它是一个常量，设置为8，表示工作机器ID占据8个位
      */
-    private final static long MACHINE_LEFT = SEQUENCE_BIT;
-    private final static long DATACENTER_LEFT = SEQUENCE_BIT + MACHINE_BIT;
-    private final static long TIMESTAMP_LEFT = DATACENTER_LEFT + DATACENTER_BIT;
+    private final long workerIdBits = 8L;
+    /**
+     * 序列号占据的位数
+     * 它是一个常量, 设置为12, 表示序列号占据12个位
+     */
+    private final long sequenceBits = 12L;
+    /**
+     * 序列号的掩码
+     * 用于生成序列号的范围。它是通过位运算得到的，所有位为1的掩码
+     */
+    private final long sequenceMask = ~(-1L << sequenceBits);
 
-    private long sequence = 0L; //序列号
-    private long lastStamp = -1L;//上一次时间戳
+    /**
+     * 时间戳的位移量
+     * 它是根据{@code workerIdBits}和 {@code sequenceBits}计算得到的，用于把时间戳左移对应的位数
+     */
+    private final long timestampShift = workerIdBits + sequenceBits;
 
+
+    /**
+     * 生成随机的 {@code workerId} 的构造方法
+     * 使用 UUID 计算 hashCode, 从而计算出 {@code workerId}
+     */
     public SnowFlake() {
+        long maxWorkerId = ~(-1L << workerIdBits);
+        int hashCode = Math.abs(UUID.randomUUID().toString().hashCode());
+        this.workerId = hashCode % (maxWorkerId + 1);
     }
 
     /**
-     * 产生下一个ID
+     * 指定 {@code workerId} 的构造方法
      *
-     * @return
+     * @param workerId
      */
+    public SnowFlake(long workerId) {
+        long maxWorkerId = ~(-1L << workerIdBits);
+        if (workerId < 0 || workerId > maxWorkerId) {
+            throw new IllegalArgumentException("Worker ID must be between 0 and " + maxWorkerId);
+        }
+        this.workerId = workerId;
+    }
+
+
     public synchronized long nextId() {
-        long currStamp = getNewStamp();
-        if (currStamp < lastStamp) {
-            throw new RuntimeException("Clock moved backwards.  Refusing to generate id");
+        long timestamp = getCurrentTimestamp();
+
+        if (timestamp < lastTimestamp) {
+            throw new RuntimeException("Clock moved backwards. Refusing to generate ID.");
         }
 
-        if (currStamp == lastStamp) {
-            //相同毫秒内，序列号自增
-            sequence = (sequence + 1) & MAX_SEQUENCE;
-            //同一毫秒的序列数已经达到最大
-            if (sequence == 0L) {
-                currStamp = getNextMill();
+        if (timestamp == lastTimestamp) {
+            sequence = (sequence + 1) & sequenceMask;
+            if (sequence == 0) {
+                timestamp = waitNextMillis(lastTimestamp);
             }
         } else {
-            //不同毫秒内，序列号置为0
             sequence = 0L;
         }
 
-        lastStamp = currStamp;
+        lastTimestamp = timestamp;
 
-        return (currStamp - START_STAMP) << TIMESTAMP_LEFT //时间戳部分
-                | datacenterId << DATACENTER_LEFT       //数据中心部分
-                | machineId << MACHINE_LEFT             //机器标识部分
-                | sequence;                             //序列号部分
+        return ((timestamp - START_TIMESTAMP) << timestampShift) |
+                (workerId << sequenceBits) |
+                sequence;
     }
 
-    private long getNextMill() {
-        long mill = getNewStamp();
-        while (mill <= lastStamp) {
-            mill = getNewStamp();
-        }
-        return mill;
-    }
-
-    private long getNewStamp() {
+    private long getCurrentTimestamp() {
         return System.currentTimeMillis();
     }
 
-
-    public long getDatacenterId() {
-        return datacenterId;
+    private long waitNextMillis(long lastTimestamp) {
+        long timestamp = getCurrentTimestamp();
+        while (timestamp <= lastTimestamp) {
+            timestamp = getCurrentTimestamp();
+        }
+        return timestamp;
     }
-
-    public void setDatacenterId(long datacenterId) {
-        this.datacenterId = datacenterId;
-    }
-
-    public long getMachineId() {
-        return machineId;
-    }
-
-    public void setMachineId(long machineId) {
-        this.machineId = machineId;
-    }
-
 }

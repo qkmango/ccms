@@ -9,6 +9,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 /**
  * 拦截器配置类
+ *
  * @author qkmango
  * @version 1.0
  * @date 2022-07-31 20:57
@@ -17,16 +18,10 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 public class InterceptorConfig implements WebMvcConfigurer {
 
     @Value("${ccms.login.url}")
-    private String LOGIN_URL;
+    private String loginUrl;
 
-    @Value("${ccms.response.NO_LOGIN_JSON}")
-    private String NO_LOGIN_JSON;
-
-    @Value("${ccms.response.OPERATION_WITHOUT_ROLE_JSON}")
-    private String OPERATION_WITHOUT_ROLE_JSON;
-
+    @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
 
         //国际化拦截器
         LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
@@ -35,7 +30,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .addPathPatterns("/system/setLocale.do");
 
         //登陆拦截器
-        LoginInterceptor loginInterceptor = new LoginInterceptor(LOGIN_URL,NO_LOGIN_JSON);
+        LoginInterceptor loginInterceptor = new LoginInterceptor(loginUrl);
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**/*.do")
                 .excludePathPatterns("/account/login.do")
@@ -45,7 +40,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/test/**/*.do");
 
 
-        PermissionsInterceptor permissionsInterceptor = new PermissionsInterceptor(LOGIN_URL, OPERATION_WITHOUT_ROLE_JSON);
+        PermissionsInterceptor permissionsInterceptor = new PermissionsInterceptor(loginUrl);
         registry.addInterceptor(permissionsInterceptor)
                 .addPathPatterns("/**/*.do")
                 .excludePathPatterns("/account/login.do")

@@ -5,12 +5,8 @@ import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.util.SnowFlake;
 import cn.qkmango.ccms.common.util.UserSession;
-import cn.qkmango.ccms.domain.bind.PayType;
 import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.domain.entity.Pay;
-import cn.qkmango.ccms.mvc.dao.PayDao;
 import cn.qkmango.ccms.mvc.service.AlipayService;
-import cn.qkmango.ccms.mvc.service.PayService;
 import cn.qkmango.ccms.pay.AlipayConfig;
 import cn.qkmango.ccms.security.request.RequestURL;
 import com.alibaba.fastjson2.JSONObject;
@@ -30,7 +26,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -50,12 +45,6 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Resource(name = "alipayConfig")
     private AlipayConfig config;
-
-    @Resource
-    private PayService payService;
-
-    @Resource
-    private PayDao payDao;
 
     @Resource(name = "snowFlake")
     private SnowFlake sf;
@@ -89,19 +78,19 @@ public class AlipayServiceImpl implements AlipayService {
         String user = account.getId();
         String id = String.valueOf(sf.nextId());
 
-        Pay pay = new Pay()
-                .setId(id)
-                .setUser(user)
-                .setDone(false)
-                .setAmount(amount)
-                .setType(PayType.alipay)
-                .setCreateTime(new Date())
-                .setInfo(subject);
+//        Pay pay = new Pay()
+//                .setId(id)
+//                .setUser(user)
+//                .setDone(false)
+//                .setAmount(amount)
+//                .setType(PayType.alipay)
+//                .setCreateTime(new Date())
+//                .setInfo(subject);
 
-        int affectedRows = payDao.insert(pay);
-        if (affectedRows != 1) {
-            throw new InsertException(ms.getMessage("db.insert.pay.create.failure", null, locale));
-        }
+//        int affectedRows = payDao.insert(pay);
+//        if (affectedRows != 1) {
+//            throw new InsertException(ms.getMessage("db.insert.pay.create.failure", null, locale));
+//        }
 
         return REQUEST_URL.builder()
                 .with("subject", subject)
@@ -176,33 +165,33 @@ public class AlipayServiceImpl implements AlipayService {
                 return;
             }
 
-            Pay pay = new Pay()
-                    .setId(outTradeNo)
-                    .setAmount(amount)
-                    .setTradeNo(tradeNo)
-                    .setDone(true)
-
-                    //TODO 这里JSON化的字符串过长，数据库中的字段长度不够，需要修改数据库字段长度
-                    .setDetail(om.writeValueAsString(params));
-
-
-            //更新支付信息
-            affectedRows = payDao.update(pay);
-            //更新失败
-            //TODO 应该将结果打印到系统日志中, 以便后续手动处理
-            if (affectedRows != 1) {
-                throw new UpdateException(ms.getMessage("db.update.pay.failure", null, locale));
-            }
+//            Pay pay = new Pay()
+//                    .setId(outTradeNo)
+//                    .setAmount(amount)
+//                    .setTradeNo(tradeNo)
+//                    .setDone(true)
+//
+//                    //TODO 这里JSON化的字符串过长，数据库中的字段长度不够，需要修改数据库字段长度
+//                    .setDetail(om.writeValueAsString(params));
+//
+//
+//            //更新支付信息
+//            affectedRows = payDao.update(pay);
+//            //更新失败
+//            //TODO 应该将结果打印到系统日志中, 以便后续手动处理
+//            if (affectedRows != 1) {
+//                throw new UpdateException(ms.getMessage("db.update.pay.failure", null, locale));
+//            }
 
             //TODO 更新用户余额
         }
 
         //支付失败
-        else {
-            affectedRows = payDao.delete(outTradeNo);
-            if (affectedRows != 1) {
-                throw new DeleteException(ms.getMessage("db.delete.pay.failure", null, locale));
-            }
-        }
+//        else {
+//            affectedRows = payDao.delete(outTradeNo);
+//            if (affectedRows != 1) {
+//                throw new DeleteException(ms.getMessage("db.delete.pay.failure", null, locale));
+//            }
+//        }
     }
 }

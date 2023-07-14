@@ -3,13 +3,10 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.domain.bind.ConsumeType;
 import cn.qkmango.ccms.domain.entity.Card;
-import cn.qkmango.ccms.domain.entity.Consume;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.dao.CardDao;
-import cn.qkmango.ccms.mvc.dao.ConsumeDao;
 import cn.qkmango.ccms.mvc.dao.UserDao;
 import cn.qkmango.ccms.mvc.service.CardService;
 import jakarta.annotation.Resource;
@@ -37,13 +34,9 @@ public class CardServiceImpl implements CardService {
     private CardDao cardDao;
     @Resource
     private UserDao userDao;
-    @Resource
-    private ConsumeDao consumeDao;
 
     @Resource
     private ReloadableResourceBundleMessageSource messageSource;
-    @Resource(name = "redisUtil")
-    private RedisUtil redis;
 
     /**
      * 更新卡状态
@@ -88,17 +81,9 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public R<List<Card>> list(Pagination<Card> pagination) {
-
-        String key = redis.key("card:pagination", pagination, "card");
-        R r = redis.get(key, R.class);
-        if (r == null) {
-            // 如果缓存中没有数据, 就从数据库中查询
-            List<Card> cardList = cardDao.list(pagination);
-            int count = cardDao.count();
-            r = R.success(cardList).setCount(count);
-            redis.set(key, r, 5 * 60);
-        }
-        return r;
+        List<Card> cardList = cardDao.list(pagination);
+        int count = cardDao.count();
+        return R.success(cardList).setCount(count);
     }
 
 //    /**
@@ -167,15 +152,11 @@ public class CardServiceImpl implements CardService {
 
         int affectedRows = 0;
 
-        Consume consume = new Consume();
-//        consume.setUser(card.getUser());
-        consume.setPrice(card.getBalance());
-        consume.setCreateTime(new Date());
-        consume.setInfo("充值");
-        consume.setType(ConsumeType.RECHARGE);
+
 
         //插入消费记录(充值)
-        affectedRows = consumeDao.insert(consume);
+        // TODO
+        affectedRows = 0;
         if (affectedRows != 1) {
             throw new UpdateException(messageSource.getMessage("db.update.recharge.failure", null, locale));
         }
