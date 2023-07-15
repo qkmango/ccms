@@ -12,9 +12,11 @@ import jakarta.validation.constraints.NotNull;
  * @version 1.0
  * @date 2022-10-30 12:29
  */
-public class Pos extends Account {
+public class Pos {
 
-    private Integer posId;
+    private Integer id;
+
+    private Integer account;
 
     private String name;
 
@@ -28,6 +30,15 @@ public class Pos extends Account {
     private String store;
 
     public Pos() {
+    }
+
+    public Integer getAccount() {
+        return account;
+    }
+
+    public Pos setAccount(Integer account) {
+        this.account = account;
+        return this;
     }
 
     public String getAddress() {
@@ -46,12 +57,12 @@ public class Pos extends Account {
         this.type = type;
     }
 
-    public Integer getPosId() {
-        return posId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setPosId(Integer posId) {
-        this.posId = posId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -73,11 +84,12 @@ public class Pos extends Account {
     @Override
     public String toString() {
         return "Pos{" +
-                "posId=" + posId +
+                "id=" + id +
+                ", account=" + account +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", type=" + type +
-                ", storeId='" + store + '\'' +
+                ", store='" + store + '\'' +
                 '}';
     }
 }

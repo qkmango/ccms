@@ -3,6 +3,12 @@
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.AccountDao">
 
+    <insert id="insert">
+        insert into t_account
+            (id, password, state, role, department)
+        values (#{id}, #{password}, #{state}, #{role}, #{department})
+    </insert>
+
     <select id="getAccountPassword" resultType="java.lang.String">
         select password
         from
@@ -109,16 +115,12 @@
         where id = #{id}
     </update>
 
-    <select id="groupUser" resultType="cn.qkmango.ccms.domain.entity.Account">
-        select id, name, email
-        from t_user
-        where clazz = (select clazz from t_user where id = #{id})
-    </select>
 
     <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Account">
         select id,
                state,
-               role
+               role,
+               department
         from t_account
         where id = #{id}
     </select>
@@ -131,6 +133,35 @@
         from t_account
         where id = #{id}
           and role = #{role}
+    </select>
+
+    <select id="list" resultType="cn.qkmango.ccms.domain.entity.Account">
+        select SQL_CALC_FOUND_ROWS
+        id,
+        state,
+        role,
+        department
+        from t_account
+        <where>
+            <if test="param != null">
+                <if test="param.id != null and param.id != ''">
+                    id = #{param.id}
+                </if>
+                <if test="param.state != null">
+                    and state = #{param.state}
+                </if>
+                <if test="param.role != null">
+                    and `role` = #{param.role}
+                </if>
+                <if test="param.department != null">
+                    and department = #{param.department}
+                </if>
+            </if>
+        </where>
+        order by id asc
+        <if test="pagination == true">
+            LIMIT #{skipCount},#{limit}
+        </if>
     </select>
 
 

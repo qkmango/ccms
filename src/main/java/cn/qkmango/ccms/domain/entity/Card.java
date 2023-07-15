@@ -38,36 +38,40 @@ public class Card implements Serializable {
     public Card() {
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public Card setId(String id) {
+        this.id = id;
+        return this;
+    }
+
     public String getAccount() {
         return account;
     }
 
-    public void setAccount(String account) {
+    public Card setAccount(String account) {
         this.account = account;
+        return this;
     }
 
     public CardState getState() {
         return state;
     }
 
-    public void setState(CardState state) {
+    public Card setState(CardState state) {
         this.state = state;
+        return this;
     }
 
     public Integer getBalance() {
         return balance;
     }
 
-    public void setBalance(Integer balance) {
+    public Card setBalance(Integer balance) {
         this.balance = balance;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        return this;
     }
 
     @Override

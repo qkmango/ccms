@@ -30,12 +30,12 @@ public class Test {
         Role p = Role.admin;
         String id = "1";
         if (session == null) {
-            account = new Account(id, null, Role.admin, AccountState.normal);
+            account = new Account(id, null, Role.admin, AccountState.normal,1);
             request.getSession(true).setAttribute("account", account);
         } else {
             account = (Account) request.getSession().getAttribute("account");
             if (account == null) {
-                account = new Account(id, null, Role.admin, AccountState.normal);
+                account = new Account(id, null, Role.admin, AccountState.normal,1);
                 request.getSession(true).setAttribute("account", account);
             }
         }

@@ -8,70 +8,71 @@ package cn.qkmango.ccms.domain.entity;
  *
  * @author qkmango
  */
-public class User extends Account {
+public class User {
 
-    private String userId;
+    private String id;
 
-    private Integer card;
+    private Integer account;
+
+    private Long card;
 
     private String name;
 
     private String email;
 
-    private Integer department;
-
-
-    public User() {
+    public String getId() {
+        return id;
     }
 
-    public String getUserId() {
-        return userId;
+    public User setId(String id) {
+        this.id = id;
+        return this;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public Integer getAccount() {
+        return account;
+    }
+
+    public User setAccount(Integer account) {
+        this.account = account;
+        return this;
+    }
+
+    public Long getCard() {
+        return card;
+    }
+
+    public User setCard(Long card) {
+        this.card = card;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public User setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public User setEmail(String email) {
         this.email = email;
+        return this;
     }
-
-    public Integer getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Integer department) {
-        this.department = department;
-    }
-
-    public Integer getCard() {
-        return card;
-    }
-
-    public void setCard(Integer card) {
-        this.card = card;
-    }
-
-
 
     @Override
     public String toString() {
         return "User{" +
+                "id='" + id + '\'' +
+                ", account=" + account +
+                ", card=" + card +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", department=" + department +
                 '}';
     }
 }

@@ -4,6 +4,8 @@ import cn.qkmango.ccms.domain.entity.Department;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 /**
  * 描述
  * <p></p>
@@ -24,5 +26,5 @@ public interface DepartmentDao extends BaseDao {
     Department getRecordById(Integer id);
 
 
-
+    List<Department> childList(Integer id);
 }

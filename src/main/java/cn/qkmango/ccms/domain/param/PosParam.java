@@ -28,9 +28,7 @@ public class PosParam extends Pos {
                 ", type=" + getType() +
                 ", store='" + getStore() + '\'' +
                 ", id='" + getId() + '\'' +
-                ", password='" + getPassword() + '\'' +
                 ", name='" + getName() + '\'' +
-                ", role=" + getRole() +
                 '}';
     }
 }

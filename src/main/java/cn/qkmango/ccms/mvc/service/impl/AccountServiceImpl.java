@@ -1,18 +1,22 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
+import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.common.util.SnowFlake;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.Department;
 import cn.qkmango.ccms.domain.entity.User;
+import cn.qkmango.ccms.domain.pagination.Pagination;
+import cn.qkmango.ccms.domain.param.AccountInsertParam;
 import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.UserDao;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
-import cn.qkmango.ccms.common.util.UserSession;
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
@@ -56,6 +60,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Resource
     private DepartmentService departmentService;
+
+    @Resource
+    private SnowFlake snowFlake;
 
     @Resource
     private StringRedisTemplate srt;
@@ -142,16 +149,15 @@ public class AccountServiceImpl implements AccountService {
         User userRecord = null;
         LinkedList<Department> departmentChain = null;
 
-
         //获取账户信息
         accountRecord = dao.getRecordById(accountId);
+        //获取部门链
+        departmentChain = departmentService.departmentChain(accountRecord.getDepartment());
 
-        //获 取卡信息/用户信息, 如果是user角色才有卡信息
-
+        //获取 卡信息/用户信息, 如果是user角色才有卡信息
         if (accountRecord.getRole() == Role.user) {
             cardRecord = cardDao.getRecordByAccount(accountId);
             userRecord = userDao.getRecordByAccount(accountId);
-            departmentChain = departmentService.departmentChain(userRecord.getDepartment());
         }
 
         AccountInfoVO vo = new AccountInfoVO();
@@ -195,16 +201,6 @@ public class AccountServiceImpl implements AccountService {
         srt.delete(key);
     }
 
-    /**
-     * 同组用户列表
-     *
-     * @return 同组用户列表
-     */
-    @Override
-    public List<Account> groupUser() {
-        String id = UserSession.getAccountId();
-        return dao.groupUser(id);
-    }
 
     /**
      * 注销账户
@@ -272,6 +268,60 @@ public class AccountServiceImpl implements AccountService {
         int affectedRows = dao.update(updateAccount);
         if (affectedRows != 1) {
             throw new UpdateException(messageSource.getMessage("db.account.update.failure", null, locale));
+        }
+    }
+
+    @Override
+    public R<List<Account>> list(Pagination<Account> pagination) {
+        List<Account> list = dao.list(pagination);
+        int count = dao.count();
+        return R.success(list).setCount(count);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void insert(AccountInsertParam param, Locale locale) throws InsertException {
+        int affectedRows = 0;
+        // 1. 添加 account 账户
+        Account account = new Account()
+                .setId(param.getId().toString())
+                .setRole(param.getRole())
+                .setState(param.getAccountState())
+                .setDepartment(param.getDepartment())
+                .setPassword(passwordEncoder.encode("123456"));
+
+        affectedRows = dao.insert(account);
+        if (affectedRows != 1) {
+            throw new InsertException(messageSource.getMessage("db.account.insert.failure", null, locale));
+        }
+
+        //如果不是user角色, 则不需要添加 card 和 user
+        if (param.getRole() != Role.user) {
+            return;
+        }
+
+        // 2. 添加 card 卡片
+        long cardId = snowFlake.nextId();
+        Card card = new Card()
+                .setId(Long.toString(cardId))
+                .setAccount(param.getId().toString())
+                .setBalance(0)
+                .setState(CardState.normal);
+        affectedRows = cardDao.insert(card);
+        if (affectedRows != 1) {
+            throw new InsertException(messageSource.getMessage("db.account.insert.failure", null, locale));
+        }
+
+        // 3. 添加 user 用户
+        long userId = snowFlake.nextId();
+        User user = new User()
+                .setId(Long.toString(userId))
+                .setAccount(param.getId())
+                .setCard(cardId)
+                .setName(param.getName());
+        affectedRows = userDao.insert(user);
+        if (affectedRows != 1) {
+            throw new InsertException(messageSource.getMessage("db.account.insert.failure", null, locale));
         }
     }
 }

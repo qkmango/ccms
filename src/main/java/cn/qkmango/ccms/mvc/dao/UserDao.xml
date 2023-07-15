@@ -3,9 +3,10 @@
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.UserDao">
     <insert id="insert">
-        Insert Into t_user(id, name, idCard, password, clazz, specialized, faculty)
-        values (#{id}, #{name}, #{idCard}, #{password}, #{clazz}, #{specialized}, #{faculty})
+        Insert Into t_user(id, account, card, name)
+        values (#{id}, #{account}, #{card}, #{name})
     </insert>
+
     <update id="resetPassword">
         update t_user
         set password = #{password}
@@ -70,8 +71,7 @@
             account,
             card,
             name,
-            email,
-            department
+            email
         from
         t_user
         where account = #{account}

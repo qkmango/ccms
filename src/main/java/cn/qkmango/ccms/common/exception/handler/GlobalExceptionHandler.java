@@ -3,6 +3,7 @@ package cn.qkmango.ccms.common.exception.handler;
 import cn.qkmango.ccms.common.exception.*;
 import cn.qkmango.ccms.common.map.R;
 
+import jakarta.validation.ValidationException;
 import org.apache.log4j.Logger;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -64,11 +65,10 @@ public class GlobalExceptionHandler {
      * 控制器入参校验异常处理
      *
      * @param e BindException
-     * @return 含有异常信息的 ResponseMap
+     * @return 含有异常信息的 R
      */
     @ExceptionHandler(BindException.class)
     public R<String> bindExceptionHandle(BindException e) {
-        e.printStackTrace();
         List<ObjectError> errors = e.getAllErrors();
         StringJoiner joiner = new StringJoiner(",", "[", "]");
         errors.forEach(er -> joiner.add(er.getDefaultMessage()));
@@ -78,11 +78,24 @@ public class GlobalExceptionHandler {
         return R.fail(message);
     }
 
+    /**
+     * 控制器入参校验异常处理
+     * 直接在控制器入参上使用相关的约束注解，抛出的异常
+     *
+     * @param e ValidationException
+     * @return 含有异常信息的 R
+     */
+    @ExceptionHandler(ValidationException.class)
+    public R<String> validationExceptionHandle(ValidationException e) {
+        logger.warn(e.getMessage());
+        return R.fail(e.getMessage());
+    }
 
     /**
      * 捕获所有异常
+     *
      * @param e 异常
-     * @return 含有异常信息的 ResponseMap
+     * @return 含有异常信息的 R
      */
     @ExceptionHandler({Throwable.class, Exception.class})
     public R<String> allThrowableHandler(Throwable e) {

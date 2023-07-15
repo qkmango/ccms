@@ -1,29 +1,31 @@
 package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.annotation.Permission;
+import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.common.util.UserSession;
-import cn.qkmango.ccms.common.validate.group.Query;
+import cn.qkmango.ccms.common.validate.group.Insert;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.domain.entity.Card;
+import cn.qkmango.ccms.domain.pagination.Pagination;
+import cn.qkmango.ccms.domain.param.AccountInsertParam;
 import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
 import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.mvc.service.UserService;
+import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Locale;
@@ -144,7 +146,6 @@ public class AccountController {
      *
      * @return 用户信息
      */
-//    @Permission({Role.admin, Role.user})
     @GetMapping("one/current-account-info.do")
     public R currentAccountInfo() {
         Account account = UserSession.getAccount();
@@ -186,14 +187,21 @@ public class AccountController {
     }
 
     /**
-     * 同组用户列表
+     * 账户分页查询
      *
-     * @return 同组用户列表
+     * @param pagination
+     * @return
      */
-    @GetMapping("group-user/all/list.do")
-    public R<List> groupUser() {
-        List<Account> data = service.groupUser();
-        return R.success(data);
+    @Permission(Role.admin)
+    @PostMapping("pagination/list.do")
+    public R<List<Account>> list(@RequestBody Pagination<Account> pagination) {
+        return service.list(pagination);
     }
 
+    @Permission(Role.admin)
+    @PostMapping("one/insert.do")
+    public R insert(@RequestBody @Validated AccountInsertParam account, Locale locale) throws InsertException {
+        service.insert(account, locale);
+        return R.success();
+    }
 }

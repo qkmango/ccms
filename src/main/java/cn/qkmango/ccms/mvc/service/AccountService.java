@@ -1,8 +1,12 @@
 package cn.qkmango.ccms.mvc.service;
 
+import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.domain.pagination.Pagination;
+import cn.qkmango.ccms.domain.param.AccountInsertParam;
 import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
 import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 
@@ -55,12 +59,6 @@ public interface AccountService {
      */
     void updateEmail(Account account, String email, String captcha, Locale locale) throws UpdateException;
 
-    /**
-     * 同组用户列表
-     *
-     * @return 同组用户列表
-     */
-    List<Account> groupUser();
 
     /**
      * 注销账户
@@ -76,4 +74,21 @@ public interface AccountService {
      * @param account 账户ID
      */
     void resetPassword(String account, Locale locale) throws UpdateException;
+
+    /**
+     * 账户分页查询
+     *
+     * @param pagination
+     * @return
+     */
+    R<List<Account>> list(Pagination<Account> pagination);
+
+    /**
+     * 添加账户
+     *
+     * @param account
+     * @param locale
+     */
+    void insert(AccountInsertParam account, Locale locale) throws InsertException;
+
 }

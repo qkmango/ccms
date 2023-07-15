@@ -1,5 +1,6 @@
 package cn.qkmango.ccms.domain.entity;
 
+import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Query.Login;
 import cn.qkmango.ccms.common.validate.group.Update;
 import cn.qkmango.ccms.domain.bind.AccountState;
@@ -27,51 +28,68 @@ public class Account implements Serializable {
     @NotNull(groups = Login.class)
     private String password;
 
-    @NotNull(groups = Login.class)
+    @NotNull(groups = {Login.class})
     private Role role;
 
     private AccountState state;
 
+    private Integer department;
+
+
     public Account() {
     }
 
-    public Account(String id, @NotNull(groups = Login.class) String password, @NotNull(groups = Login.class) Role role, AccountState state) {
+    public Account(String id, String password, Role role, AccountState state, Integer department) {
         this.id = id;
         this.password = password;
         this.role = role;
         this.state = state;
+        this.department = department;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public Account setId(String id) {
         this.id = id;
+        return this;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public Account setPassword(String password) {
         this.password = password;
+        return this;
     }
 
     public Role getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public Account setRole(Role role) {
         this.role = role;
+        return this;
     }
 
     public AccountState getState() {
         return state;
     }
 
-    public void setState(AccountState state) {
+    public Account setState(AccountState state) {
         this.state = state;
+        return this;
+    }
+
+    public Integer getDepartment() {
+        return department;
+    }
+
+    public Account setDepartment(Integer department) {
+        this.department = department;
+        return this;
     }
 
     @Override
@@ -81,6 +99,7 @@ public class Account implements Serializable {
                 ", password='" + password + '\'' +
                 ", role=" + role +
                 ", state=" + state +
+                ", department=" + department +
                 '}';
     }
 }

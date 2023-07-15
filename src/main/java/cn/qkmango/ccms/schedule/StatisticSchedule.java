@@ -22,7 +22,7 @@ import java.util.List;
  * @version 1.0
  * @date 2023-02-05 18:07
  */
-@Component
+//@Component
 public class StatisticSchedule {
 
     @Resource

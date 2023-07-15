@@ -3,6 +3,7 @@ package cn.qkmango.ccms.mvc.dao;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Pos;
+import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 import cn.qkmango.ccms.domain.vo.UserAccountInfoVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,7 +19,7 @@ import java.util.List;
  * @date 2022-10-22 17:49
  */
 @Mapper
-public interface AccountDao {
+public interface AccountDao extends BaseDao<Account> {
 
     /**
      * 登陆
@@ -86,12 +87,6 @@ public interface AccountDao {
     int updateEmail(@Param("account") Account account,
                     @Param("email") String email);
 
-    /**
-     * 同组用户列表
-     *
-     * @return 同组用户列表
-     */
-    List<Account> groupUser(String id);
 
 
     /**
@@ -117,4 +112,8 @@ public interface AccountDao {
      * @return
      */
     Account login(Account account);
+
+    List<Account> list(Pagination<Account> pagination);
+
+    int insert(Account account);
 }

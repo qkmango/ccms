@@ -4,14 +4,25 @@
 <mapper namespace="cn.qkmango.ccms.mvc.dao.DepartmentDao">
 
     <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Department">
-        select
-            id,
-            name,
-            description,
-            type,
-            parent,
-            grade
-        from t_department where id = #{id}
+        select id,
+               name,
+               description,
+               parent,
+               addition
+        from t_department
+        where id = #{id}
     </select>
+
+    <select id="childList" resultType="cn.qkmango.ccms.domain.entity.Department">
+        select id,
+               name,
+               parent,
+               addition,
+               description,
+               (id NOT IN (SELECT DISTINCT parent FROM t_department)) AS leaf
+        from t_department
+        where parent = #{parent}
+    </select>
+
 
 </mapper>

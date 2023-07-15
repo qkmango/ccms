@@ -3,6 +3,7 @@ package cn.qkmango.ccms.mvc.service;
 import cn.qkmango.ccms.domain.entity.Department;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 部门业务逻辑接口
@@ -28,4 +29,6 @@ public interface DepartmentService {
      * @return
      */
     LinkedList<Department> departmentChain(Integer childId);
+
+    List<Department> childList(Integer id);
 }

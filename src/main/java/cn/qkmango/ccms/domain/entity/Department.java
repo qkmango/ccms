@@ -13,17 +13,17 @@ public class Department {
     private String name;
     private String description;
     private Integer parent;
-    private String grade;
+    //附加信息，可以区分 年级 等等
+    private String addition;
+    private Boolean leaf;
 
-    public Department() {
+    public Boolean getLeaf() {
+        return leaf;
     }
 
-    public Department(Integer id, String name, String description, Integer parent, String grade) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.parent = parent;
-        this.grade = grade;
+    public Department setLeaf(Boolean leaf) {
+        this.leaf = leaf;
+        return this;
     }
 
     public Integer getId() {
@@ -58,12 +58,12 @@ public class Department {
         this.parent = parent;
     }
 
-    public String getGrade() {
-        return grade;
+    public String getAddition() {
+        return addition;
     }
 
-    public void setGrade(String grade) {
-        this.grade = grade;
+    public void setAddition(String addition) {
+        this.addition = addition;
     }
 
     @Override
@@ -73,7 +73,8 @@ public class Department {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", parent=" + parent +
-                ", grade='" + grade + '\'' +
+                ", addition='" + addition + '\'' +
+                ", left=" + leaf +
                 '}';
     }
 }

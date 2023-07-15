@@ -41,7 +41,7 @@ public class PosServiceImpl implements PosService {
 
     /**
      * 添加刷卡机
-     *
+     * TODO 修改表结构，密码字段待处理
      * @param pos    刷卡机
      * @param locale 语言环境
      * @return 新添加的刷卡机ID
@@ -51,7 +51,7 @@ public class PosServiceImpl implements PosService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public String add(Pos pos, Locale locale) throws InsertException {
         //设置默认密码
-        pos.setPassword(POS_DEFAULT_PASSWORD);
+//        pos.setPassword(POS_DEFAULT_PASSWORD);
         int affectedRows = dao.add(pos);
         if (affectedRows != 1) {
             throw new InsertException(messageSource.getMessage("db.pos.add.failure", null, locale));

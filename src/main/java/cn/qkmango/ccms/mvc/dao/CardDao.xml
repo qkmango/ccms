@@ -9,8 +9,9 @@
     </select>
 
     <insert id="insert">
-        insert into t_card(user)
-        values (#{user})
+        insert into t_card
+            (id, balance, state, account)
+        values (#{id}, #{balance}, #{state}, #{account})
     </insert>
 
     <update id="state">

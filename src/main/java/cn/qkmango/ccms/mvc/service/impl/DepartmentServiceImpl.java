@@ -8,6 +8,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 部门业务逻辑实现类
@@ -38,8 +39,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department = null;
         // 如果子部门不为空，且子部门的父部门id不为0
 
-        //最大循环次数 3，防止意外情况的死循环
-        byte maxLoop = 3;
+        //最大循环次数 5，防止意外情况的死循环
+        byte maxLoop = 5;
         byte i = 0;
         while ((department = dao.getRecordById(childId)) != null
                 &&
@@ -52,5 +53,13 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         return chain;
+    }
+
+    @Override
+    public List<Department> childList(Integer id) {
+        if (id == null) {
+            id = 0;
+        }
+        return dao.childList(id);
     }
 }
