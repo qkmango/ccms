@@ -2,8 +2,8 @@ package cn.qkmango.ccms.web.interceptor;
 
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.util.ResponseUtil;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.domain.entity.Account;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
@@ -24,21 +24,10 @@ import java.lang.reflect.Method;
  */
 public class PermissionsInterceptor implements HandlerInterceptor {
 
-    private final String loginApi;
     private final String OPERATION_WITHOUT_ROLE_JSON = "{\"success\":false,\"message\":\"无权操作\"}";
-
-    public PermissionsInterceptor(String loginApi) {
-        this.loginApi = loginApi;
-    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-        //如果如果是登陆接口则放行
-        String path = request.getServletPath();
-        if (loginApi.equals(path)) {
-            return true;
-        }
 
         //获取方法
         HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -48,8 +37,7 @@ public class PermissionsInterceptor implements HandlerInterceptor {
         Class<?> clazz = method.getDeclaringClass();
 
         //获取用户的权限类型
-        Account account = (Account) request.getSession().getAttribute("account");
-        Role role = account.getRole();
+        Role role = AccountHolder.getRole();
 
         //判断方法是否有注解
         if (method.isAnnotationPresent(Permission.class)) {

@@ -5,8 +5,7 @@ import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.common.util.UserSession;
-import cn.qkmango.ccms.common.validate.group.Insert;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.Pagination;
@@ -16,13 +15,16 @@ import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.mvc.service.UserService;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
+import cn.qkmango.ccms.security.token.JWT;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +54,14 @@ public class AccountController {
     private UserService userService;
 
     @Resource
+    private JWT jwt;
+
+    @Resource
     private PasswordEncoder passwordEncoder;
+
+    @Value("${ccms.jwt.expire}")
+    private int tokenExpireTime;
+
 
     /**
      * 登陆
@@ -64,24 +73,17 @@ public class AccountController {
      * @throws LoginException 登陆异常登陆失败
      */
     @PostMapping("login.do")
-    public R<Object> login(Account account, HttpServletRequest request, Locale locale) throws LoginException {
+    public R<Object> login(Account account, HttpServletRequest request, HttpServletResponse response, Locale locale) throws LoginException {
         Account loginAccount = service.login(account, locale);
-        request.getSession(true).setAttribute("account", loginAccount);
+
+        //创建 token
+        String token = jwt.create(loginAccount);
+        //设置 token 到 cookie
+        AccountHolder.setTokenInCookie(token, jwt.getExpire());
+
         return R.success(messageSource.getMessage("response.login.success", null, locale));
     }
 
-    /**
-     * 退出
-     *
-     * @param request HTTP请求
-     * @param locale  语言环境
-     * @return 结果
-     */
-    @PostMapping("logout.do")
-    public R<Object> logout(HttpServletRequest request, Locale locale) {
-        request.getSession().invalidate();
-        return R.success(messageSource.getMessage("response.logout.success", null, locale));
-    }
 
     /**
      * 修改密码
@@ -148,8 +150,9 @@ public class AccountController {
      */
     @GetMapping("one/current-account-info.do")
     public R currentAccountInfo() {
-        Account account = UserSession.getAccount();
-        AccountInfoVO info = service.accountInfo(account.getId());
+//        Account account = AccountHolder.getAccount();
+        String id = AccountHolder.getId();
+        AccountInfoVO info = service.accountInfo(id);
         return R.success(info);
     }
 
@@ -181,7 +184,11 @@ public class AccountController {
                          @Email(message = "{valid.email.illegal}") String email,
                          @Pattern(regexp = "^[a-zA-Z0-9]{5}$", message = "{valid.captcha.illegal}") String captcha,
                          Locale locale) throws UpdateException {
-        Account account = UserSession.getAccount();
+
+        String id = (String) AccountHolder.getId();
+        Role role = AccountHolder.getRole();
+
+        Account account = new Account().setId(id).setRole(role);
         service.updateEmail(account, email, captcha, locale);
         return R.success(messageSource.getMessage("db.update.email.success", null, locale));
     }

@@ -3,7 +3,8 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.RedisUtil;
-import cn.qkmango.ccms.common.util.UserSession;
+import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
@@ -14,9 +15,9 @@ import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
 import cn.qkmango.ccms.security.request.RequestURL;
+import cn.qkmango.ccms.security.token.JWT;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -48,6 +49,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Resource
     private ReloadableResourceBundleMessageSource messageSource;
+
+    @Resource
+    private JWT jwt;
 
     @Lazy
     @Autowired
@@ -100,12 +104,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * Gitee 回调 登陆/绑定
      * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
      *
-     * @param state             授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
-     *                          在redis中有效期为5分钟, 拼接为 authentication:Role:UUID
-     * @param code              授权码
-     * @param error             有错误时返回
+     * @param state            授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
+     *                         在redis中有效期为5分钟, 拼接为 authentication:Role:UUID
+     * @param code             授权码
+     * @param error            有错误时返回
      * @param errorDescription 错误描述
-     * @param locale            语言环境
+     * @param locale           语言环境
      * @return 返回重定向页面
      */
     @Override
@@ -165,7 +169,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
             }
             case bind -> {
-                Account account = UserSession.getAccount();
+                Account account = AccountHolder.getAccount();
                 OpenPlatform openPlatform = new OpenPlatform(
                         account.getId(),
                         PlatformType.gitee,
@@ -173,7 +177,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         uid,
                         account.getRole());
 
-                thisService.toBind(openPlatform, UserSession.getAccount(), locale);
+                thisService.toBind(openPlatform, AccountHolder.getAccount(), locale);
                 message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
                 return builder
                         .with("success", true)
@@ -253,7 +257,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
             case bind -> {
                 //判断认证用途，执行 绑定 的操作
-                Account account = UserSession.getAccount();
+                Account account = AccountHolder.getAccount();
+                String id = AccountHolder.getId();
+                Role role = AccountHolder.getRole();
                 OpenPlatform openPlatform = new OpenPlatform(
                         account.getId(),
                         PlatformType.dingtalk,
@@ -347,7 +353,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
             case bind -> {
                 //判断认证用途，执行 绑定 的操作
-                Account account = UserSession.getAccount();
+                Account account = AccountHolder.getAccount();
                 OpenPlatform openPlatform = new OpenPlatform(
                         account.getId(),
                         PlatformType.alipay,
@@ -375,7 +381,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public List<OpenPlatform> openPlatformState() {
-        Account account = UserSession.getAccount();
+        Account account = AccountHolder.getAccount();
         return dao.openPlatformBindState(account);
     }
 
@@ -395,8 +401,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         //登陆成功, 添加session ,返回用户信息
         loginAccount.setRole(account.getRole());
-        HttpSession session = UserSession.getSession(true);
-        session.setAttribute("account", loginAccount);
+
+//        HttpSession session = AccountHolder.getSession(true);
+//        session.setAttribute("account", loginAccount);
+
+        String token = jwt.create(loginAccount);
+        AccountHolder.setTokenInCookie(token, jwt.getExpire());
 
         return true;
     }
@@ -442,7 +452,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public R unbind(PlatformType platform, Locale locale) throws UpdateException {
-        Account account = UserSession.getAccount();
+        Account account = AccountHolder.getAccount();
         int affectedRows = dao.unbind(platform, account);
         if (affectedRows != 1) {
             throw new UpdateException(messageSource.getMessage("db.update.authentication.unbind.failure", null, locale));

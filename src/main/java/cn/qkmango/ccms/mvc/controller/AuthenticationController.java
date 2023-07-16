@@ -3,7 +3,7 @@ package cn.qkmango.ccms.mvc.controller;
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.common.util.UserSession;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
@@ -52,7 +52,7 @@ public class AuthenticationController {
 
         //如果是绑定第三方平台，则说明已经登陆过了，则不信任前端传的权限，从session中获取
         if (purpose == PurposeType.bind) {
-            role = UserSession.getAccount().getRole();
+            role = AccountHolder.getAccount().getRole();
         }
 
         AuthenticationAccount authAccount = new AuthenticationAccount(role, platform, purpose);

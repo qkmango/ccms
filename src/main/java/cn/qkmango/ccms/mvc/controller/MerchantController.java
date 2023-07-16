@@ -52,9 +52,6 @@ public class MerchantController {
     @Resource
     private PosService posService;
 
-    @Value("${ccms.pos.default.password}")
-    private String POS_DEFAULT_PASSWORD;
-
 
     // ================================ 以下为区域管理 ================================
     /**
@@ -204,7 +201,7 @@ public class MerchantController {
     @PostMapping("pos/one/insert.do")
     public R insertPos(@Validated(Insert.class) Pos pos, Locale locale) throws InsertException {
         String id = posService.add(pos, locale);
-        String[] args = {id, POS_DEFAULT_PASSWORD};
+        String[] args = {id, "123456"};
         return R.success(id,messageSource.getMessage("db.pos.add.success", args, locale));
     }
 

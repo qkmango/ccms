@@ -5,6 +5,9 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.security.holder.AccountHolder;
+import cn.qkmango.ccms.security.token.JWT;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,21 +26,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Permission(Role.admin)
 public class Test {
 
+    @Resource
+    private JWT jwt;
+
     @RequestMapping("/testLogin.do")
     public R<Account> test(HttpServletRequest request, Role type) {
-        HttpSession session = request.getSession(false);
-        Account account;
-        Role p = Role.admin;
         String id = "1";
-        if (session == null) {
-            account = new Account(id, null, Role.admin, AccountState.normal,1);
-            request.getSession(true).setAttribute("account", account);
-        } else {
-            account = (Account) request.getSession().getAttribute("account");
-            if (account == null) {
-                account = new Account(id, null, Role.admin, AccountState.normal,1);
-                request.getSession(true).setAttribute("account", account);
-            }
+
+        Account account = AccountHolder.getAccount();
+
+        if (account == null) {
+            account = new Account(id, null, Role.admin, AccountState.normal, 1);
+            String token = jwt.create(account);
+            AccountHolder.setTokenInCookie(token, jwt.getExpire());
         }
         return R.success(account);
     }

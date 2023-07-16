@@ -2,7 +2,7 @@ package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.common.util.UserSession;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.mvc.service.AggregationService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,19 +25,19 @@ import java.util.Map;
 @RequestMapping("aggregation")
 public class AggregationController {
 
-    @Resource
-    private AggregationService service;
-
-    /**
-     * 用户欢迎界面聚合数据
-     *
-     * @return 用户首页所需的数据
-     */
-    @Permission(Role.user)
-    @GetMapping("user/welcome.do")
-    public R<Map<String, Object>> userWelcome() {
-        String id = UserSession.getAccountId();
-        Map<String, Object> data = service.userWelcome(id);
-        return R.success(data);
-    }
+//    @Resource
+//    private AggregationService service;
+//
+//    /**
+//     * 用户欢迎界面聚合数据
+//     *
+//     * @return 用户首页所需的数据
+//     */
+//    @Permission(Role.user)
+//    @GetMapping("user/welcome.do")
+//    public R<Map<String, Object>> userWelcome() {
+//        String id = AccountHolder.getAccountId();
+//        Map<String, Object> data = service.userWelcome(id);
+//        return R.success(data);
+//    }
 }

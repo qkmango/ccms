@@ -3,7 +3,7 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.util.CaptchaUtil;
 import cn.qkmango.ccms.common.util.EmailUtil;
 import cn.qkmango.ccms.common.util.RedisUtil;
-import cn.qkmango.ccms.common.util.UserSession;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.mvc.service.CaptchaService;
@@ -46,7 +46,7 @@ public class CaptchaServiceImpl implements CaptchaService {
      */
     @Override
     public void sendChangeEmail(String email, Locale locale) {
-        Account account = UserSession.getAccount();
+        Account account = AccountHolder.getAccount();
 
         //获取用户id和用户类型
         String id = account.getId();

@@ -4,7 +4,7 @@ import cn.qkmango.ccms.common.exception.DeleteException;
 import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.util.SnowFlake;
-import cn.qkmango.ccms.common.util.UserSession;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.mvc.service.AlipayService;
 import cn.qkmango.ccms.pay.AlipayConfig;
@@ -74,7 +74,7 @@ public class AlipayServiceImpl implements AlipayService {
         //将金额转换为分
         int amount = (int) (Double.parseDouble(totalAmount) * 100);
 
-        Account account = UserSession.getAccount();
+        Account account = AccountHolder.getAccount();
         String user = account.getId();
         String id = String.valueOf(sf.nextId());
 

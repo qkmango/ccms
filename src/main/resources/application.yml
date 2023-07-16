@@ -62,14 +62,12 @@ logging:
 
 # 以下是自定义配置
 ccms:
-  login:
-    url: /account/login.do
-  pos:
-    default:
-      password: 888888
   snowflake:
     machine-id: 0
     data-center-id: 0
+  jwt:
+    secret: 123456
+    expire: 600
 
 #  authentication:
 #    gitee:

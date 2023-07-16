@@ -36,9 +36,6 @@ public class PosServiceImpl implements PosService {
     @Resource
     private PosDao dao;
 
-    @Value("${ccms.pos.default.password}")
-    private String POS_DEFAULT_PASSWORD;
-
     /**
      * 添加刷卡机
      * TODO 修改表结构，密码字段待处理
