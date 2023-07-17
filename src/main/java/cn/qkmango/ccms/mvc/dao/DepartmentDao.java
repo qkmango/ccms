@@ -27,4 +27,7 @@ public interface DepartmentDao extends BaseDao {
 
 
     List<Department> childList(Integer id);
+
+    int insert(Department department);
+
 }

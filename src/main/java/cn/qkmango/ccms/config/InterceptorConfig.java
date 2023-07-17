@@ -16,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @version 1.0
  * @date 2022-07-31 20:57
  */
-//@Configuration
+@Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
 
     @Resource(name = "jwt")
@@ -32,7 +32,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 //        registry.addInterceptor(localeChangeInterceptor)
 //                .addPathPatterns("/system/setLocale.do");
 
-//             JWT 拦截器, 用于验证 token, 并将用户信息放入 ThreadLocal
+        // JWT 拦截器, 用于验证 token, 并将用户信息放入 ThreadLocal
         TokenInterceptor tokenInterceptor = new TokenInterceptor(jwt);
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**/*.do")

@@ -15,6 +15,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 
+/**
+ * JWT 工具类
+ *
+ * @author qkmango
+ */
 public class JWT {
 
     private static final Logger logger = Logger.getLogger(GlobalExceptionHandler.class);
@@ -30,13 +35,55 @@ public class JWT {
         parser.setSigningKey(bytes);
     }
 
-
-    public String create(Account account) {
+    /**
+     * 创建指定过期时间的token
+     *
+     * @param account
+     * @param expireIn
+     * @return
+     */
+    public String create(Account account, long expireIn) {
         return builder
                 .claim("id", account.getId())
                 .claim("role", account.getRole().name())
-                .setExpiration(new Date(System.currentTimeMillis() + expire * 1000L))
+                .setExpiration(new Date(expireIn))
                 .compact();
+    }
+
+
+    /**
+     * 创建默认过期时间的token
+     *
+     * @param account
+     * @return
+     */
+    public String create(Account account) {
+        long expireIn = System.currentTimeMillis() + this.expire * 1000L;
+        return this.create(account, expireIn);
+    }
+
+    /**
+     * 创建指定过期时间的 TokenEntity
+     *
+     * @param account
+     * @param expireIn
+     * @return TokenEntity, 包含token和过期时间
+     */
+    public TokenEntity createEntity(Account account, long expireIn) {
+        String token = create(account, expireIn);
+        return new TokenEntity(token, expireIn);
+    }
+
+    /**
+     * 创建 默认过期时间的 TokenEntity
+     *
+     * @param account
+     * @return TokenEntity, 包含token和过期时间
+     */
+    public TokenEntity createEntity(Account account) {
+        long expireIn = System.currentTimeMillis() + this.expire * 1000L;
+        String token = create(account, expireIn);
+        return new TokenEntity(token, expireIn);
     }
 
     public Claims parser(String token) {

@@ -1,9 +1,11 @@
 package cn.qkmango.ccms.mvc.service;
 
+import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.domain.entity.Department;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 部门业务逻辑接口
@@ -31,4 +33,7 @@ public interface DepartmentService {
     LinkedList<Department> departmentChain(Integer childId);
 
     List<Department> childList(Integer id);
+
+    void insert(Department department, Locale locale) throws InsertException;
+
 }

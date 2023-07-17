@@ -69,15 +69,15 @@ public class AccountHolder {
      * @param expireTime 过期时间, 单位: 秒<br>
      *                   推荐从 {@link JWT#getExpire()} 中获取, 以保证 token 和 cookie 的过期时间一致
      */
-    public static void setTokenInCookie(String token, int expireTime) {
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(expireTime);
-        cookie.setPath("/");
-
-        HttpServletResponse response = getResponse();
-        response.addCookie(cookie);
-    }
+//    public static void setTokenInCookie(String token, int expireTime) {
+//        Cookie cookie = new Cookie("token", token);
+//        cookie.setHttpOnly(true);
+//        cookie.setMaxAge(expireTime);
+//        cookie.setPath("/");
+//
+//        HttpServletResponse response = getResponse();
+//        response.addCookie(cookie);
+//    }
 
     public static HttpServletRequest getRequest() {
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();

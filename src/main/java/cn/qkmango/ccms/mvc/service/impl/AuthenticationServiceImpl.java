@@ -16,6 +16,7 @@ import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
 import cn.qkmango.ccms.security.request.RequestURL;
 import cn.qkmango.ccms.security.token.JWT;
+import cn.qkmango.ccms.security.token.TokenEntity;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -399,14 +400,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return false;
         }
 
-        //登陆成功, 添加session ,返回用户信息
+        //登陆成功 ,返回用户信息
         loginAccount.setRole(account.getRole());
 
-//        HttpSession session = AccountHolder.getSession(true);
-//        session.setAttribute("account", loginAccount);
+        TokenEntity tokenEntity = jwt.createEntity(loginAccount);
+//        AccountHolder.setTokenInCookie(token, jwt.getExpire());
 
-        String token = jwt.create(loginAccount);
-        AccountHolder.setTokenInCookie(token, jwt.getExpire());
+        // TODO 第三方登陆后返回token
 
         return true;
     }

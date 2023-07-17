@@ -4,7 +4,6 @@ import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.JWT;
 import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -19,10 +18,10 @@ import org.springframework.web.servlet.ModelAndView;
  * @version 1.0
  * @date 2023-07-16 13:42
  */
-//@Component("tokenInterceptor")
+@Component("tokenInterceptor")
 public class TokenInterceptor implements HandlerInterceptor {
 
-//    @Resource(name = "jwt")
+    @Resource(name = "jwt")
     private JWT jwt;
 
     public TokenInterceptor(JWT jwt) {
@@ -34,20 +33,7 @@ public class TokenInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //从cookie中获取token
-        Cookie[] cookies = request.getCookies();
-        String token = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("token".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
-        }
-
-
-//        String token = request.getHeader("token");
+        String token = request.getHeader("Authorization");
         Claims claims = jwt.parser(token);
 
         //将解析的用户信息 Map<String,Object> claims 存入 UserSession

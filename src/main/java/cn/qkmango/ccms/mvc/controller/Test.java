@@ -7,6 +7,7 @@ import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.JWT;
+import cn.qkmango.ccms.security.token.TokenEntity;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -37,8 +38,6 @@ public class Test {
 
         if (account == null) {
             account = new Account(id, null, Role.admin, AccountState.normal, 1);
-            String token = jwt.create(account);
-            AccountHolder.setTokenInCookie(token, jwt.getExpire());
         }
         return R.success(account);
     }

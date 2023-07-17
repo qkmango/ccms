@@ -1,5 +1,11 @@
 package cn.qkmango.ccms.domain.entity;
 
+import cn.qkmango.ccms.common.validate.group.Insert;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  * 教学部门
  * 院系 专业 班级
@@ -10,11 +16,21 @@ package cn.qkmango.ccms.domain.entity;
  */
 public class Department {
     private Integer id;
+
+    @NotBlank(groups = {Insert.class})
     private String name;
+
     private String description;
+
+    @Min(value = 0, groups = {Insert.class})
+    @NotNull(groups = {Insert.class})
     private Integer parent;
+
     //附加信息，可以区分 年级 等等
     private String addition;
+
+    //是否是叶子节点
+    @NotNull(groups = {Insert.class})
     private Boolean leaf;
 
     public Boolean getLeaf() {

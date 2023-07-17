@@ -179,6 +179,7 @@ public class AccountServiceImpl implements AccountService {
      * @throws UpdateException 更新异常
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void updateEmail(Account account, String email, String captcha, Locale locale) throws UpdateException {
         // 生成redis key
         String key = String.format("captcha:change:email:%s:%s:%s",

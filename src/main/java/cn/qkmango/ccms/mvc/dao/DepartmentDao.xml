@@ -3,12 +3,26 @@
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.DepartmentDao">
 
+    <insert id="insert">
+        insert into t_department(name,
+                                 parent,
+                                 addition,
+                                 description,
+                                 leaf)
+        values (#{name},
+                #{parent},
+                #{addition},
+                #{description},
+                #{leaf})
+    </insert>
+
     <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Department">
         select id,
                name,
-               description,
                parent,
-               addition
+               addition,
+               description,
+               leaf
         from t_department
         where id = #{id}
     </select>
@@ -19,7 +33,7 @@
                parent,
                addition,
                description,
-               (id NOT IN (SELECT DISTINCT parent FROM t_department)) AS leaf
+               leaf
         from t_department
         where parent = #{parent}
     </select>

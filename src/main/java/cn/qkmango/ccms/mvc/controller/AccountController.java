@@ -5,7 +5,6 @@ import cn.qkmango.ccms.common.exception.InsertException;
 import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.Pagination;
@@ -15,7 +14,9 @@ import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.mvc.service.UserService;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.JWT;
+import cn.qkmango.ccms.security.token.TokenEntity;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,7 +25,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -59,10 +59,6 @@ public class AccountController {
     @Resource
     private PasswordEncoder passwordEncoder;
 
-    @Value("${ccms.jwt.expire}")
-    private int tokenExpireTime;
-
-
     /**
      * 登陆
      *
@@ -76,12 +72,12 @@ public class AccountController {
     public R<Object> login(Account account, HttpServletRequest request, HttpServletResponse response, Locale locale) throws LoginException {
         Account loginAccount = service.login(account, locale);
 
-        //创建 token
-        String token = jwt.create(loginAccount);
-        //设置 token 到 cookie
-        AccountHolder.setTokenInCookie(token, jwt.getExpire());
-
-        return R.success(messageSource.getMessage("response.login.success", null, locale));
+        //创建 TokenEntity, 包含 token 和 过期时间
+        TokenEntity tokenEntity = jwt.createEntity(loginAccount);
+        return R.success(
+                tokenEntity,
+                messageSource.getMessage("response.login.success", null, locale)
+        );
     }
 
 
