@@ -2,22 +2,13 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
-import cn.qkmango.ccms.domain.entity.Card;
-import cn.qkmango.ccms.domain.entity.User;
-import cn.qkmango.ccms.domain.vo.UserAndCardVO;
 import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.UserDao;
 import cn.qkmango.ccms.mvc.service.UserService;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Resource;
-
-import java.util.Locale;
 
 /**
  * 用户业务层实现类

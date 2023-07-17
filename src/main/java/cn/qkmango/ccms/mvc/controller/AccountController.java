@@ -181,7 +181,7 @@ public class AccountController {
                          @Pattern(regexp = "^[a-zA-Z0-9]{5}$", message = "{valid.captcha.illegal}") String captcha,
                          Locale locale) throws UpdateException {
 
-        String id = (String) AccountHolder.getId();
+        String id = AccountHolder.getId();
         Role role = AccountHolder.getRole();
 
         Account account = new Account().setId(id).setRole(role);

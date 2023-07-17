@@ -104,36 +104,36 @@ public class R<T> implements Serializable {
     }
 
     public static <T> R<T> success() {
-        return new R<T>(true, null, null, null, null);
+        return new R<>(true, null, null, null, null);
     }
 
     public static <T> R<T> success(T data) {
-        return new R<T>(true, null, data, null, null);
+        return new R<>(true, null, data, null, null);
     }
 
     public static <T> R<T> success(String message) {
-        return new R<T>(true, message, null, null, null);
+        return new R<>(true, message, null, null, null);
     }
 
     public static <T> R<T> success(T data, String message) {
-        return new R<T>(true, message, data, null, null);
+        return new R<>(true, message, data, null, null);
     }
 
     public static <T> R<T> success(T data, int count) {
-        return new R<T>(true, null, data, count, null);
+        return new R<>(true, null, data, count, null);
     }
 
 
     public static <T> R<T> fail(T data) {
-        return new R<T>(false, null, data, null, null);
+        return new R<>(false, null, data, null, null);
     }
 
     public static <T> R<T> fail(String message) {
-        return new R<T>(false, message, null, null, null);
+        return new R<>(false, message, null, null, null);
     }
 
     public static <T> R<T> fail(T data, String message) {
-        return new R<T>(false, message, data, null, null);
+        return new R<>(false, message, data, null, null);
     }
 
 

@@ -2,10 +2,7 @@ package cn.qkmango.ccms.mvc.dao;
 
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-import cn.qkmango.ccms.domain.vo.AccountInfoVO;
-import cn.qkmango.ccms.domain.vo.UserAccountInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -45,39 +42,6 @@ public interface AccountDao extends BaseDao<Account> {
     int updatePassword(String id, String password, Role type);
 
     /**
-     * 刷卡机登陆
-     *
-     * @param account 登陆账户
-     * @return 已登陆的账户信息
-     */
-//    Pos loginPos(Account account);
-
-    /**
-     * 管理员登陆
-     *
-     * @param account 登陆账户
-     * @return 已登陆的账户信息
-     */
-//    Account loginAdmin(Account account);
-
-    /**
-     * 获取用户信息
-     *
-     * @param id 用户ID
-     * @return 用户信息
-     */
-    UserAccountInfoVO userAccountInfo(String id);
-
-
-    /**
-     * 获取管理员信息
-     *
-     * @param id 管理员ID
-     * @return 管理员信息
-     */
-    AccountInfoVO adminAccountInfo(String id);
-
-    /**
      * 更新用户email
      *
      * @param account 账户
@@ -86,7 +50,6 @@ public interface AccountDao extends BaseDao<Account> {
      */
     int updateEmail(@Param("account") Account account,
                     @Param("email") String email);
-
 
 
     /**
@@ -108,6 +71,7 @@ public interface AccountDao extends BaseDao<Account> {
 
     /**
      * 登陆
+     *
      * @param account
      * @return
      */

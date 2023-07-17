@@ -1,9 +1,6 @@
 package cn.qkmango.ccms.mvc.service;
 
 import cn.qkmango.ccms.common.exception.UpdateException;
-import cn.qkmango.ccms.domain.entity.Card;
-
-import java.util.Locale;
 
 /**
  * 学生信息服务层接口

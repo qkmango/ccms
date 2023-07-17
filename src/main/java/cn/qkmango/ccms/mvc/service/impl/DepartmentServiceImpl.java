@@ -5,7 +5,6 @@ import cn.qkmango.ccms.domain.entity.Department;
 import cn.qkmango.ccms.mvc.dao.DepartmentDao;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
 import jakarta.annotation.Resource;
-import jakarta.validation.ValidationException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

@@ -10,7 +10,6 @@ import cn.qkmango.ccms.mvc.service.StatisticService;
 import jakarta.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.List;

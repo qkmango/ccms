@@ -11,7 +11,6 @@ import cn.qkmango.ccms.domain.vo.PosVO;
 import cn.qkmango.ccms.mvc.dao.PosDao;
 import cn.qkmango.ccms.mvc.service.PosService;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

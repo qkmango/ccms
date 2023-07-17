@@ -2,7 +2,6 @@ package cn.qkmango.ccms.mvc.dao;
 
 import cn.qkmango.ccms.domain.entity.Department;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 

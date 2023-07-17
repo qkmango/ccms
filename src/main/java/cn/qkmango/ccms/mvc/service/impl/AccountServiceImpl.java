@@ -5,24 +5,24 @@ import cn.qkmango.ccms.common.exception.LoginException;
 import cn.qkmango.ccms.common.exception.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.SnowFlake;
+import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.Department;
 import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.param.AccountInsertParam;
-import cn.qkmango.ccms.mvc.dao.CardDao;
-import cn.qkmango.ccms.mvc.dao.UserDao;
-import cn.qkmango.ccms.mvc.service.DepartmentService;
-import cn.qkmango.ccms.security.encoder.PasswordEncoder;
-import cn.qkmango.ccms.common.validate.group.Query;
-import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
 import cn.qkmango.ccms.domain.vo.AccountInfoVO;
 import cn.qkmango.ccms.mvc.dao.AccountDao;
+import cn.qkmango.ccms.mvc.dao.CardDao;
+import cn.qkmango.ccms.mvc.dao.UserDao;
 import cn.qkmango.ccms.mvc.service.AccountService;
+import cn.qkmango.ccms.mvc.service.DepartmentService;
+import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import jakarta.annotation.Resource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -144,10 +144,10 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public AccountInfoVO accountInfo(String accountId) {
-        Account accountRecord = null;
+        Account accountRecord;
         Card cardRecord = null;
         User userRecord = null;
-        LinkedList<Department> departmentChain = null;
+        LinkedList<Department> departmentChain;
 
         //获取账户信息
         accountRecord = dao.getRecordById(accountId);
@@ -235,7 +235,7 @@ public class AccountServiceImpl implements AccountService {
 
 
         //注销账户
-        int affectedRows = 0;
+        int affectedRows;
         // 1. 将账户状态改为注销
         Account updateAccount = new Account();
         updateAccount.setId(accountId);
@@ -282,7 +282,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void insert(AccountInsertParam param, Locale locale) throws InsertException {
-        int affectedRows = 0;
+        int affectedRows;
         // 1. 添加 account 账户
         Account account = new Account()
                 .setId(param.getId().toString())

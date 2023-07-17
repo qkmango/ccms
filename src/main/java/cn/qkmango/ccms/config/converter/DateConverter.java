@@ -25,8 +25,8 @@ public class DateConverter implements Converter<String, Date> {
     private static final String TIMESTAMP_FORMAT_REGEX = "^\\d+$";
 
 
-    private static final SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public Date convert(String source) {
@@ -38,14 +38,14 @@ public class DateConverter implements Converter<String, Date> {
 
         if (source.matches(DATETIME_FORMAT_REGEX)) {
             try {
-                return datetimeFormat.parse(source);
+                return DATETIME_FORMAT.parse(source);
             } catch (Exception e) {
                 throw new RuntimeException(String.format("parser %s to Date fail", source));
             }
         }
         if (source.matches(DATE_FORMAT_REGEX)) {
             try {
-                return dateFormat.parse(source);
+                return DATE_FORMAT.parse(source);
             } catch (ParseException e) {
                 throw new RuntimeException(String.format("parser %s to Date fail", source));
             }

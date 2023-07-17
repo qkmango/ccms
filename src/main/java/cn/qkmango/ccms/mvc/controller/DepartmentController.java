@@ -6,7 +6,6 @@ import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.domain.entity.Department;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
 import jakarta.annotation.Resource;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

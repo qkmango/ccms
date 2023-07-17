@@ -40,56 +40,6 @@
         where id = #{id} and password = #{oldPassword}
     </update>
 
-<!--    <select id="loginUser" resultType="cn.qkmango.ccms.domain.entity.User">-->
-<!--        select id, name, password-->
-<!--        from t_user-->
-<!--        where id = #{id}-->
-<!--        and unsubscribe = 0;-->
-<!--    </select>-->
-
-<!--    <select id="loginPos" resultType="cn.qkmango.ccms.domain.entity.Pos">-->
-<!--        select id, name, type, password-->
-<!--        from t_pos-->
-<!--        where id = #{id}-->
-<!--    </select>-->
-
-<!--    <select id="loginAdmin" resultType="cn.qkmango.ccms.domain.entity.Account">-->
-<!--        select id, name, password-->
-<!--        from t_admin-->
-<!--        where id = #{id}-->
-<!--    </select>-->
-
-    <select id="userAccountInfo" resultMap="UserAccountInfoVO">
-        select u.id as account_id,
-        u.name as account_name,
-        u.email as account_email,
-        'user' as account_role,
-
-        u.idCard as user_idcard,
-        u.unsubscribe as user_unsubscribe,
-
-        ca.balance as card_balance,
-        ca.`lock` as card_lock,
-
-        cz.name as clazz_name,
-        sp.name as specialized_name,
-        fa.name as faculty_name
-        from t_user u
-        left join t_card ca on ca.user = u.id
-        left join t_clazz cz on cz.id = u.clazz
-        left join t_specialty sp on sp.id = cz.specialty
-        left join t_faculty fa on fa.id = sp.faculty
-        where u.id = #{id}
-    </select>
-
-    <select id="adminAccountInfo" resultMap="AccountInfoVO">
-        select id,
-        name,
-        email,
-        'admin' as type
-        from t_admin
-        where id = #{id}
-    </select>
 
     <update id="updateEmail">
         update

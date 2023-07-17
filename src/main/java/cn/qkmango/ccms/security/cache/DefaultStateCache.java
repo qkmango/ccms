@@ -11,7 +11,7 @@ import cn.qkmango.ccms.common.util.RedisUtil;
  */
 public class DefaultStateCache implements StateCache {
 
-    private RedisUtil redisUtil;
+    private final RedisUtil redisUtil;
 
     //默认有效期 5 分钟,单位秒
     private long timeout = 60 * 5;

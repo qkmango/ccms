@@ -26,7 +26,9 @@ public class CardInfoParam implements Serializable, BaseDomain {
     }
 
     public void setId(String id) {
-        if ("".equals(id)) return;
+        if ("".equals(id)) {
+            return;
+        }
         this.id = id;
     }
 
@@ -35,7 +37,9 @@ public class CardInfoParam implements Serializable, BaseDomain {
     }
 
     public void setName(String name) {
-        if ("".equals(name)) return;
+        if ("".equals(name)) {
+            return;
+        }
         this.name = name;
     }
 

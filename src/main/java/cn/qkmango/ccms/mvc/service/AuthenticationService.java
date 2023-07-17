@@ -6,9 +6,7 @@ import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
-import jakarta.servlet.http.HttpServletRequest;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
 
@@ -52,7 +50,7 @@ public interface AuthenticationService {
      * @param code  授权码
      * @return 返回重定向页面
      */
-    public String dingtalkCallback(String state, String code, PurposeType purpose, Locale locale) throws UpdateException;
+    String dingtalkCallback(String state, String code, PurposeType purpose, Locale locale) throws UpdateException;
 
     /**
      * 支付宝回调地址

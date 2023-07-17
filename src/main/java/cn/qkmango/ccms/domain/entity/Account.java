@@ -1,6 +1,5 @@
 package cn.qkmango.ccms.domain.entity;
 
-import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.common.validate.group.Query.Login;
 import cn.qkmango.ccms.common.validate.group.Update;
 import cn.qkmango.ccms.domain.bind.AccountState;

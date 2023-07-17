@@ -12,8 +12,6 @@ import java.util.Map;
  */
 public class RequestURL {
     private String url;
-    // private Map<String, String> params = new HashMap<>();
-    private Map<String, String> staticParams = new HashMap<>();
 
     public RequestURL(String url) {
         this.url = url;

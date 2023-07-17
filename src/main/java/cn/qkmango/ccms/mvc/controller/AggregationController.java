@@ -1,17 +1,7 @@
 package cn.qkmango.ccms.mvc.controller;
 
-import cn.qkmango.ccms.common.annotation.Permission;
-import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.security.holder.AccountHolder;
-import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.mvc.service.AggregationService;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.annotation.Resource;
-
-import java.util.Map;
 
 /**
  * 聚合接口

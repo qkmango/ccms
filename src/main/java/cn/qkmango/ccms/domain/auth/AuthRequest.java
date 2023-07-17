@@ -9,5 +9,5 @@ package cn.qkmango.ccms.domain.auth;
  * @date 2023-05-17 11:37
  */
 public interface AuthRequest {
-    public String authorize(AuthenticationAccount authentication);
+    String authorize(AuthenticationAccount authentication);
 }

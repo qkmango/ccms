@@ -25,8 +25,8 @@ public class JWT {
     private static final Logger logger = Logger.getLogger(GlobalExceptionHandler.class);
     //过期时间, 单位秒
     private final int expire;
-    private JwtBuilder builder = new DefaultJwtBuilder();
-    private JwtParser parser = new DefaultJwtParser();
+    private final JwtBuilder builder = new DefaultJwtBuilder();
+    private final JwtParser parser = new DefaultJwtParser();
 
     public JWT(String secret, int expire) {
         this.expire = expire;

@@ -19,7 +19,6 @@ import cn.qkmango.ccms.mvc.service.AreaService;
 import cn.qkmango.ccms.mvc.service.PosService;
 import cn.qkmango.ccms.mvc.service.StoreService;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

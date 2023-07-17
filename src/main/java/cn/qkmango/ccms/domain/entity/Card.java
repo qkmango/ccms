@@ -1,11 +1,8 @@
 package cn.qkmango.ccms.domain.entity;
 
-import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.common.validate.group.Update;
 import cn.qkmango.ccms.domain.bind.CardState;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
