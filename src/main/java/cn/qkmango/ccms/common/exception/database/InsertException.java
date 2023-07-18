@@ -1,11 +1,11 @@
-package cn.qkmango.ccms.common.exception;
+package cn.qkmango.ccms.common.exception.database;
 
 /**
  * 删除异常
  *
  * @author qkmango
  */
-public class InsertException extends Exception {
+public class InsertException extends OperationDatabaseException {
     public InsertException() {
     }
 

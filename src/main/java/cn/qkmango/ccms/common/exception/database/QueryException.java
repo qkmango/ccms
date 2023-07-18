@@ -1,9 +1,9 @@
-package cn.qkmango.ccms.common.exception;
+package cn.qkmango.ccms.common.exception.database;
 
 /**
  * @author qkmango
  */
-public class QueryException extends Exception{
+public class QueryException extends OperationDatabaseException{
     public QueryException() {
     }
 

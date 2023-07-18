@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.RedisUtil;
 import cn.qkmango.ccms.domain.bind.Role;

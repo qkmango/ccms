@@ -1,13 +1,13 @@
-package cn.qkmango.ccms.common.exception;
+package cn.qkmango.ccms.common.exception.permission;
 
 /**
  * 登陆异常
  *
  * @author qkmango
  */
-public class LoginException extends SystemException {
+public class LoginException extends PermissionException {
     public LoginException() {
-        super("系统登陆失败！");
+        super("系统登陆异常");
     }
 
     public LoginException(String message) {

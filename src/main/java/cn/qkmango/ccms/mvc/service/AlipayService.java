@@ -1,8 +1,8 @@
 package cn.qkmango.ccms.mvc.service;
 
-import cn.qkmango.ccms.common.exception.DeleteException;
-import cn.qkmango.ccms.common.exception.InsertException;
-import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.exception.database.DeleteException;
+import cn.qkmango.ccms.common.exception.database.InsertException;
+import cn.qkmango.ccms.common.exception.database.UpdateException;
 import com.alipay.api.AlipayApiException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;

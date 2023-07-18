@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.mvc.service;
 
-import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;

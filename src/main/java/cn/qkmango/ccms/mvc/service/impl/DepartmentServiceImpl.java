@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.exception.InsertException;
+import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.entity.Department;
 import cn.qkmango.ccms.domain.pagination.Pagination;

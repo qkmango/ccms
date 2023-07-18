@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.exception;
+package cn.qkmango.ccms.common.exception.database;
 
 /**
  * 删除异常
@@ -6,7 +6,7 @@ package cn.qkmango.ccms.common.exception;
  * @author qkmango
  * @version 1.0
  */
-public class DeleteException extends Exception {
+public class DeleteException extends OperationDatabaseException {
     public DeleteException() {
     }
 

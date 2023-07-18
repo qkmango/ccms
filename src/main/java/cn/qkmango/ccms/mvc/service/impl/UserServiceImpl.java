@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.UserDao;

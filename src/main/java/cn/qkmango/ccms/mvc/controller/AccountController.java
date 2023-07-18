@@ -1,9 +1,9 @@
 package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.annotation.Permission;
-import cn.qkmango.ccms.common.exception.InsertException;
-import cn.qkmango.ccms.common.exception.LoginException;
-import cn.qkmango.ccms.common.exception.UpdateException;
+import cn.qkmango.ccms.common.exception.database.InsertException;
+import cn.qkmango.ccms.common.exception.permission.LoginException;
+import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;

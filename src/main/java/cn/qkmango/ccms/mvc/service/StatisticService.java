@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.mvc.service;
 
-import cn.qkmango.ccms.common.exception.InsertException;
+import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.domain.entity.ConsumeStatistic;
 import cn.qkmango.ccms.domain.param.DatetimeRange;
 
