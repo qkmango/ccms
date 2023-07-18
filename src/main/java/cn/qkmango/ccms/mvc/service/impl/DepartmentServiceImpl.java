@@ -1,7 +1,9 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.InsertException;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.entity.Department;
+import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.dao.DepartmentDao;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
 import jakarta.annotation.Resource;
@@ -99,5 +101,12 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (affectedRows != 1) {
             throw new InsertException(ms.getMessage("db.insert.department.failure", null, locale));
         }
+    }
+
+    @Override
+    public R<List<Department>> list(Pagination<Department> pagination) {
+        List<Department> list = dao.list(pagination);
+        int count = dao.count();
+        return R.success(list, count);
     }
 }

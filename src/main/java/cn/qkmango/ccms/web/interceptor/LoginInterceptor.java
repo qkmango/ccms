@@ -16,28 +16,10 @@ import java.util.Map;
  */
 public class LoginInterceptor implements HandlerInterceptor {
 
-//    private final String LOGIN_URL;
-
-//    public LoginInterceptor(String login) {
-//        this.LOGIN_URL = login;
-//    }
-
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
-//        String path = request.getServletPath();
-
-        //如果是登陆请求，则放行
-//        if (LOGIN_URL.equals(path)) {
-//            return true;
-//        }
-
-        //如果session存在，说明已经登陆过了，则放行
-//        HttpSession session = request.getSession(false);
-//        if (session != null) {
-//            return true;
-//        }
 
         Map account = AccountHolder.get();
         if (account != null) {

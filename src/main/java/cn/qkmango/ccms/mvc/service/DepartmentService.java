@@ -1,7 +1,9 @@
 package cn.qkmango.ccms.mvc.service;
 
 import cn.qkmango.ccms.common.exception.InsertException;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.entity.Department;
+import cn.qkmango.ccms.domain.pagination.Pagination;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,5 +37,7 @@ public interface DepartmentService {
     List<Department> childList(Integer id);
 
     void insert(Department department, Locale locale) throws InsertException;
+
+    R<List<Department>> list(Pagination<Department> pagination);
 
 }

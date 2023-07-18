@@ -67,7 +67,7 @@ ccms:
     data-center-id: 0
   jwt:
     secret: 123456
-    expire: 3600
+    expire: 36000
 
 #  authentication:
 #    gitee:

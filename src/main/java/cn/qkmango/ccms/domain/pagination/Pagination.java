@@ -103,12 +103,6 @@ public class Pagination<T> implements Serializable {
     }
 
     public void setParam(T param) {
-        //TODO: 2023-04-26 判断对象的属性是否全为空,如果全为空则不设置param的值,避免查询条件为空时重复查询（"" null）
-        if (param instanceof BaseDomain base) {
-            if (base.isAllNull()) {
-                return;
-            }
-        }
         this.param = param;
     }
 

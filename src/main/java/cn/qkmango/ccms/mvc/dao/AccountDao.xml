@@ -114,33 +114,6 @@
         </if>
     </select>
 
-
-    <resultMap id="UserAccountInfoVO" type="cn.qkmango.ccms.domain.vo.UserAccountInfoVO">
-        <association property="account">
-            <id property="id" column="account_id"/>
-            <result property="name" column="account_name"/>
-            <result property="email" column="account_email"/>
-            <result property="role" column="account_role"/>
-        </association>
-        <association property="user">
-            <result property="idCard" column="user_idcard"/>
-            <result property="unsubscribe" column="user_unsubscribe"/>
-        </association>
-        <association property="card">
-            <result property="balance" column="card_balance"/>
-            <result property="lock" column="card_lock"/>
-        </association>
-        <association property="clazz">
-            <result property="name" column="clazz_name"/>
-        </association>
-        <association property="specialty">
-            <result property="name" column="specialized_name"/>
-        </association>
-        <association property="faculty">
-            <result property="name" column="faculty_name"/>
-        </association>
-    </resultMap>
-
     <resultMap id="AccountInfoVO" type="cn.qkmango.ccms.domain.vo.AccountInfoVO">
         <association property="account">
             <id property="id" column="id"/>

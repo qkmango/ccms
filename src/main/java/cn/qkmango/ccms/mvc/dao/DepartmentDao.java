@@ -1,6 +1,7 @@
 package cn.qkmango.ccms.mvc.dao;
 
 import cn.qkmango.ccms.domain.entity.Department;
+import cn.qkmango.ccms.domain.pagination.Pagination;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public interface DepartmentDao extends BaseDao {
      */
     Department getRecordById(Integer id);
 
-
     List<Department> childList(Integer id);
 
     int insert(Department department);
 
+    List<Department> list(Pagination<Department> pagination);
 }

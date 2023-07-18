@@ -82,21 +82,5 @@
 
     </select>
 
-    <resultMap id="UserAndCardVO" type="cn.qkmango.ccms.domain.vo.UserAndCardVO">
-        <association property="user" javaType="cn.qkmango.ccms.domain.entity.User">
-            <result column="id" property="id"/>
-            <result column="name" property="name"/>
-            <result column="department" property="department"/>
-            <result column="email" property="email"/>
-            <result column="card" property="card"/>
-        </association>
-        <association property="card" javaType="cn.qkmango.ccms.domain.entity.Card">
-            <id column="id" property="id"/>
-            <result column="balance" property="balance"/>
-            <result column="state" property="state"/>
-            <result column="account" property="account"/>
-        </association>
-    </resultMap>
-
 
 </mapper>

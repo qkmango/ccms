@@ -25,13 +25,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-
-        //国际化拦截器
-//        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
-//        localeChangeInterceptor.setParamName("locale");
-//        registry.addInterceptor(localeChangeInterceptor)
-//                .addPathPatterns("/system/setLocale.do");
-
         // JWT 拦截器, 用于验证 token, 并将用户信息放入 ThreadLocal
         TokenInterceptor tokenInterceptor = new TokenInterceptor(jwt);
         registry.addInterceptor(tokenInterceptor)
@@ -43,26 +36,26 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/test/**/*.do");
 
         //登陆拦截器
-        LoginInterceptor loginInterceptor = new LoginInterceptor();
-        registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/**/*.do")
-                .excludePathPatterns("/account/login.do")
-                .excludePathPatterns("/account/logout.do")
-                .excludePathPatterns("/system/setLocale.do")
-                .excludePathPatterns("/common/test.do")
-                .excludePathPatterns("/test/**/*.do");
-
-
-        PermissionsInterceptor permissionsInterceptor = new PermissionsInterceptor();
-        registry.addInterceptor(permissionsInterceptor)
-                .addPathPatterns("/**/*.do")
-                .excludePathPatterns("/account/login.do")
-                .excludePathPatterns("/account/logout.do")
-                .excludePathPatterns("/system/setLocale.do")
-                .excludePathPatterns("/common/test.do")
-                .excludePathPatterns("/test/**/*.do")
-                .excludePathPatterns("/common/test.do")
-                .excludePathPatterns("/test/**/*.do");
+        // LoginInterceptor loginInterceptor = new LoginInterceptor();
+        // registry.addInterceptor(loginInterceptor)
+        //         .addPathPatterns("/**/*.do")
+        //         .excludePathPatterns("/account/login.do")
+        //         .excludePathPatterns("/account/logout.do")
+        //         .excludePathPatterns("/system/setLocale.do")
+        //         .excludePathPatterns("/common/test.do")
+        //         .excludePathPatterns("/test/**/*.do");
+        //
+        //
+        // PermissionsInterceptor permissionsInterceptor = new PermissionsInterceptor();
+        // registry.addInterceptor(permissionsInterceptor)
+        //         .addPathPatterns("/**/*.do")
+        //         .excludePathPatterns("/account/login.do")
+        //         .excludePathPatterns("/account/logout.do")
+        //         .excludePathPatterns("/system/setLocale.do")
+        //         .excludePathPatterns("/common/test.do")
+        //         .excludePathPatterns("/test/**/*.do")
+        //         .excludePathPatterns("/common/test.do")
+        //         .excludePathPatterns("/test/**/*.do");
 
     }
 

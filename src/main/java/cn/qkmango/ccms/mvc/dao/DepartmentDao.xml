@@ -39,4 +39,35 @@
     </select>
 
 
+    <select id="list" resultType="cn.qkmango.ccms.domain.entity.Department">
+        select SQL_CALC_FOUND_ROWS
+        id,
+        name,
+        parent,
+        addition,
+        description,
+        leaf
+        from t_department
+        <where>
+            <if test="param != null">
+                <if test="param.id != null and param.id != ''">
+                    id = #{param.id}
+                </if>
+                <if test="param.name != null and name != ''">
+                    and name = #{param.name}
+                </if>
+                <if test="param.parent != null">
+                    and parent = #{param.parent}
+                </if>
+                <if test="param.leaf != null">
+                    and leaf = #{param.leaf}
+                </if>
+            </if>
+        </where>
+        <if test="pagination == true">
+            LIMIT #{skipCount},#{limit}
+        </if>
+    </select>
+
+
 </mapper>
