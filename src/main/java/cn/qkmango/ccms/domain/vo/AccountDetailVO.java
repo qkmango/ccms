@@ -14,7 +14,7 @@ import java.util.LinkedList;
  * @version 1.0
  * @date 2023-04-18 10:19
  */
-public class AccountInfoVO {
+public class AccountDetailVO {
     private Account account;
     private User user;
     private Card card;

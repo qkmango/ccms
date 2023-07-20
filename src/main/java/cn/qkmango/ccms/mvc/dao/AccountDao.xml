@@ -82,7 +82,6 @@
                role
         from t_account
         where id = #{id}
-          and role = #{role}
     </select>
 
     <select id="list" resultType="cn.qkmango.ccms.domain.entity.Account">
@@ -114,7 +113,7 @@
         </if>
     </select>
 
-    <resultMap id="AccountInfoVO" type="cn.qkmango.ccms.domain.vo.AccountInfoVO">
+    <resultMap id="AccountInfoVO" type="cn.qkmango.ccms.domain.vo.AccountDetailVO">
         <association property="account">
             <id property="id" column="id"/>
             <result property="name" column="name"/>

@@ -16,7 +16,7 @@ import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.param.AccountInsertParam;
 import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
-import cn.qkmango.ccms.domain.vo.AccountInfoVO;
+import cn.qkmango.ccms.domain.vo.AccountDetailVO;
 import cn.qkmango.ccms.mvc.dao.AccountDao;
 import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.UserDao;
@@ -70,6 +70,7 @@ public class AccountServiceImpl implements AccountService {
     @Resource
     private PasswordEncoder passwordEncoder;
 
+
     /**
      * 登陆接口
      *
@@ -83,23 +84,30 @@ public class AccountServiceImpl implements AccountService {
 
         Account loginAccount = dao.login(account);
 
-        //判断用户是否存在
+        //判断账户是否存在
         if (loginAccount == null) {
-            throw new LoginException(messageSource.getMessage("db.account.notExist", null, locale));
+            throw new LoginException(messageSource.getMessage("response.login.account.not.exist", null, locale));
+        }
+
+        //判断账户状态
+        switch (loginAccount.getState()) {
+            case canceled ->
+                    throw new LoginException(messageSource.getMessage("response.login.account.canceled", null, locale));
+            case frozen ->
+                    throw new LoginException(messageSource.getMessage("response.login.account.frozen", null, locale));
         }
 
         //判断密码是否正确
         String dbPassword = loginAccount.getPassword();
         boolean matches = passwordEncoder.matches(account.getPassword(), dbPassword);
         if (!matches) {
-            throw new LoginException(messageSource.getMessage("response.login.failure", null, locale));
+            throw new LoginException(messageSource.getMessage("response.login.password.error", null, locale));
         }
 
         //清除密码
         loginAccount.setPassword(null);
 
-        //将登陆用户信息存入session
-        loginAccount.setRole(account.getRole());
+        //返回登陆用户信息，创建 token 由 controller 层完成
         return loginAccount;
     }
 
@@ -143,7 +151,7 @@ public class AccountServiceImpl implements AccountService {
      * @return 用户信息
      */
     @Override
-    public AccountInfoVO accountInfo(String accountId) {
+    public AccountDetailVO accountInfo(String accountId) {
         Account accountRecord;
         Card cardRecord = null;
         User userRecord = null;
@@ -160,7 +168,7 @@ public class AccountServiceImpl implements AccountService {
             userRecord = userDao.getRecordByAccount(accountId);
         }
 
-        AccountInfoVO vo = new AccountInfoVO();
+        AccountDetailVO vo = new AccountDetailVO();
         vo.setAccount(accountRecord);
         vo.setUser(userRecord);
         vo.setCard(cardRecord);
@@ -283,7 +291,14 @@ public class AccountServiceImpl implements AccountService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void insert(AccountInsertParam param, Locale locale) throws InsertException {
         int affectedRows;
-        // 1. 添加 account 账户
+
+        // 1. 判断是否已经存在
+        Account dbRecord = dao.getRecordById(param.getId().toString());
+        if (dbRecord != null) {
+            throw new InsertException(messageSource.getMessage("db.account.insert.failure@exist", null, locale));
+        }
+
+        // 2. 添加 account 账户
         Account account = new Account()
                 .setId(param.getId().toString())
                 .setRole(param.getRole())
@@ -301,7 +316,7 @@ public class AccountServiceImpl implements AccountService {
             return;
         }
 
-        // 2. 添加 card 卡片
+        // 3. 添加 card 卡片
         long cardId = snowFlake.nextId();
         Card card = new Card()
                 .setId(Long.toString(cardId))
@@ -313,7 +328,7 @@ public class AccountServiceImpl implements AccountService {
             throw new InsertException(messageSource.getMessage("db.account.insert.failure", null, locale));
         }
 
-        // 3. 添加 user 用户
+        // 4. 添加 user 用户
         long userId = snowFlake.nextId();
         User user = new User()
                 .setId(Long.toString(userId))

@@ -16,15 +16,7 @@ import java.util.List;
  * @date 2022-10-22 17:49
  */
 @Mapper
-public interface AccountDao extends BaseDao<Account> {
-
-    /**
-     * 登陆
-     *
-     * @param account 登陆账户
-     * @return 已登陆的账户信息
-     */
-//    Account loginUser(Account account);
+public interface AccountDao extends BaseDao<Account, String> {
 
     /**
      * 获取账户密码

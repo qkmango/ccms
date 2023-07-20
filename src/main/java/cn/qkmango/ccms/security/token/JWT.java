@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.security.token;
 
-import cn.qkmango.ccms.common.exception.handler.GlobalExceptionHandler;
+import cn.qkmango.ccms.common.exception.GlobalExceptionHandler;
 import cn.qkmango.ccms.domain.entity.Account;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;

@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.exception.handler;
+package cn.qkmango.ccms.common.exception;
 
 import cn.qkmango.ccms.common.exception.database.OperationDatabaseException;
 import cn.qkmango.ccms.common.exception.permission.PermissionException;
@@ -98,6 +98,7 @@ public class GlobalExceptionHandler {
         logger.warn("捕获所有异常");
         logger.warn(e.getLocalizedMessage());
         logger.warn(e.getClass().getName());
+        e.printStackTrace();
         return R.fail(e.getLocalizedMessage());
     }
 }

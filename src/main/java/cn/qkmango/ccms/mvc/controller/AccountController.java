@@ -10,7 +10,7 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.param.AccountInsertParam;
 import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
-import cn.qkmango.ccms.domain.vo.AccountInfoVO;
+import cn.qkmango.ccms.domain.vo.AccountDetailVO;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.mvc.service.UserService;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
@@ -18,8 +18,6 @@ import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.JWT;
 import cn.qkmango.ccms.security.token.TokenEntity;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -45,7 +43,7 @@ import java.util.Locale;
 @RequestMapping("account")
 public class AccountController {
     @Resource
-    private ReloadableResourceBundleMessageSource messageSource;
+    private ReloadableResourceBundleMessageSource ms;
 
     @Resource
     private AccountService service;
@@ -63,20 +61,19 @@ public class AccountController {
      * 登陆
      *
      * @param account 用户对象
-     * @param request HTTP请求
      * @param locale  语言环境
      * @return 登陆结果
      * @throws LoginException 登陆异常登陆失败
      */
     @PostMapping("login.do")
-    public R<Object> login(Account account, HttpServletRequest request, HttpServletResponse response, Locale locale) throws LoginException {
+    public R<Object> login(Account account, Locale locale) throws LoginException {
         Account loginAccount = service.login(account, locale);
 
         //创建 TokenEntity, 包含 token 和 过期时间
         TokenEntity tokenEntity = jwt.createEntity(loginAccount);
         return R.success(
                 tokenEntity,
-                messageSource.getMessage("response.login.success", null, locale)
+                ms.getMessage("response.login.success", null, locale)
         );
     }
 
@@ -100,7 +97,7 @@ public class AccountController {
 
         service.updatePassword(param, locale);
 
-        return R.success(messageSource.getMessage("db.update.password.success", null, locale));
+        return R.success(ms.getMessage("db.update.password.success", null, locale));
     }
 
 
@@ -119,7 +116,7 @@ public class AccountController {
 //        userService.resetPassword(card, locale);
 //        service.resetPassword(account);
         service.resetPassword(account, locale);
-        return R.success(messageSource.getMessage("db.resetPassword.success", null, locale));
+        return R.success(ms.getMessage("db.resetPassword.success", null, locale));
     }
 
 
@@ -136,7 +133,7 @@ public class AccountController {
     public R<Object> canceled(@NotEmpty String account, Locale locale) throws UpdateException {
         // userService.canceled(card, locale);
         service.canceled(account, locale);
-        return R.success(messageSource.getMessage("db.account.unsubscribe.success", null, locale));
+        return R.success(ms.getMessage("db.account.unsubscribe.success", null, locale));
     }
 
     /**
@@ -148,7 +145,7 @@ public class AccountController {
     public R currentAccountInfo() {
 //        Account account = AccountHolder.getAccount();
         String id = AccountHolder.getId();
-        AccountInfoVO info = service.accountInfo(id);
+        AccountDetailVO info = service.accountInfo(id);
         return R.success(info);
     }
 
@@ -160,9 +157,9 @@ public class AccountController {
      * @return
      */
     @Permission(Role.admin)
-    @GetMapping("one/account-info.do")
+    @GetMapping("one/account-detail.do")
     public R accountInfo(@NotEmpty String account, Locale locale) {
-        AccountInfoVO info = service.accountInfo(account);
+        AccountDetailVO info = service.accountInfo(account);
         return R.success(info);
     }
 
@@ -186,7 +183,7 @@ public class AccountController {
 
         Account account = new Account().setId(id).setRole(role);
         service.updateEmail(account, email, captcha, locale);
-        return R.success(messageSource.getMessage("db.update.email.success", null, locale));
+        return R.success(ms.getMessage("db.update.email.success", null, locale));
     }
 
     /**
@@ -205,6 +202,6 @@ public class AccountController {
     @PostMapping("one/insert.do")
     public R insert(@RequestBody @Validated AccountInsertParam account, Locale locale) throws InsertException {
         service.insert(account, locale);
-        return R.success();
+        return R.success(ms.getMessage("db.account.insert.success", null, locale));
     }
 }

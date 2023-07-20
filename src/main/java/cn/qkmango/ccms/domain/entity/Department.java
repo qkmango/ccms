@@ -1,6 +1,7 @@
 package cn.qkmango.ccms.domain.entity;
 
 import cn.qkmango.ccms.common.validate.group.Insert;
+import cn.qkmango.ccms.domain.bind.DepartmentType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,16 +31,8 @@ public class Department {
 
     //是否是叶子节点
     @NotNull(groups = {Insert.class})
-    private Boolean leaf;
+    private DepartmentType type;
 
-    public Boolean getLeaf() {
-        return leaf;
-    }
-
-    public Department setLeaf(Boolean leaf) {
-        this.leaf = leaf;
-        return this;
-    }
 
     public Integer getId() {
         return id;
@@ -81,6 +74,14 @@ public class Department {
         this.addition = addition;
     }
 
+    public DepartmentType getType() {
+        return type;
+    }
+
+    public void setType(DepartmentType type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "Department{" +
@@ -89,7 +90,7 @@ public class Department {
                 ", description='" + description + '\'' +
                 ", parent=" + parent +
                 ", addition='" + addition + '\'' +
-                ", left=" + leaf +
+                ", type=" + type +
                 '}';
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
  * @date 2023-07-10 21:48
  */
 @Mapper
-public interface DepartmentDao extends BaseDao {
+public interface DepartmentDao extends BaseDao<Department, Integer> {
 
     /**
      * 根据id查询部门信息
@@ -23,6 +23,7 @@ public interface DepartmentDao extends BaseDao {
      * @param id 部门id
      * @return 部门信息
      */
+    @Override
     Department getRecordById(Integer id);
 
     List<Department> childList(Integer id);

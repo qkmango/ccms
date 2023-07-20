@@ -8,7 +8,7 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.param.AccountInsertParam;
 import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
-import cn.qkmango.ccms.domain.vo.AccountInfoVO;
+import cn.qkmango.ccms.domain.vo.AccountDetailVO;
 
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +46,7 @@ public interface AccountService {
      * @param accountId 用户ID
      * @return 用户信息
      */
-    AccountInfoVO accountInfo(String accountId);
+    AccountDetailVO accountInfo(String accountId);
 
     /**
      * 更新用户email

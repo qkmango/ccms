@@ -8,12 +8,12 @@
                                  parent,
                                  addition,
                                  description,
-                                 leaf)
+                                 type)
         values (#{name},
                 #{parent},
                 #{addition},
                 #{description},
-                #{leaf})
+                #{type})
     </insert>
 
     <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Department">
@@ -22,7 +22,7 @@
                parent,
                addition,
                description,
-               leaf
+               type
         from t_department
         where id = #{id}
     </select>
@@ -33,7 +33,7 @@
                parent,
                addition,
                description,
-               leaf
+               type
         from t_department
         where parent = #{parent}
     </select>
@@ -46,7 +46,7 @@
         parent,
         addition,
         description,
-        leaf
+        type
         from t_department
         <where>
             <if test="param != null">
@@ -59,8 +59,8 @@
                 <if test="param.parent != null">
                     and parent = #{param.parent}
                 </if>
-                <if test="param.leaf != null">
-                    and leaf = #{param.leaf}
+                <if test="param.type != null">
+                    and type = #{param.type}
                 </if>
             </if>
         </where>

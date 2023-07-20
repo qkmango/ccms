@@ -1,8 +1,7 @@
 package cn.qkmango.ccms.domain.bind;
 
 /**
- * 描述
- * <p></p>
+ * 部门类型枚举类
  *
  * @author qkmango
  * @version 1.0
@@ -12,5 +11,15 @@ public enum DepartmentType {
     /**
      * 根节点
      */
-    ROOT,
+    root,
+
+    /**
+     * 中间节点
+     */
+    middle,
+
+    /**
+     * 叶子节点
+     */
+    leaf
 }

@@ -2,6 +2,7 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.bind.DepartmentType;
 import cn.qkmango.ccms.domain.entity.Department;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.dao.DepartmentDao;
@@ -72,26 +73,22 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void insert(Department department, Locale locale) throws InsertException {
-        Boolean leaf = department.getLeaf();
+        DepartmentType type = department.getType();
         Integer parent = department.getParent();
 
         //2. 获取给定的父结点对象父节点对象
         Department parentRecord = dao.getRecordById(parent);
 
-        // 2.
-        // 如果是叶子结点, 且父节点为0, 前后矛盾, 则抛出异常
-        //                但是父节点不存在，则抛出异常
-        //                但是所给的父节点是其实是叶子结点，则抛出异常
-        // 如果不是叶子结点 并且不是根结点, (即为中间结点), 但是父节点不存在，则抛出异常
-        //                 并且是根结点，但是父节点存在，则抛出异常
-        //                并且父节点是叶子结点，则抛出异常
-        // 非根节点, 但是父节点实际为子节点
-        if (leaf && parent == 0 ||
-                leaf && parentRecord == null ||
-                leaf && parentRecord.getLeaf() ||
-                !leaf && parent != 0 && parentRecord == null ||
-                !leaf && parent == 0 && parentRecord != null ||
-                (leaf || parent != 0) && parentRecord.getLeaf()
+        /* 2.
+            leaf|middle(!root) , 且parent为0, 前后矛盾, 则抛出异常
+            leaf|middle(!root) , 且parent不存在, 则抛出异常
+            lead|middle(!root) , 且parent为叶子结点, 则抛出异常
+            root , 且 parent != 0, 前后矛盾, 则抛出异常
+         */
+        if (type != DepartmentType.root && parent == 0 ||
+                type != DepartmentType.root && parentRecord == null ||
+                type != DepartmentType.root && parentRecord.getType() == DepartmentType.leaf ||
+                type == DepartmentType.root && parent != 0
         ) {
             throw new InsertException(ms.getMessage("db.insert.department.failure", null, locale));
         }

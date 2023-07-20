@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.exception;
+package cn.qkmango.ccms.common.exception.verify;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
