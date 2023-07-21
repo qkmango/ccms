@@ -46,7 +46,7 @@ public interface AccountService {
      * @param accountId 用户ID
      * @return 用户信息
      */
-    AccountDetailVO accountInfo(String accountId);
+    AccountDetailVO accountDetail(String accountId);
 
     /**
      * 更新用户email
@@ -91,4 +91,5 @@ public interface AccountService {
      */
     void insert(AccountInsertParam account, Locale locale) throws InsertException;
 
+    Account getRecordById(String id);
 }

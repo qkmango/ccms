@@ -57,6 +57,7 @@ public class AccountController {
     @Resource
     private PasswordEncoder passwordEncoder;
 
+
     /**
      * 登陆
      *
@@ -131,7 +132,6 @@ public class AccountController {
     @Permission({Role.admin, Role.user})
     @PostMapping(value = "update/canceled.do")
     public R<Object> canceled(@NotEmpty String account, Locale locale) throws UpdateException {
-        // userService.canceled(card, locale);
         service.canceled(account, locale);
         return R.success(ms.getMessage("db.account.unsubscribe.success", null, locale));
     }
@@ -141,25 +141,38 @@ public class AccountController {
      *
      * @return 用户信息
      */
-    @GetMapping("one/current-account-info.do")
-    public R currentAccountInfo() {
-//        Account account = AccountHolder.getAccount();
+    @GetMapping("one/current-account-detail.do")
+    public R currentAccountDetail() {
         String id = AccountHolder.getId();
-        AccountDetailVO info = service.accountInfo(id);
+        AccountDetailVO info = service.accountDetail(id);
         return R.success(info);
     }
 
     /**
+     * 当前登陆用户基本信息
+     *
+     * @return 用户信息
+     */
+    @GetMapping("one/current-account-info.do")
+    public R currentAccountInfo() {
+        String id = AccountHolder.getId();
+        Account account = service.getRecordById(id);
+        return R.success(account);
+    }
+
+    /**
      * 获取用户账户详情
-     * 功能和 {@link AccountController#currentAccountInfo()} 一样，只是做了权限控制
      *
      * @param account 账户ID
      * @return
      */
     @Permission(Role.admin)
     @GetMapping("one/account-detail.do")
-    public R accountInfo(@NotEmpty String account, Locale locale) {
-        AccountDetailVO info = service.accountInfo(account);
+    public R accountDetail(@NotEmpty String account, Locale locale) {
+        AccountDetailVO info = service.accountDetail(account);
+        if (info == null) {
+            return R.fail(ms.getMessage("db.account.failure@notExist", null, locale));
+        }
         return R.success(info);
     }
 

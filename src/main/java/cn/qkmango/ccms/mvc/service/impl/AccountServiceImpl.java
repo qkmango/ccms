@@ -70,6 +70,10 @@ public class AccountServiceImpl implements AccountService {
     @Resource
     private PasswordEncoder passwordEncoder;
 
+    @Override
+    public Account getRecordById(String id) {
+        return dao.getRecordById(id);
+    }
 
     /**
      * 登陆接口
@@ -151,7 +155,7 @@ public class AccountServiceImpl implements AccountService {
      * @return 用户信息
      */
     @Override
-    public AccountDetailVO accountInfo(String accountId) {
+    public AccountDetailVO accountDetail(String accountId) {
         Account accountRecord;
         Card cardRecord = null;
         User userRecord = null;
@@ -159,6 +163,10 @@ public class AccountServiceImpl implements AccountService {
 
         //获取账户信息
         accountRecord = dao.getRecordById(accountId);
+        //判断账户是否存在
+        if (accountRecord == null) {
+            return null;
+        }
         //获取部门链
         departmentChain = departmentService.departmentChain(accountRecord.getDepartment());
 
