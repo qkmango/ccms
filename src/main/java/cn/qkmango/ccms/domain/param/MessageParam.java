@@ -19,7 +19,7 @@ public class MessageParam extends Message {
     public MessageParam() {
     }
 
-    public MessageParam(Integer id, String content, String author, Date createTime, Date startCreateTime, Date endCreateTime) {
+    public MessageParam(Integer id, String content, Integer author, Date createTime, Date startCreateTime, Date endCreateTime) {
         super(id, content, author, createTime);
         this.startCreateTime = startCreateTime;
         this.endCreateTime = endCreateTime;

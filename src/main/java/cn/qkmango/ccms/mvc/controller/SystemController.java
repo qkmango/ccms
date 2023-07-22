@@ -1,6 +1,7 @@
 package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.map.R;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,11 +41,9 @@ public class SystemController {
      * <li>locale: en_US <pre>&lt;script>document.cookie='locale=en_US'&lt;/script></pre></li>
      */
     @RequestMapping("locale.do")
-    public R<Map<String, String>> locale(Locale locale) {
-        if ("en".equals(locale.getLanguage())) {
-            return R.success(en_US);
-        }
-        return R.success(zh_CN);
+    public R<Locale> locale() {
+        System.out.println(LocaleContextHolder.getLocale().hashCode());
+        return R.success(LocaleContextHolder.getLocale());
     }
 
 }

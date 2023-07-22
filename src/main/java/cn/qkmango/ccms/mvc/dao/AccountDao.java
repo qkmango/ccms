@@ -1,6 +1,5 @@
 package cn.qkmango.ccms.mvc.dao;
 
-import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import org.apache.ibatis.annotations.Mapper;
@@ -19,21 +18,6 @@ import java.util.List;
 public interface AccountDao extends BaseDao<Account, String> {
 
     /**
-     * 获取账户密码
-     *
-     * @param id 账户id
-     * @return 账户密码
-     */
-    String getAccountPassword(String id, Role type);
-
-    /**
-     * 修改密码
-     *
-     * @return 数据库影响的行数
-     */
-    int updatePassword(String id, String password, Role type);
-
-    /**
      * 更新用户email
      *
      * @param account 账户
@@ -50,7 +34,9 @@ public interface AccountDao extends BaseDao<Account, String> {
      * @param id
      * @return
      */
-    Account getRecordById(String id);
+    Account getRecordById(Integer id);
+
+    Account getRecordById(Integer id, Boolean password);
 
 
     /**

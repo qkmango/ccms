@@ -8,6 +8,7 @@ import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.dao.DepartmentDao;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
 import jakarta.annotation.Resource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 部门业务逻辑实现类
@@ -43,7 +43,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         LinkedList<Department> chain = new LinkedList<>();
 
-        Department department = null;
+        Department department;
         // 如果子部门不为空，且子部门的父部门id不为0
 
         //最大循环次数 5，防止意外情况的死循环
@@ -72,7 +72,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void insert(Department department, Locale locale) throws InsertException {
+    public void insert(Department department) throws InsertException {
         DepartmentType type = department.getType();
         Integer parent = department.getParent();
 
@@ -90,13 +90,13 @@ public class DepartmentServiceImpl implements DepartmentService {
                 type != DepartmentType.root && parentRecord.getType() == DepartmentType.leaf ||
                 type == DepartmentType.root && parent != 0
         ) {
-            throw new InsertException(ms.getMessage("db.insert.department.failure", null, locale));
+            throw new InsertException(ms.getMessage("db.insert.department.failure", null, LocaleContextHolder.getLocale()));
         }
 
         //3. 插入
         int affectedRows = dao.insert(department);
         if (affectedRows != 1) {
-            throw new InsertException(ms.getMessage("db.insert.department.failure", null, locale));
+            throw new InsertException(ms.getMessage("db.insert.department.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 

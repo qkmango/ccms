@@ -6,7 +6,7 @@ import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.security.holder.AccountHolder;
-import cn.qkmango.ccms.security.token.JWT;
+import cn.qkmango.ccms.security.token.Jwt;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,16 +26,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class Test {
 
     @Resource
-    private JWT jwt;
+    private Jwt jwt;
 
     @RequestMapping("/testLogin.do")
     public R<Account> test(HttpServletRequest request, Role type) {
-        String id = "1";
-
         Account account = AccountHolder.getAccount();
 
         if (account == null) {
-            account = new Account(id, null, Role.admin, AccountState.normal, 1);
+            account = new Account(1, null, Role.admin, AccountState.normal, 1);
         }
         return R.success(account);
     }

@@ -9,38 +9,6 @@
         values (#{id}, #{password}, #{state}, #{role}, #{department})
     </insert>
 
-    <select id="getAccountPassword" resultType="java.lang.String">
-        select password
-        from
-        <if test="type == @cn.qkmango.ccms.domain.bind.Role@user">
-            t_user
-        </if>
-        <if test="type == @cn.qkmango.ccms.domain.bind.Role@admin">
-            t_admin
-        </if>
-        <if test="type == @cn.qkmango.ccms.domain.bind.Role@pos">
-            t_pos
-        </if>
-        where id = #{id}
-    </select>
-
-
-    <update id="updatePassword">
-        update
-        <if test="role == @cn.qkmango.ccms.domain.bind.Role@user">
-            t_user
-        </if>
-        <if test="role == @cn.qkmango.ccms.domain.bind.Role@admin">
-            t_admin
-        </if>
-        <if test="role == @cn.qkmango.ccms.domain.bind.Role@pos">
-            t_pos
-        </if>
-        set password = #{newPassword}
-        where id = #{id} and password = #{oldPassword}
-    </update>
-
-
     <update id="updateEmail">
         update
         <if test="account.role == @cn.qkmango.ccms.domain.bind.Role@user">
@@ -55,22 +23,30 @@
 
     <update id="update">
         update
-            t_account
-        <if test="password != null and password != ''">
-            set password = #{password}
-        </if>
-        <if test="state != null">
-            set state = #{state}
-        </if>
+        t_account
+        <set>
+            <if test="password != null and password != ''">
+                 password = #{password},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="department != null">
+                department = #{department}
+            </if>
+        </set>
         where id = #{id}
     </update>
 
 
     <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Account">
         select id,
-               state,
-               role,
-               department
+        state,
+        role,
+        department
+        <if test="password != null and password==true">
+            ,password
+        </if>
         from t_account
         where id = #{id}
     </select>

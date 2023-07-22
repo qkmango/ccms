@@ -8,7 +8,9 @@ import cn.qkmango.ccms.security.config.AlipayAppConfig;
 import cn.qkmango.ccms.security.config.AppConfig;
 import cn.qkmango.ccms.security.encoder.BCryptPasswordEncoder;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
+import cn.qkmango.ccms.security.token.Jwt;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +35,16 @@ public class SecurityConfig {
     // public StateCache stateCache() {
     //     return new DefaultStateCache(redisUtil, 60 * 5);
     // }
+
+    @Value("${ccms.jwt.secret}")
+    private String secret;
+    @Value("${ccms.jwt.expire}")
+    private int expire;
+
+    @Bean(name = "jwt")
+    public Jwt jwt() {
+        return new Jwt(secret, expire);
+    }
 
     // 密码加密器
     @Bean

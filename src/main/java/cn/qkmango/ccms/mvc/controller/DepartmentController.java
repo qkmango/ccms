@@ -10,12 +10,12 @@ import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 部门
@@ -48,9 +48,9 @@ public class DepartmentController {
     }
 
     @PostMapping("/one/insert.do")
-    public R insert(@Validated(Insert.class) @RequestBody Department department, Locale locale) throws InsertException {
-        service.insert(department, locale);
-        return R.success(ms.getMessage("db.insert.department.success", null, locale));
+    public R insert(@Validated(Insert.class) @RequestBody Department department) throws InsertException {
+        service.insert(department);
+        return R.success(ms.getMessage("db.insert.department.success", null, LocaleContextHolder.getLocale()));
     }
 
     @Permission(Role.admin)

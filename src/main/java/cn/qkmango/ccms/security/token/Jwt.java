@@ -20,7 +20,7 @@ import java.util.Date;
  *
  * @author qkmango
  */
-public class JWT {
+public class Jwt {
 
     private static final Logger logger = Logger.getLogger(GlobalExceptionHandler.class);
     //过期时间, 单位秒
@@ -28,7 +28,7 @@ public class JWT {
     private final JwtBuilder builder = new DefaultJwtBuilder();
     private final JwtParser parser = new DefaultJwtParser();
 
-    public JWT(String secret, int expire) {
+    public Jwt(String secret, int expire) {
         this.expire = expire;
         byte[] bytes = secret.getBytes(StandardCharsets.UTF_8);
         builder.signWith(SignatureAlgorithm.HS256, bytes);

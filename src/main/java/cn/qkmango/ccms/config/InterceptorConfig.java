@@ -1,9 +1,7 @@
 package cn.qkmango.ccms.config;
 
-import cn.qkmango.ccms.security.token.JWT;
+import cn.qkmango.ccms.security.token.Jwt;
 import cn.qkmango.ccms.web.interceptor.TokenInterceptor;
-import cn.qkmango.ccms.web.interceptor.LoginInterceptor;
-import cn.qkmango.ccms.web.interceptor.PermissionsInterceptor;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -20,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class InterceptorConfig implements WebMvcConfigurer {
 
     @Resource(name = "jwt")
-    private JWT jwt;
+    private Jwt jwt;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

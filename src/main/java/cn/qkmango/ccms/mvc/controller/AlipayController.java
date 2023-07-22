@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Locale;
 
 /**
  * 支付宝
@@ -35,9 +34,8 @@ public class AlipayController {
     @GetMapping("/createPay.do")
     private R createPay(
             @RequestParam String subject,
-            @RequestParam String totalAmount,
-            Locale locale) throws InsertException {
-        String url = service.createPay(subject, totalAmount, locale);
+            @RequestParam String totalAmount) throws InsertException {
+        String url = service.createPay(subject, totalAmount);
         return R.success().setData(url);
     }
 
@@ -75,9 +73,8 @@ public class AlipayController {
             @RequestParam("gmt_payment") String gmtPayment,
             @RequestParam("receipt_amount") String receiptAmount,
             @RequestParam("sign") String sign,
-            Locale locale,
             HttpServletRequest request) throws AlipayApiException, UpdateException, DeleteException, JsonProcessingException {
-        service.payNotify(tradeNo, outTradeNo, gmtPayment, receiptAmount, sign, locale, request);
+        service.payNotify(tradeNo, outTradeNo, gmtPayment, receiptAmount, sign, request);
     }
 
 }

@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.mvc.service;
 
-import java.util.Locale;
-
 /**
  * 验证码服务接口
  *
@@ -17,7 +15,7 @@ public interface CaptchaService {
      * @param email  邮箱
      * @param locale 语言环境
      */
-    void sendChangeEmail(String email, Locale locale);
+    void sendChangeEmail(String email);
 
 
 }

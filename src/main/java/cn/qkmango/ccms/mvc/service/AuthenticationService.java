@@ -8,7 +8,6 @@ import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 第三方授权登陆
@@ -36,11 +35,10 @@ public interface AuthenticationService {
      * @param error             有错误时返回
      * @param errorDescription 错误描述
      * @param purpose           授权目的
-     * @param locale            语言环境
      * @return 返回重定向页面
      * @throws UpdateException
      */
-    String giteeCallback(String state, String code, String error, String errorDescription, PurposeType purpose, Locale locale) throws UpdateException;
+    String giteeCallback(String state, String code, String error, String errorDescription, PurposeType purpose) throws UpdateException;
 
     /**
      * 钉钉回调地址
@@ -50,7 +48,7 @@ public interface AuthenticationService {
      * @param code  授权码
      * @return 返回重定向页面
      */
-    String dingtalkCallback(String state, String code, PurposeType purpose, Locale locale) throws UpdateException;
+    String dingtalkCallback(String state, String code, PurposeType purpose) throws UpdateException;
 
     /**
      * 支付宝回调地址
@@ -61,10 +59,9 @@ public interface AuthenticationService {
      * @param appId
      * @param source
      * @param scope
-     * @param locale
      * @return
      */
-    String alipayCallback(PurposeType purpose, String authCode, String state, String appId, String source, String scope, Locale locale) throws UpdateException;
+    String alipayCallback(PurposeType purpose, String authCode, String state, String appId, String source, String scope) throws UpdateException;
 
     /**
      * 获取开放平台绑定状态
@@ -79,6 +76,6 @@ public interface AuthenticationService {
      * @param platform 平台类型
      * @return 返回解绑结果
      */
-    R unbind(PlatformType platform, Locale locale) throws UpdateException;
+    R unbind(PlatformType platform) throws UpdateException;
 
 }

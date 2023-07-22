@@ -7,13 +7,13 @@ import cn.qkmango.ccms.mvc.service.CaptchaService;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Locale;
 
 /**
  * 验证码
@@ -42,10 +42,9 @@ public class CaptchaController {
     @Permission({Role.admin, Role.user})
     @GetMapping("send/change/email.do")
     public R sendChangeEmail(@NotBlank(message = "{valid.email.notBlank}")
-                             @Email(message = "{valid.email.illegal}") String email,
-                             Locale locale) {
-        service.sendChangeEmail(email, locale);
-        return R.success(messageSource.getMessage("response.email.send.success", null, locale));
+                             @Email(message = "{valid.email.illegal}") String email) {
+        service.sendChangeEmail(email);
+        return R.success(messageSource.getMessage("response.email.send.success", null, LocaleContextHolder.getLocale()));
     }
 
 }

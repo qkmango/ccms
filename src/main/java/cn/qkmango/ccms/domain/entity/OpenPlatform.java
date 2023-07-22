@@ -14,7 +14,7 @@ import cn.qkmango.ccms.domain.bind.Role;
 public class OpenPlatform {
 
     //系统用户ID
-    private String id;
+    private Integer id;
 
     // 平台名称
     private PlatformType type;
@@ -30,7 +30,7 @@ public class OpenPlatform {
     public OpenPlatform() {
     }
 
-    public OpenPlatform(String id, PlatformType type, Boolean state, String uid, Role accountType) {
+    public OpenPlatform(Integer id, PlatformType type, Boolean state, String uid, Role accountType) {
         this.id = id;
         this.type = type;
         this.state = state;
@@ -38,11 +38,11 @@ public class OpenPlatform {
         this.accountType = accountType;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -29,13 +29,13 @@ public class AccountHolder {
         return THREAD_LOCAL.get();
     }
 
-    public static String getId() {
+    public static Integer getId() {
         Map<String, Object> map = get();
         if (map == null) {
             return null;
         }
 
-        return (String) map.get("id");
+        return (Integer) map.get("id");
     }
 
     public static Role getRole() {

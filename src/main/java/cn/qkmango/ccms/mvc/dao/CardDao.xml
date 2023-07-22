@@ -16,23 +16,16 @@
 
     <update id="state">
         update t_card
-        set `lock`=#{lock}
-        where user = #{user}
+        set state = #{state}
+        where account = #{account}
     </update>
 
 
     <update id="recharge">
         update t_card
-        set balance = balance + #{balance}
-        where user = #{user}
-        and `lock` = 0
-        and (select unsubscribe from t_user where id = #{user}) = 0
-    </update>
-
-    <update id="updateState">
-        update t_card
-        set state = #{state}
+        set balance = balance + #{amount}
         where account = #{account}
+          and state = #{state}
     </update>
 
     <select id="lastInsertId" resultType="java.lang.Integer">

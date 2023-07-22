@@ -26,7 +26,7 @@ public class MessageVO extends Message implements Serializable {
     public MessageVO() {
     }
 
-    public MessageVO(Integer id, String content, String author, Date createTime, String authorName) {
+    public MessageVO(Integer id, String content, Integer author, Date createTime, String authorName) {
         super(id, content, author, createTime);
         this.authorName = authorName;
     }

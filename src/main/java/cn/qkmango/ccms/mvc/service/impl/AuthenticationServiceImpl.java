@@ -3,24 +3,25 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.RedisUtil;
-import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.request.RequestURL;
-import cn.qkmango.ccms.security.token.JWT;
+import cn.qkmango.ccms.security.token.Jwt;
 import cn.qkmango.ccms.security.token.TokenEntity;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -52,7 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private ReloadableResourceBundleMessageSource messageSource;
 
     @Resource
-    private JWT jwt;
+    private Jwt jwt;
 
     @Lazy
     @Autowired
@@ -110,11 +110,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param code             授权码
      * @param error            有错误时返回
      * @param errorDescription 错误描述
-     * @param locale           语言环境
      * @return 返回重定向页面
      */
     @Override
-    public String giteeCallback(String state, String code, String error, String errorDescription, PurposeType purpose, Locale locale) throws UpdateException {
+    public String giteeCallback(String state, String code, String error, String errorDescription, PurposeType purpose) throws UpdateException {
 
         String message = null;
 
@@ -126,7 +125,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         //检查state是否存在
         AuthenticationAccount authAccount = this.checkState(state);
         if (authAccount == null) {
-            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
+            message = messageSource.getMessage("response.authentication.state.failure", null, LocaleContextHolder.getLocale());
             return builder
                     .with("success", false)
                     .with("message", message)
@@ -134,7 +133,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         //获取第三方认证结果
-        AuthenticationResult result = giteeAuthHttpClient.authentication(state, code, error, authAccount, locale);
+        AuthenticationResult result = giteeAuthHttpClient.authentication(state, code, error, authAccount, LocaleContextHolder.getLocale());
 
         //如果第三方认证失败
         if (!result.success) {
@@ -154,7 +153,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 boolean login = toLogin(authAccount);
                 //如果登陆成功
                 if (login) {
-                    message = messageSource.getMessage("response.authentication.success", null, locale);
+                    message = messageSource.getMessage("response.authentication.success", null, LocaleContextHolder.getLocale());
                     return builder
                             .with("success", true)
                             .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -162,7 +161,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
                 //如果登陆失败
                 else {
-                    message = messageSource.getMessage("db.user.gitee.uid.failure@notExist", null, locale);
+                    message = messageSource.getMessage("db.user.gitee.uid.failure@notExist", null, LocaleContextHolder.getLocale());
                     return builder
                             .with("success", false)
                             .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -178,8 +177,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         uid,
                         account.getRole());
 
-                thisService.toBind(openPlatform, AccountHolder.getAccount(), locale);
-                message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
+                thisService.toBind(openPlatform, AccountHolder.getAccount());
+                message = messageSource.getMessage("db.update.authentication.bind.success", null, LocaleContextHolder.getLocale());
                 return builder
                         .with("success", true)
                         .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -197,11 +196,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param state   授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
      * @param code    授权码
      * @param purpose 授权目的
-     * @param locale  语言环境
      * @return 返回重定向页面
      */
     @Override
-    public String dingtalkCallback(String state, String code, PurposeType purpose, Locale locale) throws UpdateException {
+    public String dingtalkCallback(String state, String code, PurposeType purpose) throws UpdateException {
 
         String message;
 
@@ -214,7 +212,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         //检查state是否存在
         AuthenticationAccount authAccount = this.checkState(state);
         if (authAccount == null) {
-            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
+            message = messageSource.getMessage("response.authentication.state.failure", null, LocaleContextHolder.getLocale());
             return builder
                     .with("success", false)
                     .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -222,7 +220,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         //获取第三方认证结果
-        AuthenticationResult result = dingtalkAuthHttpClient.authentication(state, code, locale);
+        AuthenticationResult result = dingtalkAuthHttpClient.authentication(state, code, LocaleContextHolder.getLocale());
 
         //如果第三方认证失败
         if (!result.success) {
@@ -241,7 +239,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 boolean login = toLogin(authAccount);
                 //如果登陆成功
                 if (login) {
-                    message = messageSource.getMessage("response.authentication.success", null, locale);
+                    message = messageSource.getMessage("response.authentication.success", null, LocaleContextHolder.getLocale());
                     return builder
                             .with("success", true)
                             .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -249,7 +247,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
                 //如果登陆成功
                 else {
-                    message = messageSource.getMessage("db.user.dingtalk.uid.failure@notExist", null, locale);
+                    message = messageSource.getMessage("db.user.dingtalk.uid.failure@notExist", null, LocaleContextHolder.getLocale());
                     return builder
                             .with("success", false)
                             .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -259,7 +257,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             case bind -> {
                 //判断认证用途，执行 绑定 的操作
                 Account account = AccountHolder.getAccount();
-                String id = AccountHolder.getId();
+                Integer id = AccountHolder.getId();
                 Role role = AccountHolder.getRole();
                 OpenPlatform openPlatform = new OpenPlatform(
                         account.getId(),
@@ -268,9 +266,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         uid,
                         account.getRole());
 
-                thisService.toBind(openPlatform, account, locale);
+                thisService.toBind(openPlatform, account);
 
-                message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
+                message = messageSource.getMessage("db.update.authentication.bind.success", null, LocaleContextHolder.getLocale());
                 return builder
                         .with("success", true)
                         .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -292,12 +290,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param appId    应用id
      * @param source   来源
      * @param scope    作用域
-     * @param locale   语言环境
      * @return 返回重定向页面
      * @throws UpdateException 更新异常
      */
     @Override
-    public String alipayCallback(PurposeType purpose, String authCode, String state, String appId, String source, String scope, Locale locale) throws UpdateException {
+    public String alipayCallback(PurposeType purpose, String authCode, String state, String appId, String source, String scope) throws UpdateException {
 
         String message;
 
@@ -309,7 +306,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         //检查state是否存在
         AuthenticationAccount authAccount = this.checkState(state);
         if (authAccount == null) {
-            message = messageSource.getMessage("response.authentication.state.failure", null, locale);
+            message = messageSource.getMessage("response.authentication.state.failure", null, LocaleContextHolder.getLocale());
             return builder
                     .with("success", false)
                     .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -317,7 +314,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         //获取第三方认证结果
-        AuthenticationResult result = alipayAuthHttpClient.authentication(state, authCode, authAccount, locale);
+        AuthenticationResult result = alipayAuthHttpClient.authentication(state, authCode, authAccount, LocaleContextHolder.getLocale());
 
 
         //如果第三方认证失败
@@ -337,7 +334,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 boolean login = toLogin(authAccount);
                 //如果登陆成功
                 if (login) {
-                    message = messageSource.getMessage("response.authentication.success", null, locale);
+                    message = messageSource.getMessage("response.authentication.success", null, LocaleContextHolder.getLocale());
                     return builder
                             .with("success", true)
                             .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -345,7 +342,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
                 //如果登陆成功
                 else {
-                    message = messageSource.getMessage("db.user.alipay.uid.failure@notExist", null, locale);
+                    message = messageSource.getMessage("db.user.alipay.uid.failure@notExist", null, LocaleContextHolder.getLocale());
                     return builder
                             .with("success", false)
                             .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -362,9 +359,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         uid,
                         account.getRole());
 
-                thisService.toBind(openPlatform, account, locale);
+                thisService.toBind(openPlatform, account);
 
-                message = messageSource.getMessage("db.update.authentication.bind.success", null, locale);
+                message = messageSource.getMessage("db.update.authentication.bind.success", null, LocaleContextHolder.getLocale());
                 return builder
                         .with("success", true)
                         .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -416,18 +413,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void toBind(OpenPlatform platform,
-                       Account account,
-                       Locale locale) throws UpdateException {
+                       Account account) throws UpdateException {
 
         //如果已经绑定，抛出异常
         if (isBind(platform, account)) {
-            throw new UpdateException(messageSource.getMessage("db.update.authentication.bind.failure@exist", null, locale));
+            throw new UpdateException(messageSource.getMessage("db.update.authentication.bind.failure@exist", null, LocaleContextHolder.getLocale()));
         }
 
         //绑定
         int affectedRows = dao.toBind(platform, account);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.update.authentication.bind.failure", null, locale));
+            throw new UpdateException(messageSource.getMessage("db.update.authentication.bind.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -451,13 +447,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public R unbind(PlatformType platform, Locale locale) throws UpdateException {
+    public R unbind(PlatformType platform) throws UpdateException {
         Account account = AccountHolder.getAccount();
         int affectedRows = dao.unbind(platform, account);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.update.authentication.unbind.failure", null, locale));
+            throw new UpdateException(messageSource.getMessage("db.update.authentication.unbind.failure", null, LocaleContextHolder.getLocale()));
         }
-        return R.success(messageSource.getMessage("db.update.authentication.unbind.success", null, locale));
+        return R.success(messageSource.getMessage("db.update.authentication.unbind.success", null, LocaleContextHolder.getLocale()));
     }
 
     /**

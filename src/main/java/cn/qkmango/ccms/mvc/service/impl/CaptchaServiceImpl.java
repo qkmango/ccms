@@ -3,17 +3,16 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.util.CaptchaUtil;
 import cn.qkmango.ccms.common.util.EmailUtil;
 import cn.qkmango.ccms.common.util.RedisUtil;
-import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.mvc.service.CaptchaService;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import jakarta.annotation.Resource;
 import jakarta.mail.MessagingException;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
-
-import java.util.Locale;
 
 /**
  * 验证码服务接口
@@ -45,11 +44,11 @@ public class CaptchaServiceImpl implements CaptchaService {
      * @param locale 语言环境
      */
     @Override
-    public void sendChangeEmail(String email, Locale locale) {
+    public void sendChangeEmail(String email) {
         Account account = AccountHolder.getAccount();
 
         //获取用户id和用户类型
-        String id = account.getId();
+        Integer id = account.getId();
         Role type = account.getRole();
 
         //生成验证码
@@ -65,7 +64,7 @@ public class CaptchaServiceImpl implements CaptchaService {
             emailUtil2.sendWithHtml(email, "修改邮箱验证码", content);
         } catch (MessagingException e) {
             e.printStackTrace();
-            throw new MailSendException(message.getMessage("response.email.send.failure", null, locale));
+            throw new MailSendException(message.getMessage("response.email.send.failure", null, LocaleContextHolder.getLocale()));
         }
         //将验证码存入redis,并设置过期时间5分钟
         redis.set(key, captcha, 5 * 60);

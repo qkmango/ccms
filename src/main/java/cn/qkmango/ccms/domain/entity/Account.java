@@ -1,11 +1,8 @@
 package cn.qkmango.ccms.domain.entity;
 
 import cn.qkmango.ccms.common.validate.group.Query.Login;
-import cn.qkmango.ccms.common.validate.group.Update;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.mvc.service.CardService;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
@@ -21,8 +18,7 @@ public class Account implements Serializable {
     /**
      * ID
      */
-    @NotEmpty(groups = {Login.class, Update.class, CardService.class})
-    private String id;
+    private Integer id;
 
     @NotNull(groups = Login.class)
     private String password;
@@ -38,7 +34,7 @@ public class Account implements Serializable {
     public Account() {
     }
 
-    public Account(String id, String password, Role role, AccountState state, Integer department) {
+    public Account(Integer id, String password, Role role, AccountState state, Integer department) {
         this.id = id;
         this.password = password;
         this.role = role;
@@ -46,11 +42,11 @@ public class Account implements Serializable {
         this.department = department;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public Account setId(String id) {
+    public Account setId(Integer id) {
         this.id = id;
         return this;
     }

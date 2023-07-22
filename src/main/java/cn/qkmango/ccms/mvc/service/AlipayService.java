@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Locale;
 
 /**
  * 支付宝
@@ -28,7 +27,7 @@ public interface AlipayService {
      * @param locale      语言
      * @return R
      */
-    String createPay(String subject, String totalAmount, Locale locale) throws InsertException;
+    String createPay(String subject, String totalAmount) throws InsertException;
 
     /**
      * 支付接口
@@ -58,6 +57,5 @@ public interface AlipayService {
                    String gmtPayment,
                    String receiptAmount,
                    String sign,
-                   Locale locale,
                    HttpServletRequest request) throws AlipayApiException, UpdateException, DeleteException, JsonProcessingException;
 }

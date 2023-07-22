@@ -24,14 +24,14 @@ public class Message implements Serializable {
     @NotEmpty(message = "留言内容不能为空", groups = {Insert.class})
     @Length(message = "留言内容长度必须 < 200", groups = {Insert.class})
     private String content;
-    private String author;
+    private Integer author;
     private Date createTime;
 
 
     public Message() {
     }
 
-    public Message(Integer id, String content, String author, Date createTime) {
+    public Message(Integer id, String content, Integer author, Date createTime) {
         this.id = id;
         this.content = content;
         this.author = author;
@@ -54,11 +54,11 @@ public class Message implements Serializable {
         this.content = content;
     }
 
-    public String getAuthor() {
+    public Integer getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Integer author) {
         this.author = author;
     }
 

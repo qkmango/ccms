@@ -3,20 +3,36 @@ package cn.qkmango.ccms.domain;
 import java.io.Serializable;
 
 /**
- * Domain 基类
+ * domain基类
+ * <p>
+ * 所有domain类都继承自该类
+ *
+ * </p>
  *
  * @author qkmango
  * @version 1.0
- * @date 2023-04-26 22:24
+ * @date 2023-07-18 11:20
  */
-public interface BaseDomain extends Serializable {
+public abstract class BaseDomain<T> implements Serializable {
 
-    String getVersion();
+    private Integer version;
+    private Integer newVersion;
 
-    void setVersion(String version);
+    public Integer getVersion() {
+        return version;
+    }
 
-    String getNewVersion();
+    public T setVersion(Integer version) {
+        this.version = version;
+        return (T)this;
+    }
 
-    void setNewVersion(String newVersion);
+    public Integer getNewVersion() {
+        return newVersion;
+    }
 
+    public T setNewVersion(Integer newVersion) {
+        this.newVersion = newVersion;
+        return (T)this;
+    }
 }

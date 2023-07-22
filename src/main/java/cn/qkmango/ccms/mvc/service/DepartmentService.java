@@ -7,7 +7,6 @@ import cn.qkmango.ccms.domain.pagination.Pagination;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 部门业务逻辑接口
@@ -36,7 +35,7 @@ public interface DepartmentService {
 
     List<Department> childList(Integer id);
 
-    void insert(Department department, Locale locale) throws InsertException;
+    void insert(Department department) throws InsertException;
 
     R<List<Department>> list(Pagination<Department> pagination);
 

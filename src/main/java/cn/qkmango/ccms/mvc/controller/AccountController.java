@@ -2,33 +2,31 @@ package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.exception.database.InsertException;
-import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
+import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.param.AccountInsertParam;
-import cn.qkmango.ccms.domain.param.UpdatePasswordParam;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.mvc.service.UserService;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.security.holder.AccountHolder;
-import cn.qkmango.ccms.security.token.JWT;
+import cn.qkmango.ccms.security.token.Jwt;
 import cn.qkmango.ccms.security.token.TokenEntity;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 账户控制器
@@ -52,7 +50,7 @@ public class AccountController {
     private UserService userService;
 
     @Resource
-    private JWT jwt;
+    private Jwt jwt;
 
     @Resource
     private PasswordEncoder passwordEncoder;
@@ -67,44 +65,36 @@ public class AccountController {
      * @throws LoginException 登陆异常登陆失败
      */
     @PostMapping("login.do")
-    public R<Object> login(Account account, Locale locale) throws LoginException {
-        Account loginAccount = service.login(account, locale);
+    public R<Object> login(Account account) throws LoginException {
+        Account loginAccount = service.login(account);
 
         //创建 TokenEntity, 包含 token 和 过期时间
         TokenEntity tokenEntity = jwt.createEntity(loginAccount);
-        return R.success(
-                tokenEntity,
-                ms.getMessage("response.login.success", null, locale)
-        );
+        return R.success(tokenEntity, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
     }
 
 
     /**
      * 修改密码
+     * 修改当前登陆账户的密码
      *
-     * @param param   新的密码
-     * @param session 会话
+     * @param dto   新的密码
      * @param locale  语言环境
      * @return 结果
      * @throws UpdateException 修改失败
      */
 
     @PostMapping("update/password.do")
-    public R<Object> updatePassword(@Validated UpdatePasswordParam param, HttpSession session, Locale locale) throws UpdateException {
-
-        Account account = (Account) session.getAttribute("account");
-        param.setRole(account.getRole());
-        param.setId(account.getId());
-
-        service.updatePassword(param, locale);
-
-        return R.success(ms.getMessage("db.update.password.success", null, locale));
+    public R<Object> updatePassword(@Validated UpdatePasswordDto dto) throws UpdateException {
+        Integer id = AccountHolder.getId();
+        dto.setAccount(id);
+        service.updatePassword(dto);
+        return R.success(ms.getMessage("db.update.password.success", null,LocaleContextHolder.getLocale()));
     }
 
 
     /**
      * 重置密码
-     * 重置密码为身份证后6位
      *
      * @param account 账户 ID
      * @param locale  语言环境
@@ -113,11 +103,9 @@ public class AccountController {
      */
     @Permission(Role.admin)
     @PostMapping(value = "update/resetPassword.do")
-    public R<Object> resetPassword(@NotEmpty String account, Locale locale) throws UpdateException {
-//        userService.resetPassword(card, locale);
-//        service.resetPassword(account);
-        service.resetPassword(account, locale);
-        return R.success(ms.getMessage("db.resetPassword.success", null, locale));
+    public R<Object> resetPassword(Integer account) throws UpdateException {
+        service.resetPassword(account);
+        return R.success(ms.getMessage("db.resetPassword.success", null, LocaleContextHolder.getLocale()));
     }
 
 
@@ -131,9 +119,9 @@ public class AccountController {
      */
     @Permission({Role.admin, Role.user})
     @PostMapping(value = "update/canceled.do")
-    public R<Object> canceled(@NotEmpty String account, Locale locale) throws UpdateException {
-        service.canceled(account, locale);
-        return R.success(ms.getMessage("db.account.unsubscribe.success", null, locale));
+    public R<Object> canceled(Integer account) throws UpdateException {
+        service.canceled(account);
+        return R.success(ms.getMessage("db.account.unsubscribe.success", null, LocaleContextHolder.getLocale()));
     }
 
     /**
@@ -143,7 +131,7 @@ public class AccountController {
      */
     @GetMapping("one/current-account-detail.do")
     public R currentAccountDetail() {
-        String id = AccountHolder.getId();
+        Integer id = AccountHolder.getId();
         AccountDetailVO info = service.accountDetail(id);
         return R.success(info);
     }
@@ -155,7 +143,7 @@ public class AccountController {
      */
     @GetMapping("one/current-account-info.do")
     public R currentAccountInfo() {
-        String id = AccountHolder.getId();
+        Integer id = AccountHolder.getId();
         Account account = service.getRecordById(id);
         return R.success(account);
     }
@@ -168,10 +156,10 @@ public class AccountController {
      */
     @Permission(Role.admin)
     @GetMapping("one/account-detail.do")
-    public R accountDetail(@NotEmpty String account, Locale locale) {
+    public R accountDetail(Integer account) {
         AccountDetailVO info = service.accountDetail(account);
         if (info == null) {
-            return R.fail(ms.getMessage("db.account.failure@notExist", null, locale));
+            return R.fail(ms.getMessage("db.account.failure@notExist", null, LocaleContextHolder.getLocale()));
         }
         return R.success(info);
     }
@@ -186,17 +174,15 @@ public class AccountController {
      */
     @Permission({Role.admin, Role.user})
     @PostMapping("user/update/email.do")
-    public R updateEmail(@NotBlank(message = "{valid.email.notBlank}")
-                         @Email(message = "{valid.email.illegal}") String email,
-                         @Pattern(regexp = "^[a-zA-Z0-9]{5}$", message = "{valid.captcha.illegal}") String captcha,
-                         Locale locale) throws UpdateException {
+    public R updateEmail(@NotBlank(message = "{valid.email.notBlank}") @Email(message = "{valid.email.illegal}") String email,
+                         @Pattern(regexp = "^[a-zA-Z0-9]{5}$", message = "{valid.captcha.illegal}") String captcha) throws UpdateException {
 
-        String id = AccountHolder.getId();
+        Integer id = AccountHolder.getId();
         Role role = AccountHolder.getRole();
 
         Account account = new Account().setId(id).setRole(role);
-        service.updateEmail(account, email, captcha, locale);
-        return R.success(ms.getMessage("db.update.email.success", null, locale));
+        service.updateEmail(account, email, captcha);
+        return R.success(ms.getMessage("db.update.email.success", null, LocaleContextHolder.getLocale()));
     }
 
     /**
@@ -213,8 +199,8 @@ public class AccountController {
 
     @Permission(Role.admin)
     @PostMapping("one/insert.do")
-    public R insert(@RequestBody @Validated AccountInsertParam account, Locale locale) throws InsertException {
-        service.insert(account, locale);
-        return R.success(ms.getMessage("db.account.insert.success", null, locale));
+    public R insert(@RequestBody @Validated AccountInsertParam account) throws InsertException {
+        service.insert(account);
+        return R.success(ms.getMessage("db.account.insert.success", null, LocaleContextHolder.getLocale()));
     }
 }

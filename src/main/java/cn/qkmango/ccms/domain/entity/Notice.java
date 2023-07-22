@@ -26,7 +26,7 @@ public class Notice implements Serializable {
     @NotEmpty(groups = {Insert.class})
     private String content;
 
-    private String author;
+    private Integer author;
     private Date createTime;
 
 
@@ -34,7 +34,7 @@ public class Notice implements Serializable {
     public Notice() {
     }
 
-    public Notice(Integer id, String title, String content, String author, Date createTime) {
+    public Notice(Integer id, String title, String content, Integer author, Date createTime) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -66,11 +66,11 @@ public class Notice implements Serializable {
         this.content = content;
     }
 
-    public String getAuthor() {
+    public Integer getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Integer author) {
         this.author = author;
     }
 

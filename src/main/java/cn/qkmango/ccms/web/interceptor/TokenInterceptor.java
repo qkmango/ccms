@@ -1,7 +1,7 @@
 package cn.qkmango.ccms.web.interceptor;
 
 import cn.qkmango.ccms.security.holder.AccountHolder;
-import cn.qkmango.ccms.security.token.JWT;
+import cn.qkmango.ccms.security.token.Jwt;
 import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,9 +22,9 @@ import org.springframework.web.servlet.ModelAndView;
 public class TokenInterceptor implements HandlerInterceptor {
 
     @Resource(name = "jwt")
-    private JWT jwt;
+    private Jwt jwt;
 
-    public TokenInterceptor(JWT jwt) {
+    public TokenInterceptor(Jwt jwt) {
         this.jwt = jwt;
     }
 

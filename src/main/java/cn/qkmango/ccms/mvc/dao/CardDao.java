@@ -49,11 +49,8 @@ public interface CardDao {
 
     /**
      * 更新校园卡状态
-     *
-     * @param card 校园卡
-     * @return 影响的记录条数
      */
-    int state(Card card);
+    int state(Integer account, CardState state);
 
     /**
      * 查询校园卡详细信息
@@ -61,7 +58,7 @@ public interface CardDao {
      * @param account 账户 id
      * @return 校园卡详细信息
      */
-    Card getRecordByAccount(String account);
+    Card getRecordByAccount(Integer account);
 
 
     /**
@@ -70,7 +67,7 @@ public interface CardDao {
      * @param card 校园卡（账号，充值金额）
      * @return
      */
-    int recharge(Card card);
+    int recharge(Integer account, Integer amount, CardState state);
 
     /**
      * 查询校园卡信息
@@ -80,12 +77,5 @@ public interface CardDao {
      */
     List<Card> list(Pagination<Card> pagination);
 
-    /**
-     * 修改校园卡状态
-     *
-     * @param accountId 账户id
-     * @param cardState 校园卡状态
-     * @return
-     */
-    int updateState(String accountId, CardState cardState);
+
 }

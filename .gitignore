@@ -9,32 +9,18 @@ target/
 *.iml
 *.ipr
 
-src/main/resources/static/test/
 src/main/java/cn/qkmango/ccms/test/
-src/main/resources/static/lib/layui-v2.6.3/layui_update.js
-src/main/resources/static/**/*.bak.*
 src/test/
-/src/main/resources/static/page/user/common/data.json
-/src/main/resources/static/api/test.json
-/src/main/resources/static/page/*/*/*test.json
-/src/main/resources/static/page/**/*.test.json
-/src/main/resources/static/**/*.test.css
+
 out
 /src/main/java/cn/qkmango/ccms/mvc/controller/Test2.java
 /src/main/resources/application.properties
-/src/main/resources/static/api/upload.json
-/src/main/resources/static/api/tableSelect.json
-/src/main/resources/static/api/table.json
-/src/main/resources/static/api/menus.json
-/src/main/resources/static/api/clear.json
-/src/main/resources/static/api/init.json
 /src/main/java/cn/qkmango/ccms/mvc/dao/TestDao.java
 /src/main/java/cn/qkmango/ccms/mvc/dao/TestDao.xml
 /src/main/resources/rebel.xml
 
-/src/main/resources/static/lib/layui-v2.6.3/
-/src/main/resources/static/lib/layui-v2.8.3/
-
 # 这两个文件包含第三方平台配置信息，不能上传到仓库
 /src/main/resources/application-prd_provate.yml
 /src/main/resources/application-dev_private.yml
+
+/src/main/java/cn/qkmango/ccms/mvc/Test2Controller.java

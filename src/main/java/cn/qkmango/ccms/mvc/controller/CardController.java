@@ -1,19 +1,19 @@
 package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.annotation.Permission;
-import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.service.CardService;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Range;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,22 +39,6 @@ public class CardController {
     @Resource
     private CardService service;
 
-
-    /**
-     * 开卡
-     *
-     * @param user   学生
-     * @param locale 语言环境
-     * @return 开卡结果
-     * @throws InsertException 开卡失败
-     */
-//    @Permission(Role.admin)
-//    @PostMapping("one/insert.do")
-//    public R<Card> insert(@Validated({Insert.class, CardService.class}) User user, Locale locale) throws InsertException {
-//        Card addCard = service.insert(user, locale);
-//        return R.success(addCard,messageSource.getMessage("db.card.insert.success", null, locale));
-//    }
-
     /**
      * 查询卡信息列表
      *
@@ -67,60 +51,35 @@ public class CardController {
         return service.list(pagination);
     }
 
-    /**
-     * 更改卡状态（挂失/解挂）
-     *
-     * @param card   传入卡号和状态
-     * @param locale 语言环境
-     * @return 更改结果
-     * @throws UpdateException 更改失败
-     */
-//    @PostMapping(value = "update/state.do")
-//    public R state(@Validated(Update.class) Card card, Locale locale) throws UpdateException {
-//        service.state(card, locale);
-//        return R.success(messageSource.getMessage("db.updateCardState.success", null, locale));
-//    }
-
-
-    /**
-     * 查询卡详细信息
-     * @deprecated 该方法已经被 {@link cn.qkmango.ccms.mvc.controller.AccountController#accountInfo(String, Locale)} 取代
-     * @param accountId 账户
-     * @param session   会话
-     * @param locale    语言环境
-     * @return 卡详细信息
-     */
-    @PostMapping(value = "one/detail.do")
-    public R detail(@NotEmpty String accountId, HttpSession session, Locale locale) {
-
-        //如果是学生，仅可以查询自己的卡信息
-        Account account = (Account) session.getAttribute("account");
-
-        Card detail = service.detail(accountId);
-
-        if (detail == null) {
-            return R.fail(messageSource.getMessage("db.card.detail.failure", null, locale));
-        }
-
-        //如果不是admin但查出的卡号不是自己的卡号，返回错误信息
-        if (account.getRole() != Role.admin && !accountId.equals(detail.getAccount())) {
-            return R.fail(messageSource.getMessage("db.card.detail.failure", null, locale));
-        }
-
-        return R.success(detail);
-    }
 
     /**
      * 充值
      *
-     * @param card 传入卡号和充值金额
-     * @return 充值结果
+     * @param account 账户
+     * @param amount  充值金额
+     * @return
      */
     @Permission(Role.admin)
-    @PostMapping(value = "update/recharge.do")
-    public R recharge(@Validated(Card.UpdateRecharge.class) Card card, Locale locale) throws UpdateException {
-//        service.recharge(card, locale);
+    @PostMapping("update/recharge.do")
+    public R recharge(@NotNull Integer account,
+                      @NotNull @Range(min = 100, max = 100000, message = "充值金额在1~1000元") Integer amount,
+                      Locale locale) throws UpdateException {
+        service.recharge(account, amount, locale);
         return R.success(messageSource.getMessage("db.update.recharge.success", null, locale));
+    }
+
+    @PostMapping("update/state.do")
+    public R state(Integer account, CardState state) throws UpdateException {
+
+        Integer id = AccountHolder.getId();
+        Role role = AccountHolder.getRole();
+        //如果不是管理员，且不是自己的卡，就不能修改
+        if (role != Role.admin && !account.equals(id)) {
+            R.fail(messageSource.getMessage("db.card.update.state.failure", null, LocaleContextHolder.getLocale()));
+        }
+
+        service.state(account, state);
+        return R.success(messageSource.getMessage("db.card.update.state.success", null, LocaleContextHolder.getLocale()));
     }
 
 }

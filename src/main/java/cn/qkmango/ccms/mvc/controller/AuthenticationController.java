@@ -3,13 +3,13 @@ package cn.qkmango.ccms.mvc.controller;
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Controller;
@@ -17,7 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Locale;
+
 
 /**
  * 第三方授权登陆
@@ -82,10 +82,9 @@ public class AuthenticationController {
             @RequestParam PurposeType purpose,
             @RequestParam String code,
             @RequestParam(required = false) String error,
-            @RequestParam(required = false, value = "error_description") String errorDescription,
-            Locale locale) throws UpdateException {
+            @RequestParam(required = false, value = "error_description") String errorDescription) throws UpdateException {
 
-        return service.giteeCallback(state, code, error, errorDescription, purpose, locale);
+        return service.giteeCallback(state, code, error, errorDescription, purpose);
     }
 
 
@@ -102,10 +101,9 @@ public class AuthenticationController {
     public String dingtalk(
             @RequestParam PurposeType purpose,
             @RequestParam String authCode,
-            @RequestParam String state,
-            Locale locale) throws UpdateException {
+            @RequestParam String state) throws UpdateException {
 
-        return service.dingtalkCallback(state, authCode, purpose, locale);
+        return service.dingtalkCallback(state, authCode, purpose);
     }
 
     /**
@@ -127,10 +125,9 @@ public class AuthenticationController {
             @RequestParam String state,
             @RequestParam("app_id") String appId,
             @RequestParam String source,
-            @RequestParam String scope,
-            Locale locale) throws UpdateException {
+            @RequestParam String scope) throws UpdateException {
 
-        return service.alipayCallback(purpose, authCode, state, appId, source, scope, locale);
+        return service.alipayCallback(purpose, authCode, state, appId, source, scope);
     }
 
 
@@ -139,8 +136,8 @@ public class AuthenticationController {
      */
     @ResponseBody
     @PostMapping("unbind/{platform}.do")
-    public R unbind(@PathVariable PlatformType platform, Locale locale) throws UpdateException {
-        return service.unbind(platform, locale);
+    public R unbind(@PathVariable PlatformType platform) throws UpdateException {
+        return service.unbind(platform);
     }
 
     /**

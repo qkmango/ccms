@@ -15,19 +15,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("aggregation")
 public class AggregationController {
 
-//    @Resource
-//    private AggregationService service;
-//
-//    /**
-//     * 用户欢迎界面聚合数据
-//     *
-//     * @return 用户首页所需的数据
-//     */
-//    @Permission(Role.user)
-//    @GetMapping("user/welcome.do")
-//    public R<Map<String, Object>> userWelcome() {
-//        String id = AccountHolder.getAccountId();
-//        Map<String, Object> data = service.userWelcome(id);
-//        return R.success(data);
-//    }
 }

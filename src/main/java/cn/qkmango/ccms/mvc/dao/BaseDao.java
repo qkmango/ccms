@@ -27,5 +27,5 @@ public interface BaseDao<T, I> {
      * @param id id
      * @return 记录
      */
-    T getRecordById(I id);
+    T getRecordById(Integer id);
 }

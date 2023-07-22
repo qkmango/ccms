@@ -4,10 +4,10 @@ import cn.qkmango.ccms.common.exception.database.DeleteException;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.util.SnowFlake;
-import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.mvc.service.AlipayService;
 import cn.qkmango.ccms.pay.AlipayConfig;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.request.RequestURL;
 import com.alibaba.fastjson2.JSONObject;
 import com.alipay.api.AlipayApiException;
@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -63,19 +62,18 @@ public class AlipayServiceImpl implements AlipayService {
      *
      * @param subject     支付的名称
      * @param totalAmount 订单的总金额
-     * @param locale      语言
      * @return R
      * @throws InsertException 创建支付失败
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public String createPay(String subject, String totalAmount, Locale locale) throws InsertException {
+    public String createPay(String subject, String totalAmount) throws InsertException {
 
         //将金额转换为分
         int amount = (int) (Double.parseDouble(totalAmount) * 100);
 
         Account account = AccountHolder.getAccount();
-        String user = account.getId();
+        Integer user = account.getId();
         String id = String.valueOf(sf.nextId());
 
 //        Pay pay = new Pay()
@@ -141,7 +139,7 @@ public class AlipayServiceImpl implements AlipayService {
             String gmtPayment,
             String receiptAmount,
             String sign,
-            Locale locale,
+            
             HttpServletRequest request) throws AlipayApiException, UpdateException, DeleteException, JsonProcessingException {
 
         //将金额转换为分

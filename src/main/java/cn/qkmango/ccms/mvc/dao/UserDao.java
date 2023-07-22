@@ -48,5 +48,5 @@ public interface UserDao {
      * @param account
      * @return
      */
-    User getRecordByAccount(String account);
+    User getRecordByAccount(Integer account);
 }

@@ -1,5 +1,6 @@
 package cn.qkmango.ccms.domain.entity;
 
+import cn.qkmango.ccms.domain.BaseDomain;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel2;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
@@ -14,9 +15,9 @@ import java.util.Date;
  * @version 1.0
  * @date 2023-07-14 16:53
  */
-public class Trade {
+public class Trade extends BaseDomain<Trade> {
 
-    private String id;
+    private Long id;
     private String account;
     private TradeLevel1 level1;
     private TradeLevel2 level2;
@@ -28,7 +29,7 @@ public class Trade {
      * 外部系统的ID
      * 如微信订单号，支付宝订单号
      */
-    private String ouId;
+    private String outId;
 
     /**
      * 内部系统的ID
@@ -40,11 +41,11 @@ public class Trade {
     private Date createTime;
     private String description;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public Trade setId(String id) {
+    public Trade setId(Long id) {
         this.id = id;
         return this;
     }
@@ -94,12 +95,12 @@ public class Trade {
         return this;
     }
 
-    public String getOuId() {
-        return ouId;
+    public String getOutId() {
+        return outId;
     }
 
-    public Trade setOuId(String ouId) {
-        this.ouId = ouId;
+    public Trade setOutId(String outId) {
+        this.outId = outId;
         return this;
     }
 
@@ -148,7 +149,7 @@ public class Trade {
                 ", level2=" + level2 +
                 ", level3=" + level3 +
                 ", state=" + state +
-                ", ouId='" + ouId + '\'' +
+                ", ouId='" + outId + '\'' +
                 ", inId='" + inId + '\'' +
                 ", amount=" + amount +
                 ", createTime=" + createTime +
