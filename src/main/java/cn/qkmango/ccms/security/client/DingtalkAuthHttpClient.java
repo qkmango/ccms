@@ -13,10 +13,10 @@ import com.aliyun.dingtalkoauth2_1_0.models.GetUserTokenRequest;
 import com.aliyun.dingtalkoauth2_1_0.models.GetUserTokenResponse;
 import com.aliyun.teaopenapi.models.Config;
 import com.aliyun.teautil.models.RuntimeOptions;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import java.net.URLEncoder;
-import java.util.Locale;
 
 /**
  * Dingtalk 授权登陆请求
@@ -41,12 +41,12 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
     }
 
     @Override
-    public String authorize(AuthenticationAccount authAccount, String state, Object... params) {
+    public String authorize(AuthenticationAccount authAccount, String state) {
 
         PurposeType purpose = authAccount.getPurpose();
         RequestURL authorize = config.getAuthorize();
         String callback = config.getCallback().builder()
-                .with("purpose", purpose.name())
+                // .with("purpose", purpose.name())
                 .build().url();
 
 
@@ -128,9 +128,7 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
      */
     @Override
     public AuthenticationResult authentication(String state, String code, Object... params) {
-        Locale locale = (Locale) params[0];
-
-        String message = messageSource.getMessage("response.authentication.failure", null, locale);
+        String message = messageSource.getMessage("response.authentication.failure", null, LocaleContextHolder.getLocale());
 
         AuthenticationResult result = new AuthenticationResult();
         result.setSuccess(false);

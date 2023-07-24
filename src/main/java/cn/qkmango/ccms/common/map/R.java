@@ -123,6 +123,9 @@ public class R<T> implements Serializable {
         return new R<>(true, null, data, count, null);
     }
 
+    public static <T> R<T> fail() {
+        return new R<>(false, null, null, null, null);
+    }
 
     public static <T> R<T> fail(T data) {
         return new R<>(false, null, data, null, null);

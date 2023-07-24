@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.security.client;
 
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
-import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.UserInfo;
 import cn.qkmango.ccms.security.config.AlipayAppConfig;
@@ -13,10 +12,10 @@ import com.alipay.api.request.AlipaySystemOauthTokenRequest;
 import com.alipay.api.request.AlipayUserInfoShareRequest;
 import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.alipay.api.response.AlipayUserInfoShareResponse;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import java.net.URLEncoder;
-import java.util.Locale;
 
 /**
  * 支付宝认证客户端
@@ -38,9 +37,9 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
     }
 
     @Override
-    public String authorize(AuthenticationAccount authAccount, String state, Object... params) {
+    public String authorize(AuthenticationAccount authAccount, String state) {
         String callback = config.getCallback().builder()
-                .with("purpose", authAccount.getPurpose().name())
+                // .with("purpose", authAccount.getPurpose().name())
                 .build().url();
 
         return config.getAuthorize().builder()
@@ -136,12 +135,11 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
     @Override
     public AuthenticationResult authentication(String state, String code, Object... params) {
         AuthenticationAccount account = (AuthenticationAccount) params[0];
-        Locale locale = (Locale) params[1];
 
         //获取授权用途
-        PurposeType purpose = account.getPurpose();
+        // PurposeType purpose = account.getPurpose();
 
-        String message = messageSource.getMessage("response.authentication.failure", null, locale);
+        String message = messageSource.getMessage("response.authentication.failure", null, LocaleContextHolder.getLocale());
 
         AuthenticationResult result = new AuthenticationResult();
         result.setSuccess(false);
@@ -154,7 +152,7 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
         }
 
         //获取 access_token
-        String accessToken = this.accessToken(code, purpose);
+        String accessToken = this.accessToken(code);
 
         //获取 userInfo 信息
         UserInfo userInfo = this.userInfo(accessToken);

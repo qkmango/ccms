@@ -1,6 +1,5 @@
 package cn.qkmango.ccms.mvc.dao;
 
-import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
@@ -29,7 +28,7 @@ public interface AuthenticationDao {
      *                       <li>三方平台返回的用户唯一标识 uid
      * @return 返回账户信息
      */
-    Account authentication(AuthenticationAccount authentication);
+    // Account authentication(AuthenticationAccount authentication);
 
     /**
      * 获取开放平台绑定状态

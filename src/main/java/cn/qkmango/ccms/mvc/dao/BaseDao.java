@@ -28,4 +28,5 @@ public interface BaseDao<T, I> {
      * @return 记录
      */
     T getRecordById(Integer id);
+
 }

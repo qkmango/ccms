@@ -23,7 +23,7 @@ public interface AuthHttpClient {
      * @param authAccount 授权账户
      * @return 授权地址
      */
-    String authorize(AuthenticationAccount authAccount, String state, Object... params);
+    String authorize(AuthenticationAccount authAccount, String state);
 
 
     /**

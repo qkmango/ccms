@@ -14,4 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TradeDao extends BaseDao<Trade, Long> {
     int insert(Trade trade);
+
+    @Override
+    Trade getRecordById(Integer id);
 }

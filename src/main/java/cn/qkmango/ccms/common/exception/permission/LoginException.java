@@ -5,7 +5,7 @@ package cn.qkmango.ccms.common.exception.permission;
  *
  * @author qkmango
  */
-public class LoginException extends PermissionException {
+public class LoginException extends RuntimeException {
     public LoginException() {
         super("系统登陆异常");
     }

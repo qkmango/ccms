@@ -3,20 +3,6 @@
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.AuthenticationDao">
 
-    <select id="authentication" resultType="cn.qkmango.ccms.domain.entity.Account">
-        SELECT id,name
-        FROM
-        <choose>
-            <when test="role == @cn.qkmango.ccms.domain.bind.Role@user">t_user</when>
-            <when test="role == @cn.qkmango.ccms.domain.bind.Role@admin">t_admin</when>
-        </choose>
-
-        WHERE
-        id=(SELECT account FROM t_open_platform WHERE type = #{platform} and uid = #{uid} and role = #{role})
-
-        <if test="role == @cn.qkmango.ccms.domain.bind.Role@user">and unsubscribe = 0;</if>
-    </select>
-
     <update id="toBind2">
         update
         <choose>

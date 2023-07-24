@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.domain.auth;
 
-import cn.qkmango.ccms.domain.bind.Role;
-
 /**
  * 认证信息
  *
@@ -15,11 +13,6 @@ public class AuthenticationAccount {
      * 用户ID
      */
     private String id;
-
-    /**
-     * 用户权限
-     */
-    private Role role;
 
     /**
      * 认证平台
@@ -39,26 +32,17 @@ public class AuthenticationAccount {
     public AuthenticationAccount() {
     }
 
-    public AuthenticationAccount(Role role, PlatformType platform, PurposeType purpose) {
-        this.role = role;
+    public AuthenticationAccount(PlatformType platform, PurposeType purpose) {
         this.platform = platform;
         this.purpose = purpose;
     }
 
-    public AuthenticationAccount(Role role, PlatformType platform, PurposeType purpose, String uid) {
-        this.role = role;
+    public AuthenticationAccount(PlatformType platform, PurposeType purpose, String uid) {
         this.platform = platform;
         this.purpose = purpose;
         this.uid = uid;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
     public PlatformType getPlatform() {
         return platform;
@@ -97,7 +81,6 @@ public class AuthenticationAccount {
     public String toString() {
         return "AuthenticationAccount{" +
                 "id='" + id + '\'' +
-                ", role=" + role +
                 ", platform=" + platform +
                 ", purpose=" + purpose +
                 ", uid='" + uid + '\'' +

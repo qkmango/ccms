@@ -1,5 +1,8 @@
 package cn.qkmango.ccms.config;
 
+import cn.qkmango.ccms.common.util.RedisUtil;
+import cn.qkmango.ccms.security.cache.DefaultSecurityCache;
+import cn.qkmango.ccms.security.cache.SecurityCache;
 import cn.qkmango.ccms.security.client.AlipayAuthHttpClient;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
 import cn.qkmango.ccms.security.client.DingtalkAuthHttpClient;
@@ -27,14 +30,19 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 public class SecurityConfig {
 
     // redis工具类
-    // @Resource(name = "redisUtil")
-    // private RedisUtil redisUtil;
+    @Resource(name = "redisUtil")
+    private RedisUtil redisUtil;
 
     // 认证 state 缓存工具
-    // @Bean
-    // public StateCache stateCache() {
-    //     return new DefaultStateCache(redisUtil, 60 * 5);
-    // }
+    @Bean("authStateCache")
+    public SecurityCache authStateCache() {
+        return new DefaultSecurityCache("auth:state:", redisUtil, 60 * 5);
+    }
+
+    @Bean("authCodeCache")
+    public SecurityCache authCodeCache() {
+        return new DefaultSecurityCache("auth:code:", redisUtil, 60 * 5);
+    }
 
     @Value("${ccms.jwt.secret}")
     private String secret;
@@ -55,33 +63,21 @@ public class SecurityConfig {
     @Resource
     private ReloadableResourceBundleMessageSource messageSource;
 
-    /**
-     * Gitee 第三方平台配置
-     *
-     * @return 配置
-     */
+    // Gitee 第三方平台配置
     @Bean("giteeAuthConfig")
     @ConfigurationProperties(prefix = "ccms.authentication.gitee")
     public AppConfig giteeConfig() {
         return new AppConfig();
     }
 
-    /**
-     * Dingtalk 第三方平台配置
-     *
-     * @return 配置
-     */
+    // Dingtalk 第三方平台配置
     @Bean("dingtalkAuthConfig")
     @ConfigurationProperties(prefix = "ccms.authentication.dingtalk")
     public AppConfig dingtalkConfig() {
         return new AppConfig();
     }
 
-    /**
-     * Alipay 第三方平台配置
-     *
-     * @return 配置
-     */
+    // Alipay 第三方平台配置
     @Bean("alipayAuthConfig")
     @ConfigurationProperties(prefix = "ccms.authentication.alipay")
     public AlipayAppConfig alipayConfig() {

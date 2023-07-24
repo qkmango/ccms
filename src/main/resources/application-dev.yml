@@ -25,7 +25,8 @@ ccms:
       authorize: https://gitee.com/oauth/authorize
       accessToken: https://gitee.com/oauth/token
       userInfo: https://gitee.com/api/v5/user
-      callback: http://localhost/auth/gitee/callback.do
+#      callback: http://localhost/auth/gitee/callback.do
+      callback: http://localhost:5500/page/common/authentication/callback.html
       redirect: redirect:/page/common/authentication/result.html
 
     dingtalk:

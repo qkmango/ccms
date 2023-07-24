@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.qkmango.ccms.mvc.dao.OpenPlatformDao">
+
+    <select id="getRecordByUid" resultType="cn.qkmango.ccms.domain.entity.OpenPlatform">
+        select id,
+               account,
+               type,
+               uid
+        from t_open_platform
+        where uid = #{uid}
+    </select>
+</mapper>

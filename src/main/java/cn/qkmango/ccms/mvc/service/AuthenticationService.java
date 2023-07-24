@@ -4,10 +4,10 @@ import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
-import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 第三方授权登陆
@@ -25,20 +25,24 @@ public interface AuthenticationService {
      */
     String authorize(AuthenticationAccount authentication);
 
+
+    String callback(String state, PlatformType platform, Map<String, String> params);
+
+
     /**
      * Gitee授权回调
      * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
      *
-     * @param state             授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
-     *                          在redis中有效期为5分钟, 拼接为 authentication:Role:UUID
-     * @param code              授权码
-     * @param error             有错误时返回
+     * @param state            授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
+     *                         在redis中有效期为5分钟, 拼接为 authentication:Role:UUID
+     * @param code             授权码
+     * @param error            有错误时返回
      * @param errorDescription 错误描述
-     * @param purpose           授权目的
+     * @param purpose          授权目的
      * @return 返回重定向页面
      * @throws UpdateException
      */
-    String giteeCallback(String state, String code, String error, String errorDescription, PurposeType purpose) throws UpdateException;
+    String giteeCallback(String state, Map<String, String> params);
 
     /**
      * 钉钉回调地址
@@ -48,7 +52,7 @@ public interface AuthenticationService {
      * @param code  授权码
      * @return 返回重定向页面
      */
-    String dingtalkCallback(String state, String code, PurposeType purpose) throws UpdateException;
+    String dingtalkCallback(String state, Map<String, String> params);
 
     /**
      * 支付宝回调地址
@@ -61,7 +65,7 @@ public interface AuthenticationService {
      * @param scope
      * @return
      */
-    String alipayCallback(PurposeType purpose, String authCode, String state, String appId, String source, String scope) throws UpdateException;
+    String alipayCallback(String state, Map<String, String> params);
 
     /**
      * 获取开放平台绑定状态

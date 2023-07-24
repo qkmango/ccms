@@ -14,11 +14,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.Locale;
 
 /**
  * Gitee 授权登陆请求
@@ -39,12 +39,12 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
     }
 
     @Override
-    public String authorize(AuthenticationAccount authAccount, String state, Object... params) {
+    public String authorize(AuthenticationAccount authAccount, String state) {
         PurposeType purpose = authAccount.getPurpose();
         RequestURL authorize = config.getAuthorize();
 
         String callback = config.getCallback().builder()
-                .with("purpose", purpose.name())
+                // .with("purpose", purpose.name())
                 .build().url();
 
         return authorize.builder()
@@ -67,10 +67,8 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
     @Override
     public String accessToken(Object... params) {
         String code = (String) params[0];
-        PurposeType purpose = (PurposeType) params[1];
 
         String callback = config.getCallback().builder()
-                .with("purpose", purpose.name())
                 .build().url();
 
         RequestURL accessToken = config.getAccessToken();
@@ -176,10 +174,8 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
     public AuthenticationResult authentication(String state, String code, Object... params) {
 
         String error = (String) params[0];
-        Locale locale = (Locale) params[2];
-        AuthenticationAccount account = (AuthenticationAccount) params[1];
 
-        String message = messageSource.getMessage("response.authentication.failure", null, locale);
+        String message = messageSource.getMessage("response.authentication.failure", null, LocaleContextHolder.getLocale());
 
         AuthenticationResult result = new AuthenticationResult();
         result.setSuccess(false);
@@ -187,12 +183,11 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
 
         //如果用户拒绝授权
         if (error != null || code == null) {
-            result.setMessage(message);
             return result;
         }
 
         //获取 access_token
-        String accessToken = this.accessToken(code, account.getPurpose());
+        String accessToken = this.accessToken(code);
 
         //获取 userInfo 信息
         UserInfo userInfo = this.userInfo(accessToken);
@@ -200,12 +195,12 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
         //查询数据库中是否存在该用户
         //如果code无效，则Gitee返回的结果中没有 id
         if (userInfo == null) {
-            result.setMessage(message);
             return result;
         }
 
         result.setSuccess(true);
         result.setUserInfo(userInfo);
+        result.setMessage(messageSource.getMessage("response.authentication.success", null, LocaleContextHolder.getLocale()));
         return result;
     }
 

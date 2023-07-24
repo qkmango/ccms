@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.domain.entity;
 
 import cn.qkmango.ccms.domain.auth.PlatformType;
-import cn.qkmango.ccms.domain.bind.Role;
 
 /**
  * 开放平台实体类
@@ -16,77 +15,57 @@ public class OpenPlatform {
     //系统用户ID
     private Integer id;
 
+    private Integer account;
+
     // 平台名称
     private PlatformType type;
 
-    // 平台绑定状态
-    private Boolean state;
-
     // 平台绑定的账号
     private String uid;
-
-    private Role accountType;
-
-    public OpenPlatform() {
-    }
-
-    public OpenPlatform(Integer id, PlatformType type, Boolean state, String uid, Role accountType) {
-        this.id = id;
-        this.type = type;
-        this.state = state;
-        this.uid = uid;
-        this.accountType = accountType;
-    }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public OpenPlatform setId(Integer id) {
         this.id = id;
+        return this;
+    }
+
+    public Integer getAccount() {
+        return account;
+    }
+
+    public OpenPlatform setAccount(Integer account) {
+        this.account = account;
+        return this;
     }
 
     public PlatformType getType() {
         return type;
     }
 
-    public void setType(PlatformType type) {
+    public OpenPlatform setType(PlatformType type) {
         this.type = type;
-    }
-
-    public Boolean getState() {
-        return state;
-    }
-
-    public void setState(Boolean state) {
-        this.state = state;
+        return this;
     }
 
     public String getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
+    public OpenPlatform setUid(String uid) {
         this.uid = uid;
-    }
-
-    public Role getAccountType() {
-        return accountType;
-    }
-
-    public OpenPlatform setAccountType(Role accountType) {
-        this.accountType = accountType;
         return this;
     }
 
     @Override
     public String toString() {
         return "OpenPlatform{" +
-                "id='" + id + '\'' +
+                "id=" + id +
+                ", account=" + account +
                 ", type=" + type +
-                ", state=" + state +
                 ", uid='" + uid + '\'' +
-                ", accountType=" + accountType +
                 '}';
     }
 }
