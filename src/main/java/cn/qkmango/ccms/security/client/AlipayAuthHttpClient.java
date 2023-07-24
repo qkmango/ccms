@@ -126,19 +126,12 @@ public class AlipayAuthHttpClient implements AuthHttpClient {
     /**
      * 认证
      *
-     * @param state  防止CSRF攻击
-     * @param code   临时授权码
-     * @param params params[0] = AuthenticationAccount
-     *               params[1] = locale
+     * @param state 防止CSRF攻击
+     * @param code  临时授权码
      * @return 认证结果
      */
     @Override
     public AuthenticationResult authentication(String state, String code, Object... params) {
-        AuthenticationAccount account = (AuthenticationAccount) params[0];
-
-        //获取授权用途
-        // PurposeType purpose = account.getPurpose();
-
         String message = messageSource.getMessage("response.authentication.failure", null, LocaleContextHolder.getLocale());
 
         AuthenticationResult result = new AuthenticationResult();

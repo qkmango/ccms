@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public interface AuthenticationService {
     /**
-     * Gitee/钉钉 授权登陆
+     * 获取第三方授权登陆地址
      *
      * @param authentication 授权信息
      * @return 返回授权地址
@@ -28,44 +28,6 @@ public interface AuthenticationService {
 
     String callback(String state, PlatformType platform, Map<String, String> params);
 
-
-    /**
-     * Gitee授权回调
-     * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
-     *
-     * @param state            授权状态,防止CSRF攻击,授权状态,防止CSRF攻击,
-     *                         在redis中有效期为5分钟, 拼接为 authentication:Role:UUID
-     * @param code             授权码
-     * @param error            有错误时返回
-     * @param errorDescription 错误描述
-     * @param purpose          授权目的
-     * @return 返回重定向页面
-     * @throws UpdateException
-     */
-    String giteeCallback(String state, Map<String, String> params);
-
-    /**
-     * 钉钉回调地址
-     * 回调中进行从钉钉获取用户信息，然后和系统数据库进行比对登陆
-     *
-     * @param state 授权状态,防止CSRF攻击,授权状态,防止CSRF攻击
-     * @param code  授权码
-     * @return 返回重定向页面
-     */
-    String dingtalkCallback(String state, Map<String, String> params);
-
-    /**
-     * 支付宝回调地址
-     *
-     * @param purpose
-     * @param authCode
-     * @param state
-     * @param appId
-     * @param source
-     * @param scope
-     * @return
-     */
-    String alipayCallback(String state, Map<String, String> params);
 
     /**
      * 获取开放平台绑定状态

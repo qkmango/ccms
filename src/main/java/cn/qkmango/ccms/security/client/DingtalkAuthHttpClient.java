@@ -121,9 +121,8 @@ public class DingtalkAuthHttpClient implements AuthHttpClient {
     /**
      * 钉钉授权登陆
      *
-     * @param state  防止CSRF攻击
-     * @param code   临时授权码
-     * @param params params[0] locale
+     * @param state 防止CSRF攻击
+     * @param code  临时授权码
      * @return 认证结果
      */
     @Override

@@ -166,8 +166,6 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
      * @param state  state
      * @param code   code
      * @param params params[0] error
-     *               params[1] authAccount
-     *               params[2] locale
      * @return
      */
     @Override

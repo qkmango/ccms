@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.database.UpdateException;
-import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
@@ -55,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private SecurityCache authCodeCache;
 
     @Resource
-    private ReloadableResourceBundleMessageSource messageSource;
+    private ReloadableResourceBundleMessageSource ms;
 
     @Resource(name = "giteeAuthHttpClient")
     private AuthHttpClient giteeAuthHttpClient;
@@ -91,8 +90,36 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return url;
     }
 
+    /**
+     * 第三方授权登陆回调
+     *
+     * @param state    防止CSRF攻击
+     * @param platform 第三方平台
+     * @param params   回调参数
+     *                 <p>Gitee 的回调参数</p>
+     *                 <ul>
+     *                 <li>code               授权码</li>
+     *                 <li>error              错误码</li>
+     *                 <li>error_description  错误描述</li>
+     *                 </ul>
+     *
+     *                 <p>dingtalk 的回调参数</p>
+     *                 <ul><li>authCode 授权码</li></ul>
+     *
+     *                 <p>alipay 的回调参数</p>
+     *                 <ul>
+     *                 <li>auth_code 授权码</li>
+     *                 <li>state     状态</li>
+     *                 <li>app_id    应用id</li>
+     *                 <li>source    来源</li>
+     *                 <li>scope     作用域</li>
+     *                 </ul>
+     * @return 重定向地址
+     */
     @Override
     public String callback(String state, PlatformType platform, Map<String, String> params) {
+        String message = null;
+
         //获取重定向地址
         RequestURL.Builder builder = null;
         switch (platform) {
@@ -106,89 +133,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         boolean check = authStateCache.check(state);
         if (!check) {
-            String message = messageSource.getMessage("response.authentication.state.failure", null, LocaleContextHolder.getLocale());
-            return builder
-                    .with("success", false)
-                    .with("message", message)
-                    .build().url();
-        }
-
-
-
-        return null;
-    }
-
-    /**
-     * Gitee 回调
-     * 回调中进行从Gitee获取用户信息，然后和系统数据库进行比对登陆
-     *
-     * @param state  用于第三方应用防止CSRF攻击, 有效期为5分钟
-     * @param params 第三方回调参数,
-     *               code               授权码
-     *               error              错误码
-     *               error_description  错误描述
-     * @return 返回重定向页面
-     */
-    @Override
-    public String giteeCallback(String state, Map<String, String> params) {
-        String code = params.get("code");
-        String error = params.get("error");
-
-        //获取重定向地址
-        RequestURL.Builder builder = giteeAuthHttpClient.getAppConfig().getRedirect().builder()
-                .with("platform", "gitee");
-
-        //检查state是否存在
-        boolean checked = authStateCache.check(state);
-        if (!checked) {
-            String message = messageSource.getMessage("response.authentication.state.failure", null, LocaleContextHolder.getLocale());
-            return builder
-                    .with("success", false)
-                    .with("message", message)
-                    .build().url();
-        }
-
-        //获取第三方认证结果
-        AuthenticationResult result = giteeAuthHttpClient.authentication(state, code, error);
-
-        //第三方认证成功
-        if (result.success) {
-            //检查账户
-            Account account = this.checkAccount(result.getUserInfo().getUid());
-            if (account == null) {
-                return null;
-            }
-            //生成授权码
-            String authorizationCode = authCodeCache.create(account.getId().toString());
-            return authorizationCode;
-        }
-        return null;
-    }
-
-
-    /**
-     * dingtalk 回调
-     * 回调中进行从钉钉获取用户信息，然后和系统数据库进行比对登陆
-     *
-     * @param state  用于第三方应用防止CSRF攻击, 有效期为5分钟
-     * @param params 第三方回调参数,
-     *               authCode 授权码
-     * @return 返回重定向页面
-     */
-    @Override
-    public String dingtalkCallback(String state, Map<String, String> params) {
-
-        String code = params.get("authCode");
-
-        //获取重定向地址
-        RequestURL.Builder builder = dingtalkAuthHttpClient.getAppConfig().getRedirect().builder()
-                .with("platform", "dingtalk");
-
-
-        //检查state是否存在
-        boolean checked = authStateCache.check(state);
-        if (!checked) {
-            String message = messageSource.getMessage("response.authentication.state.failure", null, LocaleContextHolder.getLocale());
+            message = ms.getMessage("response.authentication.state.failure", null, LocaleContextHolder.getLocale());
             return builder
                     .with("success", false)
                     .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
@@ -196,72 +141,60 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         //获取第三方认证结果
-        AuthenticationResult result = dingtalkAuthHttpClient.authentication(state, code);
+        AuthenticationResult result = null;
+        switch (platform) {
+            case gitee -> result = giteeAuthHttpClient.authentication(state, params.get("code"), params.get("error"));
+            case alipay -> result = alipayAuthHttpClient.authentication(state, params.get("auth_code"));
+            case dingtalk -> result = dingtalkAuthHttpClient.authentication(state, params.get("authCode"));
+        }
 
         //第三方认证成功
+        //检查账户
         if (result.success) {
-            //检查账户
-            Account account = this.checkAccount(result.getUserInfo().getUid());
-            if (account == null) {
-                return null;
+            //是否绑定
+            OpenPlatform platformRecord = openPlatformDao.getRecordByUid(result.getUserInfo().getUid());
+            if (platformRecord == null) {
+                message = ms.getMessage("db.platform.failure@unbind", null, LocaleContextHolder.getLocale());
+                return builder
+                        .with("success", false)
+                        .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
+                        .build().url();
             }
-            //生成授权码
-            String authorizationCode = authCodeCache.create(account.getId().toString());
-            return authorizationCode;
-        }
-        return null;
-    }
 
+            // 检查账户是否存在
+            Account accountRecord = accountDao.getRecordById(platformRecord.getAccount());
+            if (accountRecord == null) {
+                message = ms.getMessage("db.account.failure@notExist", null, LocaleContextHolder.getLocale());
+                return builder
+                        .with("success", false)
+                        .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
+                        .build().url();
+            }
 
-    /**
-     * alipay 回调
-     *
-     * @param state  用于第三方应用防止CSRF攻击, 有效期为5分钟
-     * @param params 第三方回调参数,
-     *               auth_code 授权码
-     *               state     状态
-     *               app_id    应用id
-     *               source    来源
-     *               scope     作用域
-     * @return 返回重定向页面
-     */
-    @Override
-    public String alipayCallback(String state, Map<String, String> params) {
+            // 检查账户状态
+            if (accountRecord.getState() != AccountState.normal) {
+                message = ms.getMessage("db.account.failure@state", null, LocaleContextHolder.getLocale());
+                return builder
+                        .with("success", false)
+                        .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
+                        .build().url();
+            }
 
-        String authCode = params.get("auth_code");
-        String appId = params.get("app_id");
-        String source = params.get("source");
-        String scope = params.get("scope");
+            // 生成授权码，并将其缓存到redis中，有效期为5分钟，key为授权码，value为账户id
+            String authorizationCode = authCodeCache.create(accountRecord.getId().toString());
 
-        //获取重定向地址
-        RequestURL.Builder builder = alipayAuthHttpClient.getAppConfig().getRedirect().builder()
-                .with("platform", "alipay");
-
-        //检查state是否存在
-        boolean checked = authStateCache.check(state);
-        if (!checked) {
-            String message = messageSource.getMessage("response.authentication.state.failure", null, LocaleContextHolder.getLocale());
+            message = ms.getMessage("response.authentication.success", null, LocaleContextHolder.getLocale());
             return builder
-                    .with("success", false)
+                    .with("success", true)
                     .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
+                    .with("authorizationCode", authorizationCode)
                     .build().url();
         }
-
-        //获取第三方认证结果
-        AuthenticationResult result = alipayAuthHttpClient.authentication(state, authCode);
-
-        //第三方认证成功
-        if (result.success) {
-            //检查账户
-            Account account = this.checkAccount(result.getUserInfo().getUid());
-            if (account == null) {
-                return null;
-            }
-            //生成授权码
-            String authorizationCode = authCodeCache.create(account.getId().toString());
-            return authorizationCode;
-        }
-        return null;
+        message = ms.getMessage("response.authentication.failure", null, LocaleContextHolder.getLocale());
+        return builder
+                .with("success", false)
+                .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
+                .build().url();
     }
 
     /**
@@ -279,18 +212,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * 绑定第三方账户
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void toBind(OpenPlatform platform,
-                       Account account) throws UpdateException {
+    public void toBind(OpenPlatform platform, Account account) throws UpdateException {
 
         //如果已经绑定，抛出异常
         if (isBind(platform, account)) {
-            throw new UpdateException(messageSource.getMessage("db.update.authentication.bind.failure@exist", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.update.authentication.bind.failure@exist", null, LocaleContextHolder.getLocale()));
         }
 
         //绑定
         int affectedRows = dao.toBind(platform, account);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.update.authentication.bind.failure", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.update.authentication.bind.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -301,8 +233,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param account  账户
      * @return 返回绑定状态
      */
-    public boolean isBind(OpenPlatform platform,
-                          Account account) {
+    public boolean isBind(OpenPlatform platform, Account account) {
         return dao.isBind(platform, account);
     }
 
@@ -318,34 +249,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Account account = AccountHolder.getAccount();
         int affectedRows = dao.unbind(platform, account);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.update.authentication.unbind.failure", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.update.authentication.unbind.failure", null, LocaleContextHolder.getLocale()));
         }
-        return R.success(messageSource.getMessage("db.update.authentication.unbind.success", null, LocaleContextHolder.getLocale()));
+        return R.success(ms.getMessage("db.update.authentication.unbind.success", null, LocaleContextHolder.getLocale()));
     }
-
-    /**
-     * 检查账户
-     * 检查账户是否存在，是否正常
-     *
-     * @param uid
-     * @return
-     */
-    public Account checkAccount(String uid) {
-        OpenPlatform openPlatform = openPlatformDao.getRecordByUid(uid);
-        if (openPlatform == null) {
-            throw new LoginException(messageSource.getMessage("db.platform.failure@unbind", null, LocaleContextHolder.getLocale()));
-        }
-
-        Account account = accountDao.getRecordById(openPlatform.getAccount());
-        if (account == null) {
-            throw new LoginException(messageSource.getMessage("db.account.failure@notExist", null, LocaleContextHolder.getLocale()));
-        }
-
-        if (account.getState() != AccountState.normal) {
-            throw new LoginException(messageSource.getMessage("db.account.failure@state", null, LocaleContextHolder.getLocale()));
-        }
-        return account;
-    }
-
 
 }
