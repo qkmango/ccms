@@ -1,8 +1,8 @@
 package cn.qkmango.ccms.mvc.service;
 
 import cn.qkmango.ccms.common.exception.database.InsertException;
+import cn.qkmango.ccms.domain.dto.ValidListDto;
 import cn.qkmango.ccms.domain.entity.ConsumeStatistic;
-import cn.qkmango.ccms.domain.param.DatetimeRange;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public interface StatisticService {
      * @param range 开始时间和结束时间范围
      * @return 每天的消费金额和消费次数
      */
-    List<ConsumeStatistic> consumeCountPriceByDayAndType(DatetimeRange range);
+    List<ConsumeStatistic> consumeCountPriceByDayAndType(ValidListDto.DatetimeRange range);
 
     /**
      * 统计最近一周消费金额数据
@@ -35,7 +35,7 @@ public interface StatisticService {
      *              如果不传入时间，则默认统计最近一周的数据
      * @return 最近一周消费金额和消费次数
      */
-    List<ConsumeStatistic> consumeStatistic(DatetimeRange range);
+    List<ConsumeStatistic> consumeStatistic(ValidListDto.DatetimeRange range);
 
 
     /**

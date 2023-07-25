@@ -1,7 +1,11 @@
 package cn.qkmango.ccms.mvc.dao;
 
+import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 描述
@@ -18,4 +22,8 @@ public interface OpenPlatformDao extends BaseDao<OpenPlatformDao, Integer> {
     OpenPlatformDao getRecordById(Integer id);
 
     OpenPlatform getRecordByUid(String uid);
+
+    List<OpenPlatform> state(@Param("account") Integer id);
+
+    int unbind(@Param("account") Integer account, @Param("type") PlatformType type);
 }

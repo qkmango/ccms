@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.domain.param;
+package cn.qkmango.ccms.domain.dto;
 
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.CardState;
@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
  * @version 1.0
  * @date 2023-07-15 22:44
  */
-public class AccountInsertParam {
+public class AccountInsertDto {
     @NotNull
     private Integer id;
 
@@ -37,7 +37,7 @@ public class AccountInsertParam {
         return id;
     }
 
-    public AccountInsertParam setId(Integer id) {
+    public AccountInsertDto setId(Integer id) {
         this.id = id;
         return this;
     }
@@ -46,7 +46,7 @@ public class AccountInsertParam {
         return name;
     }
 
-    public AccountInsertParam setName(String name) {
+    public AccountInsertDto setName(String name) {
         this.name = name;
         return this;
     }
@@ -55,7 +55,7 @@ public class AccountInsertParam {
         return role;
     }
 
-    public AccountInsertParam setRole(Role role) {
+    public AccountInsertDto setRole(Role role) {
         this.role = role;
         return this;
     }
@@ -64,7 +64,7 @@ public class AccountInsertParam {
         return accountState;
     }
 
-    public AccountInsertParam setAccountState(AccountState accountState) {
+    public AccountInsertDto setAccountState(AccountState accountState) {
         this.accountState = accountState;
         return this;
     }
@@ -73,7 +73,7 @@ public class AccountInsertParam {
         return cardState;
     }
 
-    public AccountInsertParam setCardState(CardState cardState) {
+    public AccountInsertDto setCardState(CardState cardState) {
         this.cardState = cardState;
         return this;
     }
@@ -82,7 +82,7 @@ public class AccountInsertParam {
         return department;
     }
 
-    public AccountInsertParam setDepartment(Integer department) {
+    public AccountInsertDto setDepartment(Integer department) {
         this.department = department;
         return this;
     }

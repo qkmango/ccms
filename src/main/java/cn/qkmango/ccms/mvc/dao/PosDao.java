@@ -1,8 +1,8 @@
 package cn.qkmango.ccms.mvc.dao;
 
+import cn.qkmango.ccms.domain.dto.PosDto;
 import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-import cn.qkmango.ccms.domain.param.PosParam;
 import cn.qkmango.ccms.domain.vo.PosVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -26,7 +26,7 @@ public interface PosDao {
 
     String lastInsertId();
 
-    List<PosVO> list(Pagination<PosParam> pagination);
+    List<PosVO> list(Pagination<PosDto> pagination);
 
     PosVO detail(String id);
 

@@ -1,8 +1,8 @@
 package cn.qkmango.ccms.mvc.dao;
 
+import cn.qkmango.ccms.domain.dto.MessageDto;
 import cn.qkmango.ccms.domain.entity.Message;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-import cn.qkmango.ccms.domain.param.MessageParam;
 import cn.qkmango.ccms.domain.vo.MessageVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -22,7 +22,7 @@ public interface MessageDao {
 
     int delete(Message message);
 
-    List<MessageVO> list(Pagination<MessageParam> pagination);
+    List<MessageVO> list(Pagination<MessageDto> pagination);
 
     MessageVO detail(String id);
 }

@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.mvc;
 
-import cn.qkmango.ccms.domain.param.DatetimeRange;
+import cn.qkmango.ccms.domain.dto.ValidListDto;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +24,7 @@ public class TestController {
     }
 
     @RequestMapping("hello2.do")
-    public DatetimeRange hello2(DatetimeRange range) {
+    public ValidListDto.DatetimeRange hello2(ValidListDto.DatetimeRange range) {
         return range;
     }
 

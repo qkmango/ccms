@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.config.converter;
 
-import cn.qkmango.ccms.domain.param.DatetimeRange;
+import cn.qkmango.ccms.domain.dto.ValidListDto;
 import org.springframework.core.convert.converter.Converter;
 
 import java.text.ParseException;
@@ -20,7 +20,7 @@ import java.util.Date;
  * @version 1.0
  * @date 2023-02-08 19:19
  */
-public class DatetimeRangeConverter implements Converter<String, DatetimeRange> {
+public class DatetimeRangeConverter implements Converter<String, ValidListDto.DatetimeRange> {
 
     private static final String DATETIME_RANGE_FORMAT_REGEX = "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2} - \\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$";
     private static final String DATE_RANGE_FORMAT_REGEX = "^\\d{4}-\\d{2}-\\d{2} - \\d{4}-\\d{2}-\\d{2}$";
@@ -32,7 +32,7 @@ public class DatetimeRangeConverter implements Converter<String, DatetimeRange> 
 
 
     @Override
-    public DatetimeRange convert(String source) {
+    public ValidListDto.DatetimeRange convert(String source) {
         if (source.trim().length() == 0) {
             return null;
         }
@@ -44,7 +44,7 @@ public class DatetimeRangeConverter implements Converter<String, DatetimeRange> 
                 Date start = datetimeRangeFormat.parse(split[0]);
                 Date end = datetimeRangeFormat.parse(split[1]);
 
-                DatetimeRange datetimeRange = new DatetimeRange();
+                ValidListDto.DatetimeRange datetimeRange = new ValidListDto.DatetimeRange();
                 datetimeRange.setStartTime(start);
                 datetimeRange.setEndTime(end);
                 return datetimeRange;
@@ -60,7 +60,7 @@ public class DatetimeRangeConverter implements Converter<String, DatetimeRange> 
                 Date start = dateRangeFormat.parse(split[0]);
                 Date end = dateRangeFormat.parse(split[1]);
 
-                DatetimeRange datetimeRange = new DatetimeRange();
+                ValidListDto.DatetimeRange datetimeRange = new ValidListDto.DatetimeRange();
                 datetimeRange.setStartTime(start);
                 datetimeRange.setEndTime(end);
                 return datetimeRange;
@@ -75,7 +75,7 @@ public class DatetimeRangeConverter implements Converter<String, DatetimeRange> 
             Date start = new Date(Long.parseLong(split[0]));
             Date end = new Date(Long.parseLong(split[1]));
 
-            DatetimeRange datetimeRange = new DatetimeRange();
+            ValidListDto.DatetimeRange datetimeRange = new ValidListDto.DatetimeRange();
             datetimeRange.setStartTime(start);
             datetimeRange.setEndTime(end);
             return datetimeRange;

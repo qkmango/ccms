@@ -77,7 +77,7 @@ public class Jwt {
     /**
      * 创建 默认过期时间的 TokenEntity
      *
-     * @param account
+     * @param account 必须包含 id 和 role
      * @return TokenEntity, 包含token和过期时间
      */
     public TokenEntity createEntity(Account account) {

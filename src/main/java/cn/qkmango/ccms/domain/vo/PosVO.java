@@ -1,6 +1,5 @@
 package cn.qkmango.ccms.domain.vo;
 
-import cn.qkmango.ccms.domain.entity.Area;
 import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.entity.Store;
 
@@ -16,7 +15,7 @@ import java.io.Serializable;
 public class PosVO implements Serializable {
     private Pos pos;
     private Store store;
-    private Area area;
+    // private Area area;
 
     public Pos getPos() {
         return pos;
@@ -34,20 +33,19 @@ public class PosVO implements Serializable {
         this.store = store;
     }
 
-    public Area getArea() {
-        return area;
-    }
-
-    public void setArea(Area area) {
-        this.area = area;
-    }
+    // public Area getArea() {
+    //     return area;
+    // }
+    //
+    // public void setArea(Area area) {
+    //     this.area = area;
+    // }
 
     @Override
     public String toString() {
         return "PosVO{" +
                 "pos=" + pos +
                 ", store=" + store +
-                ", area=" + area +
                 '}';
     }
 }

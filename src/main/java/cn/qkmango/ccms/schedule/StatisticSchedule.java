@@ -3,8 +3,8 @@ package cn.qkmango.ccms.schedule;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.util.DateTimeUtil;
 import cn.qkmango.ccms.domain.bind.ConsumeStatisticType;
+import cn.qkmango.ccms.domain.dto.ValidListDto;
 import cn.qkmango.ccms.domain.entity.ConsumeStatistic;
-import cn.qkmango.ccms.domain.param.DatetimeRange;
 import cn.qkmango.ccms.mvc.dao.StatisticDao;
 import cn.qkmango.ccms.mvc.service.StatisticService;
 import jakarta.annotation.Resource;
@@ -40,7 +40,7 @@ public class StatisticSchedule {
     private void consumeStatistic() {
 
         //设置统计时间范围,前一天
-        DatetimeRange range = new DatetimeRange();
+        ValidListDto.DatetimeRange range = new ValidListDto.DatetimeRange();
         Calendar calendar = DateTimeUtil.addDay(Calendar.getInstance(), -1);
 
         Calendar start = DateTimeUtil.getDayStart(calendar);

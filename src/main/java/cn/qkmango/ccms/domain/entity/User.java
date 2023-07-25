@@ -3,14 +3,12 @@ package cn.qkmango.ccms.domain.entity;
 
 /**
  * 用户实体类
- * <p>
- * 继承自父类 {@link Account}
  *
  * @author qkmango
  */
 public class User {
 
-    private String id;
+    private Long id;
 
     private Integer account;
 
@@ -20,11 +18,11 @@ public class User {
 
     private String email;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public User setId(String id) {
+    public User setId(Long id) {
         this.id = id;
         return this;
     }

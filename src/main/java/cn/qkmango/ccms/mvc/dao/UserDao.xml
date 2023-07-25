@@ -7,73 +7,14 @@
         values (#{id}, #{account}, #{card}, #{name})
     </insert>
 
-    <update id="resetPassword">
-        update t_user
-        set password = #{password}
-        where id = #{id}
-    </update>
-
-    <!--<update id="unsubscribe">-->
-    <!--    update t_user-->
-    <!--    set unsubscribe = 1-->
-    <!--    where id = #{user}-->
-    <!--      and unsubscribe = 0-->
-    <!--</update>-->
-
-    <select id="lastInsertId" resultType="java.lang.Integer">
-        SELECT LAST_INSERT_ID()
-    </select>
-
-    <select id="getUser" resultType="cn.qkmango.ccms.domain.entity.User">
-        select id,
-        name,
-        clazz,
-        specialized,
-        faculty,
-        password,
-        idCard,
-        unsubscribe
-        from t_user
-        where id = #{id}
-    </select>
-
-    <select id="isUnsubscribe" resultType="boolean">
-        select unsubscribe
-        from t_user
-        where id = #{id}
-    </select>
-
-    <select id="userCountOr" resultType="int">
-        select count(*)
-        from t_user
-        <where>
-            <if test="id != null">
-                id = #{id}
-            </if>
-            <if test="idCard != null">
-                or idCard = #{idCard}
-            </if>
-        </where>
-    </select>
-
-    <select id="getUserIdByClazzIds" resultType="java.lang.String">
-        select id
-        from t_user
-        where clazz in
-        <foreach collection="clazzIds" item="clazzId" open="(" separator="," close=")">
-            #{clazzId}
-        </foreach>
-    </select>
 
     <select id="getRecordByAccount" resultType="cn.qkmango.ccms.domain.entity.User">
-        select
-            id,
-            account,
-            card,
-            name,
-            email
-        from
-        t_user
+        select id,
+               account,
+               card,
+               name,
+               email
+        from t_user
         where account = #{account}
     </select>
 

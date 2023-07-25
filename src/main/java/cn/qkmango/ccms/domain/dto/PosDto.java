@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.domain.param;
+package cn.qkmango.ccms.domain.dto;
 
 import cn.qkmango.ccms.domain.entity.Pos;
 
@@ -9,7 +9,7 @@ import cn.qkmango.ccms.domain.entity.Pos;
  * @version 1.0
  * @date 2023-01-07 13:30
  */
-public class PosParam extends Pos {
+public class PosDto extends Pos {
     private String area;
 
     public String getArea() {

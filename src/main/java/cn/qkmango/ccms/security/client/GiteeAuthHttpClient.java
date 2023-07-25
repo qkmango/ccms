@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.security.client;
 
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
-import cn.qkmango.ccms.domain.auth.PurposeType;
 import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.UserInfo;
 import cn.qkmango.ccms.security.config.AppConfig;
@@ -40,11 +39,9 @@ public class GiteeAuthHttpClient implements AuthHttpClient {
 
     @Override
     public String authorize(AuthenticationAccount authAccount, String state) {
-        PurposeType purpose = authAccount.getPurpose();
         RequestURL authorize = config.getAuthorize();
 
         String callback = config.getCallback().builder()
-                // .with("purpose", purpose.name())
                 .build().url();
 
         return authorize.builder()

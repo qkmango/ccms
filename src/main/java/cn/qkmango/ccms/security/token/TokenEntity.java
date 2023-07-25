@@ -37,6 +37,9 @@ public class TokenEntity {
         return this;
     }
 
+    public String toJson() {
+        return "{\"accessToken\":\"" + accessToken + "\",\"expireIn\":" + expireIn + "}";
+    }
 
     @Override
     public String toString() {

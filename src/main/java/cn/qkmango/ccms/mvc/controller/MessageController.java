@@ -6,18 +6,18 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Delete;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.domain.dto.MessageDto;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Message;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-import cn.qkmango.ccms.domain.param.MessageParam;
 import cn.qkmango.ccms.domain.vo.MessageVO;
 import cn.qkmango.ccms.mvc.service.MessageService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Locale;
 
@@ -85,7 +85,7 @@ public class MessageController {
      * @return 留言列表
      */
     @PostMapping("pagination/list.do")
-    public R<List<MessageVO>> list(@RequestBody Pagination<MessageParam> pagination) {
+    public R<List<MessageVO>> list(@RequestBody Pagination<MessageDto> pagination) {
         return service.list(pagination);
     }
 

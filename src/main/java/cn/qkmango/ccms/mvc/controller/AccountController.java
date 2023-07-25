@@ -5,15 +5,14 @@ import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.domain.dto.AccountInsertDto;
 import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-import cn.qkmango.ccms.domain.param.AccountInsertParam;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
 import cn.qkmango.ccms.mvc.service.AccountService;
-import cn.qkmango.ccms.mvc.service.UserService;
-import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.Jwt;
 import cn.qkmango.ccms.security.token.TokenEntity;
@@ -27,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 账户控制器
@@ -47,27 +47,33 @@ public class AccountController {
     private AccountService service;
 
     @Resource
-    private UserService userService;
-
-    @Resource
     private Jwt jwt;
 
-    @Resource
-    private PasswordEncoder passwordEncoder;
-
-
     /**
-     * 登陆
+     * 使用账户密码登陆
      *
      * @param account 用户对象
-     * @param locale  语言环境
      * @return 登陆结果
      * @throws LoginException 登陆异常登陆失败
      */
-    @PostMapping("login.do")
-    public R<Object> login(Account account) throws LoginException {
-        Account loginAccount = service.login(account);
+    @PostMapping("system-login.do")
+    public R<Object> systemLogin(Account account) throws LoginException {
+        Account loginAccount = service.systemLogin(account);
+        //创建 TokenEntity, 包含 token 和 过期时间
+        TokenEntity tokenEntity = jwt.createEntity(loginAccount);
+        return R.success(tokenEntity, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
+    }
 
+    /**
+     * 使用授权码登陆
+     * 授权码为第三方认证后回调 {@link cn.qkmango.ccms.mvc.controller.AuthenticationController#callback(PlatformType, String, Map)}
+     * 时返回的重定向URL中的授权码
+     *
+     * @return
+     */
+    @PostMapping("access-login.do")
+    public R accessLogin(@NotBlank String accessCode) throws LoginException {
+        Account loginAccount = service.accessLogin(accessCode);
         //创建 TokenEntity, 包含 token 和 过期时间
         TokenEntity tokenEntity = jwt.createEntity(loginAccount);
         return R.success(tokenEntity, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
@@ -78,8 +84,7 @@ public class AccountController {
      * 修改密码
      * 修改当前登陆账户的密码
      *
-     * @param dto   新的密码
-     * @param locale  语言环境
+     * @param dto 新的密码
      * @return 结果
      * @throws UpdateException 修改失败
      */
@@ -89,7 +94,7 @@ public class AccountController {
         Integer id = AccountHolder.getId();
         dto.setAccount(id);
         service.updatePassword(dto);
-        return R.success(ms.getMessage("db.update.password.success", null,LocaleContextHolder.getLocale()));
+        return R.success(ms.getMessage("db.update.password.success", null, LocaleContextHolder.getLocale()));
     }
 
 
@@ -97,7 +102,6 @@ public class AccountController {
      * 重置密码
      *
      * @param account 账户 ID
-     * @param locale  语言环境
      * @return 响应结果
      * @throws UpdateException 更新异常
      */
@@ -113,7 +117,6 @@ public class AccountController {
      * 注销账户
      *
      * @param account 账户
-     * @param locale  语言环境
      * @return 响应结果
      * @throws UpdateException 更新异常
      */
@@ -152,7 +155,6 @@ public class AccountController {
      * 获取用户账户详情
      *
      * @param account 账户ID
-     * @return
      */
     @Permission(Role.admin)
     @GetMapping("one/account-detail.do")
@@ -167,8 +169,7 @@ public class AccountController {
     /**
      * 更新用户email
      *
-     * @param email  新的email
-     * @param locale 语言环境
+     * @param email 新的email
      * @return 修改结果
      * @throws UpdateException 修改失败
      */
@@ -189,7 +190,6 @@ public class AccountController {
      * 账户分页查询
      *
      * @param pagination
-     * @return
      */
     @Permission(Role.admin)
     @PostMapping("pagination/list.do")
@@ -199,7 +199,7 @@ public class AccountController {
 
     @Permission(Role.admin)
     @PostMapping("one/insert.do")
-    public R insert(@RequestBody @Validated AccountInsertParam account) throws InsertException {
+    public R insert(@RequestBody @Validated AccountInsertDto account) throws InsertException {
         service.insert(account);
         return R.success(ms.getMessage("db.account.insert.success", null, LocaleContextHolder.getLocale()));
     }

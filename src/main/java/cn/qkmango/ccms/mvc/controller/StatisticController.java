@@ -3,8 +3,8 @@ package cn.qkmango.ccms.mvc.controller;
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.domain.dto.ValidListDto;
 import cn.qkmango.ccms.domain.entity.ConsumeStatistic;
-import cn.qkmango.ccms.domain.param.DatetimeRange;
 import cn.qkmango.ccms.mvc.service.StatisticService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +40,7 @@ public class StatisticController {
      */
     @Permission(Role.admin)
     @GetMapping("consume/statistic-price-by-day-and-type.do")
-    public R<List> consumeStatistic(@RequestParam("range") DatetimeRange range) {
+    public R<List> consumeStatistic(@RequestParam("range") ValidListDto.DatetimeRange range) {
         List<ConsumeStatistic> date = service.consumeStatistic(range);
         return R.success(date);
     }

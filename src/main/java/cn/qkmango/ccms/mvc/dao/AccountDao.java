@@ -30,14 +30,21 @@ public interface AccountDao extends BaseDao<Account, String> {
 
     /**
      * 账户详情
+     * 包含 password
      *
      * @param id
      * @return
      */
     Account getRecordById(Integer id);
 
+    /**
+     * 账户详情
+     *
+     * @param id
+     * @param password 是否查询 password
+     * @return
+     */
     Account getRecordById(Integer id, Boolean password);
-
 
     /**
      * 更新账户信息
@@ -46,14 +53,6 @@ public interface AccountDao extends BaseDao<Account, String> {
      * @return 数据库影响的行数
      */
     int update(Account updateAccount);
-
-    /**
-     * 登陆
-     *
-     * @param account
-     * @return
-     */
-    Account login(Account account);
 
     List<Account> list(Pagination<Account> pagination);
 

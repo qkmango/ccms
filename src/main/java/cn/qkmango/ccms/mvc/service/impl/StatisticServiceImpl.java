@@ -2,8 +2,8 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.util.DateTimeUtil;
+import cn.qkmango.ccms.domain.dto.ValidListDto;
 import cn.qkmango.ccms.domain.entity.ConsumeStatistic;
-import cn.qkmango.ccms.domain.param.DatetimeRange;
 import cn.qkmango.ccms.mvc.dao.StatisticDao;
 import cn.qkmango.ccms.mvc.service.StatisticService;
 import jakarta.annotation.Resource;
@@ -47,10 +47,10 @@ public class StatisticServiceImpl implements StatisticService {
      * @return 最近一周消费金额和消费次数
      */
     @Override
-    public List<ConsumeStatistic> consumeStatistic(DatetimeRange range) {
+    public List<ConsumeStatistic> consumeStatistic(ValidListDto.DatetimeRange range) {
         //如果入参为空，则默认统计最近一周的数据
         if (range == null) {
-            range = new DatetimeRange();
+            range = new ValidListDto.DatetimeRange();
         }
 
         Date startTime = range.getStartTime();
@@ -100,7 +100,7 @@ public class StatisticServiceImpl implements StatisticService {
      * @return 每天的消费金额和消费次数
      */
     @Override
-    public List<ConsumeStatistic> consumeCountPriceByDayAndType(DatetimeRange range) {
+    public List<ConsumeStatistic> consumeCountPriceByDayAndType(ValidListDto.DatetimeRange range) {
         return dao.consumeCountPriceByDayAndType(range);
     }
 }

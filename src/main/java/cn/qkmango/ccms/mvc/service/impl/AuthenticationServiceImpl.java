@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.exception.database.UpdateException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.bind.AccountState;
@@ -14,18 +12,16 @@ import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.cache.SecurityCache;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
-import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.request.RequestURL;
+import cn.qkmango.ccms.security.token.Jwt;
+import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,6 +48,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Resource(name = "authCodeCache")
     private SecurityCache authCodeCache;
+
+    @Resource
+    private Jwt jwt;
 
     @Resource
     private ReloadableResourceBundleMessageSource ms;
@@ -180,16 +179,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .build().url();
             }
 
-            // 生成授权码，并将其缓存到redis中，有效期为5分钟，key为授权码，value为账户id
-            String authorizationCode = authCodeCache.create(accountRecord.getId().toString());
+            // 生成授权码，并将其缓存到redis中，有效期为5分钟，key为授权码，value为数据库中认证平台信息
+            String accessCode = authCodeCache.create(JSON.toJSONString(platformRecord));
 
+            // √ 成功
             message = ms.getMessage("response.authentication.success", null, LocaleContextHolder.getLocale());
             return builder
                     .with("success", true)
                     .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
-                    .with("authorizationCode", authorizationCode)
+                    .with("accessCode", accessCode)
                     .build().url();
         }
+
+        //失败
         message = ms.getMessage("response.authentication.failure", null, LocaleContextHolder.getLocale());
         return builder
                 .with("success", false)
@@ -197,61 +199,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build().url();
     }
 
-    /**
-     * 获取开放平台绑定状态
-     *
-     * @return 返回开放平台绑定状态
-     */
-    @Override
-    public List<OpenPlatform> openPlatformState() {
-        Account account = AccountHolder.getAccount();
-        return dao.openPlatformBindState(account);
-    }
-
-    /**
-     * 绑定第三方账户
-     */
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void toBind(OpenPlatform platform, Account account) throws UpdateException {
-
-        //如果已经绑定，抛出异常
-        if (isBind(platform, account)) {
-            throw new UpdateException(ms.getMessage("db.update.authentication.bind.failure@exist", null, LocaleContextHolder.getLocale()));
-        }
-
-        //绑定
-        int affectedRows = dao.toBind(platform, account);
-        if (affectedRows != 1) {
-            throw new UpdateException(ms.getMessage("db.update.authentication.bind.failure", null, LocaleContextHolder.getLocale()));
-        }
-    }
-
-    /**
-     * 判断账户指定平台是否绑定
-     *
-     * @param platform 平台
-     * @param account  账户
-     * @return 返回绑定状态
-     */
-    public boolean isBind(OpenPlatform platform, Account account) {
-        return dao.isBind(platform, account);
-    }
-
-    /**
-     * 解绑开放平台
-     *
-     * @param platform 平台类型
-     * @return 返回解绑结果
-     */
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public R unbind(PlatformType platform) throws UpdateException {
-        Account account = AccountHolder.getAccount();
-        int affectedRows = dao.unbind(platform, account);
-        if (affectedRows != 1) {
-            throw new UpdateException(ms.getMessage("db.update.authentication.unbind.failure", null, LocaleContextHolder.getLocale()));
-        }
-        return R.success(ms.getMessage("db.update.authentication.unbind.success", null, LocaleContextHolder.getLocale()));
-    }
 
 }

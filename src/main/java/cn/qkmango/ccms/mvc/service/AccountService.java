@@ -4,10 +4,10 @@ import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.dto.AccountInsertDto;
 import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-import cn.qkmango.ccms.domain.param.AccountInsertParam;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public interface AccountService {
      * @return 登陆成功返回登陆用户信息
      * @throws LoginException 登陆异常
      */
-    Account login(Account account) throws LoginException;
+    Account systemLogin(Account account) throws LoginException;
 
     /**
      * 修改密码
@@ -83,7 +83,10 @@ public interface AccountService {
      *
      * @param account
      */
-    void insert(AccountInsertParam account) throws InsertException;
+    void insert(AccountInsertDto account) throws InsertException;
 
     Account getRecordById(Integer id);
+
+    Account accessLogin(String accessCode) throws LoginException;
+
 }

@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.domain.param;
+package cn.qkmango.ccms.domain.dto;
 
 import cn.qkmango.ccms.domain.entity.Message;
 
@@ -12,20 +12,20 @@ import java.util.Date;
  * @version 1.0
  * @date 2022-12-21 13:27
  */
-public class MessageParam extends Message {
+public class MessageDto extends Message {
     private Date startCreateTime;
     private Date endCreateTime;
 
-    public MessageParam() {
+    public MessageDto() {
     }
 
-    public MessageParam(Integer id, String content, Integer author, Date createTime, Date startCreateTime, Date endCreateTime) {
+    public MessageDto(Integer id, String content, Integer author, Date createTime, Date startCreateTime, Date endCreateTime) {
         super(id, content, author, createTime);
         this.startCreateTime = startCreateTime;
         this.endCreateTime = endCreateTime;
     }
 
-    public MessageParam(Date startCreateTime, Date endCreateTime) {
+    public MessageDto(Date startCreateTime, Date endCreateTime) {
         this.startCreateTime = startCreateTime;
         this.endCreateTime = endCreateTime;
     }

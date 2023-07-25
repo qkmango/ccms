@@ -38,24 +38,14 @@
         where id = #{id}
     </update>
 
-
     <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Account">
         select id,
         state,
         role,
         department
-        <if test="password != null and password==true">
+        <if test="password==true">
             ,password
         </if>
-        from t_account
-        where id = #{id}
-    </select>
-
-    <select id="login" resultType="cn.qkmango.ccms.domain.entity.Account">
-        select id,
-               password,
-               state,
-               role
         from t_account
         where id = #{id}
     </select>

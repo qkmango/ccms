@@ -112,11 +112,6 @@
             <result property="manager" column="storeManager"/>
             <result property="phone" column="storePhone"/>
         </association>
-        <association property="area" javaType="cn.qkmango.ccms.domain.entity.Area">
-            <id property="id" column="areaId"/>
-            <result property="name" column="areaName"/>
-            <result property="description" column="areaDescription"/>
-        </association>
     </resultMap>
 
 </mapper>

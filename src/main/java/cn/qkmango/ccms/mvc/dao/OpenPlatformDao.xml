@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.OpenPlatformDao">
+    <delete id="unbind">
+        delete
+        from t_open_platform
+        where account = #{account}
+          and type = #{type}
+    </delete>
 
     <select id="getRecordByUid" resultType="cn.qkmango.ccms.domain.entity.OpenPlatform">
         select id,
@@ -10,5 +16,14 @@
                uid
         from t_open_platform
         where uid = #{uid}
+    </select>
+
+    <select id="state" resultType="cn.qkmango.ccms.domain.entity.OpenPlatform">
+        select id,
+               account,
+               type,
+               uid
+        from t_open_platform
+        where account = #{account}
     </select>
 </mapper>

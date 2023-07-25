@@ -9,20 +9,19 @@ import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.domain.dto.AccountInsertDto;
 import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
-import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.domain.entity.Card;
-import cn.qkmango.ccms.domain.entity.Department;
-import cn.qkmango.ccms.domain.entity.User;
+import cn.qkmango.ccms.domain.entity.*;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-import cn.qkmango.ccms.domain.param.AccountInsertParam;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
 import cn.qkmango.ccms.mvc.dao.AccountDao;
 import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.UserDao;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
+import cn.qkmango.ccms.security.cache.SecurityCache;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
+import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -61,6 +60,9 @@ public class AccountServiceImpl implements AccountService {
     @Resource
     private DepartmentService departmentService;
 
+    @Resource(name = "authCodeCache")
+    public SecurityCache authCodeCache;
+
     @Resource
     private SnowFlake snowFlake;
 
@@ -79,27 +81,16 @@ public class AccountServiceImpl implements AccountService {
      * 登陆接口
      *
      * @param account 账户
-     * @param locale  语言环境
      * @return 登陆成功返回登陆用户信息
      * @throws LoginException 登陆异常
      */
     @Override
-    public Account login(@Validated(Query.Login.class) Account account) throws LoginException {
+    public Account systemLogin(@Validated(Query.Login.class) Account account) throws LoginException {
 
-        Account loginAccount = dao.login(account);
+        Account loginAccount = dao.getRecordById(account.getId());
 
-        //判断账户是否存在
-        if (loginAccount == null) {
-            throw new LoginException(messageSource.getMessage("response.login.account.not.exist", null, LocaleContextHolder.getLocale()));
-        }
-
-        //判断账户状态
-        switch (loginAccount.getState()) {
-            case canceled ->
-                    throw new LoginException(messageSource.getMessage("response.login.account.canceled", null, LocaleContextHolder.getLocale()));
-            case frozen ->
-                    throw new LoginException(messageSource.getMessage("response.login.account.frozen", null, LocaleContextHolder.getLocale()));
-        }
+        //检查账户状态
+        checkLoginAccount(loginAccount);
 
         //判断密码是否正确
         String dbPassword = loginAccount.getPassword();
@@ -116,10 +107,33 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
+    @Override
+    public Account accessLogin(String accessCode) throws LoginException {
+        //从 redis 中获取 accessCode 对应的账户ID
+        String value = authCodeCache.get(accessCode);
+        //删除 accessCode
+        authCodeCache.delete(accessCode);
+
+        //判断 accessCode 是否存在
+        if (value == null) {
+            throw new LoginException(messageSource.getMessage("response.login.access-code.not.exist", null, LocaleContextHolder.getLocale()));
+        }
+
+        //将 value 转换为 OpenPlatform 对象
+        OpenPlatform platform = JSON.parseObject(value, OpenPlatform.class);
+
+        //查询数据库
+        Account loginAccount = dao.getRecordById(platform.getAccount(), false);
+        //检查账户状态
+        checkLoginAccount(loginAccount);
+
+        return loginAccount;
+    }
+
     /**
      * 修改密码
      *
-     * @param dto    新的密码
+     * @param dto 新的密码
      * @throws UpdateException 修改失败
      */
     @Override
@@ -294,7 +308,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void insert(AccountInsertParam param) throws InsertException {
+    public void insert(AccountInsertDto param) throws InsertException {
         int affectedRows;
 
         // 1. 判断是否已经存在
@@ -336,13 +350,36 @@ public class AccountServiceImpl implements AccountService {
         // 4. 添加 user 用户
         long userId = snowFlake.nextId();
         User user = new User()
-                .setId(Long.toString(userId))
+                .setId(userId)
                 .setAccount(param.getId())
                 .setCard(cardId)
                 .setName(param.getName());
         affectedRows = userDao.insert(user);
         if (affectedRows != 1) {
             throw new InsertException(messageSource.getMessage("db.account.insert.failure", null, LocaleContextHolder.getLocale()));
+        }
+    }
+
+
+    /**
+     * 检查登录账户
+     * 1. 判断账户是否存在
+     * 2. 判断账户状态
+     *
+     * @param account
+     */
+    private void checkLoginAccount(Account account) {
+        //判断账户是否存在
+        if (account == null) {
+            throw new LoginException(messageSource.getMessage("db.account.failure@notExist", null, LocaleContextHolder.getLocale()));
+        }
+
+        //判断账户状态
+        switch (account.getState()) {
+            case canceled ->
+                    throw new LoginException(messageSource.getMessage("db.account.canceled.failure@canceled", null, LocaleContextHolder.getLocale()));
+            case frozen ->
+                    throw new LoginException(messageSource.getMessage("db.account.canceled.failure@frozen", null, LocaleContextHolder.getLocale()));
         }
     }
 }

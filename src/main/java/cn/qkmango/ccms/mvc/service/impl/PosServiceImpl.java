@@ -4,9 +4,9 @@ import cn.qkmango.ccms.common.exception.database.DeleteException;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.dto.PosDto;
 import cn.qkmango.ccms.domain.entity.Pos;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-import cn.qkmango.ccms.domain.param.PosParam;
 import cn.qkmango.ccms.domain.vo.PosVO;
 import cn.qkmango.ccms.mvc.dao.PosDao;
 import cn.qkmango.ccms.mvc.service.PosService;
@@ -77,7 +77,7 @@ public class PosServiceImpl implements PosService {
      * @return 分页查询结果
      */
     @Override
-    public R<List<PosVO>> list(Pagination<PosParam> pagination) {
+    public R<List<PosVO>> list(Pagination<PosDto> pagination) {
         List<PosVO> list = dao.list(pagination);
         return new R<List<PosVO>>().setSuccess(true).setData(list).setCount(dao.count());
     }

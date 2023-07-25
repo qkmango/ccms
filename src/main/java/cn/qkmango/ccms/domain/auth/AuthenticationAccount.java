@@ -1,5 +1,7 @@
 package cn.qkmango.ccms.domain.auth;
 
+import java.io.Serializable;
+
 /**
  * 认证信息
  *
@@ -7,12 +9,12 @@ package cn.qkmango.ccms.domain.auth;
  * @version 1.0
  * @date 2023-02-19 10:19
  */
-public class AuthenticationAccount {
+public class AuthenticationAccount implements Serializable {
 
     /**
      * 用户ID
      */
-    private String id;
+    private Integer account;
 
     /**
      * 认证平台
@@ -20,69 +22,42 @@ public class AuthenticationAccount {
     private PlatformType platform;
 
     /**
-     * 认证用途
-     */
-    private PurposeType purpose;
-
-    /**
      * 三方平台返回的用户唯一标识
      */
     private String uid;
 
-    public AuthenticationAccount() {
+    public Integer getAccount() {
+        return account;
     }
 
-    public AuthenticationAccount(PlatformType platform, PurposeType purpose) {
-        this.platform = platform;
-        this.purpose = purpose;
+    public AuthenticationAccount setAccount(Integer account) {
+        this.account = account;
+        return this;
     }
-
-    public AuthenticationAccount(PlatformType platform, PurposeType purpose, String uid) {
-        this.platform = platform;
-        this.purpose = purpose;
-        this.uid = uid;
-    }
-
 
     public PlatformType getPlatform() {
         return platform;
     }
 
-    public void setPlatform(PlatformType platform) {
+    public AuthenticationAccount setPlatform(PlatformType platform) {
         this.platform = platform;
-    }
-
-    public PurposeType getPurpose() {
-        return purpose;
-    }
-
-    public void setPurpose(PurposeType purpose) {
-        this.purpose = purpose;
+        return this;
     }
 
     public String getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
+    public AuthenticationAccount setUid(String uid) {
         this.uid = uid;
+        return this;
     }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
 
     @Override
     public String toString() {
         return "AuthenticationAccount{" +
-                "id='" + id + '\'' +
+                "id='" + account + '\'' +
                 ", platform=" + platform +
-                ", purpose=" + purpose +
                 ", uid='" + uid + '\'' +
                 '}';
     }
