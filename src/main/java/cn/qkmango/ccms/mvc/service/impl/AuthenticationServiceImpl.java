@@ -3,6 +3,7 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.bind.AccountState;
+import cn.qkmango.ccms.domain.bo.OpenPlatformBo;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.mvc.dao.AccountDao;
@@ -16,6 +17,7 @@ import cn.qkmango.ccms.security.request.RequestURL;
 import cn.qkmango.ccms.security.token.Jwt;
 import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
@@ -46,8 +48,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Resource(name = "authStateCache")
     private SecurityCache authStateCache;
 
-    @Resource(name = "authCodeCache")
-    private SecurityCache authCodeCache;
+    @Resource(name = "authAccessCodeCache")
+    private SecurityCache authAccessCodeCache;
 
     @Resource
     private Jwt jwt;
@@ -130,6 +132,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .with("platform", "alipay");
         }
 
+        // 检查state
         boolean check = authStateCache.check(state);
         if (!check) {
             message = ms.getMessage("response.authentication.state.failure", null, LocaleContextHolder.getLocale());
@@ -152,13 +155,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (result.success) {
             //是否绑定
             OpenPlatform platformRecord = openPlatformDao.getRecordByUid(result.getUserInfo().getUid());
+
+            //业务对象
+            OpenPlatformBo platformBo = new OpenPlatformBo();
+
+            // 未绑定
+            // 未绑定可以进行绑定操作,所以需要生成授权码，状态为true
+            // 此处生成用于绑定的 accessCode
             if (platformRecord == null) {
+                platformBo
+                        .setBind(false)
+                        .setType(platform)
+                        .setUid(result.getUserInfo().getUid());
+                // 生成授权码，并将其缓存到redis中，有效期为5分钟，key为授权码，value为数据库中认证平台信息
+                String accessCode = authAccessCodeCache.create(JSON.toJSONString(platformBo));
                 message = ms.getMessage("db.platform.failure@unbind", null, LocaleContextHolder.getLocale());
                 return builder
-                        .with("success", false)
+                        .with("success", true)
+                        .with("bind", false)
+                        .with("accessCode", accessCode)
                         .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                         .build().url();
             }
+
+            // 已绑定
+            platformBo.setBind(true);
+            BeanUtils.copyProperties(platformRecord, platformBo);
 
             // 检查账户是否存在
             Account accountRecord = accountDao.getRecordById(platformRecord.getAccount());
@@ -166,32 +188,40 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 message = ms.getMessage("db.account.failure@notExist", null, LocaleContextHolder.getLocale());
                 return builder
                         .with("success", false)
+                        .with("bind", true)
                         .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                         .build().url();
             }
 
+            // 已绑定
             // 检查账户状态
             if (accountRecord.getState() != AccountState.normal) {
                 message = ms.getMessage("db.account.failure@state", null, LocaleContextHolder.getLocale());
                 return builder
                         .with("success", false)
+                        .with("bind", true)
                         .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                         .build().url();
             }
 
+            // 已绑定
+            // 账户状态正常
+            // 此处生成用于登陆的 accessCode
             // 生成授权码，并将其缓存到redis中，有效期为5分钟，key为授权码，value为数据库中认证平台信息
-            String accessCode = authCodeCache.create(JSON.toJSONString(platformRecord));
+            String accessCode = authAccessCodeCache.create(JSON.toJSONString(platformBo));
 
             // √ 成功
             message = ms.getMessage("response.authentication.success", null, LocaleContextHolder.getLocale());
             return builder
                     .with("success", true)
+                    .with("bind", true)
                     .with("message", URLEncoder.encode(message, StandardCharsets.UTF_8))
                     .with("accessCode", accessCode)
                     .build().url();
         }
 
-        //失败
+        // 失败
+        // 第三方认证失败
         message = ms.getMessage("response.authentication.failure", null, LocaleContextHolder.getLocale());
         return builder
                 .with("success", false)

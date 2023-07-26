@@ -68,17 +68,32 @@ public class CardController {
         return R.success(messageSource.getMessage("db.update.recharge.success", null, locale));
     }
 
+    /**
+     * 修改卡状态
+     *
+     * @param account
+     * @param state
+     * @return
+     * @throws UpdateException
+     */
+    @Permission(Role.admin)
     @PostMapping("update/state.do")
-    public R state(Integer account, CardState state) throws UpdateException {
-
-        Integer id = AccountHolder.getId();
-        Role role = AccountHolder.getRole();
-        //如果不是管理员，且不是自己的卡，就不能修改
-        if (role != Role.admin && !account.equals(id)) {
-            R.fail(messageSource.getMessage("db.card.update.state.failure", null, LocaleContextHolder.getLocale()));
-        }
-
+    public R state(@NotNull Integer account, @NotNull CardState state) throws UpdateException {
         service.state(account, state);
+        return R.success(messageSource.getMessage("db.card.update.state.success", null, LocaleContextHolder.getLocale()));
+    }
+
+    /**
+     * 修改当前登陆用户的卡状态
+     *
+     * @param state
+     * @return
+     */
+    @Permission(Role.user)
+    @PostMapping("update/current-state.do")
+    public R currentState(@NotNull CardState state) throws UpdateException {
+        Integer id = AccountHolder.getId();
+        service.state(id, state);
         return R.success(messageSource.getMessage("db.card.update.state.success", null, LocaleContextHolder.getLocale()));
     }
 

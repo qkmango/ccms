@@ -17,4 +17,7 @@ public interface OpenPlatformService {
     List<OpenPlatform> state(Integer id);
 
     void unbind(Integer account, PlatformType type);
+
+    void bind(Integer account, String accessCode);
+
 }

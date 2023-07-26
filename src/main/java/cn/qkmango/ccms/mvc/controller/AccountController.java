@@ -66,8 +66,8 @@ public class AccountController {
 
     /**
      * 使用授权码登陆
-     * 授权码为第三方认证后回调 {@link cn.qkmango.ccms.mvc.controller.AuthenticationController#callback(PlatformType, String, Map)}
-     * 时返回的重定向URL中的授权码
+     * <p>授权码为第三方认证后回调 {@link cn.qkmango.ccms.mvc.controller.AuthenticationController#callback(PlatformType, String, Map)}
+     * 时返回的重定向URL中的授权码</p>
      *
      * @return
      */

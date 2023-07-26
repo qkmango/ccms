@@ -39,8 +39,8 @@ public class SecurityConfig {
         return new DefaultSecurityCache("auth:state:", redisUtil, 60 * 5);
     }
 
-    @Bean("authCodeCache")
-    public SecurityCache authCodeCache() {
+    @Bean("authAccessCodeCache")
+    public SecurityCache authAccessCodeCache() {
         return new DefaultSecurityCache("auth:code:", redisUtil, 60 * 5);
     }
 

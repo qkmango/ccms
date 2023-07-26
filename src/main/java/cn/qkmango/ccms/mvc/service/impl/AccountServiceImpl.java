@@ -9,9 +9,13 @@ import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.domain.bo.OpenPlatformBo;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
 import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
-import cn.qkmango.ccms.domain.entity.*;
+import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.domain.entity.Card;
+import cn.qkmango.ccms.domain.entity.Department;
+import cn.qkmango.ccms.domain.entity.User;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
 import cn.qkmango.ccms.mvc.dao.AccountDao;
@@ -60,8 +64,8 @@ public class AccountServiceImpl implements AccountService {
     @Resource
     private DepartmentService departmentService;
 
-    @Resource(name = "authCodeCache")
-    public SecurityCache authCodeCache;
+    @Resource(name = "authAccessCodeCache")
+    public SecurityCache authAccessCodeCache;
 
     @Resource
     private SnowFlake snowFlake;
@@ -110,17 +114,17 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account accessLogin(String accessCode) throws LoginException {
         //从 redis 中获取 accessCode 对应的账户ID
-        String value = authCodeCache.get(accessCode);
+        String value = authAccessCodeCache.get(accessCode);
         //删除 accessCode
-        authCodeCache.delete(accessCode);
+        authAccessCodeCache.delete(accessCode);
 
-        //判断 accessCode 是否存在
+        //判断 accessCode 是否存在/是否过期
         if (value == null) {
             throw new LoginException(messageSource.getMessage("response.login.access-code.not.exist", null, LocaleContextHolder.getLocale()));
         }
 
-        //将 value 转换为 OpenPlatform 对象
-        OpenPlatform platform = JSON.parseObject(value, OpenPlatform.class);
+        //将 value 转换为 OpenPlatformBo 对象
+        OpenPlatformBo platform = JSON.parseObject(value, OpenPlatformBo.class);
 
         //查询数据库
         Account loginAccount = dao.getRecordById(platform.getAccount(), false);

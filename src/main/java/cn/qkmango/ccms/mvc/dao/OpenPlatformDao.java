@@ -26,4 +26,7 @@ public interface OpenPlatformDao extends BaseDao<OpenPlatformDao, Integer> {
     List<OpenPlatform> state(@Param("account") Integer id);
 
     int unbind(@Param("account") Integer account, @Param("type") PlatformType type);
+
+    int insert(OpenPlatform platform);
+
 }

@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.OpenPlatformDao">
+    <insert id="insert">
+        insert into t_open_platform (account, type, uid)
+        values (#{account}, #{type}, #{uid})
+    </insert>
+
     <delete id="unbind">
         delete
         from t_open_platform
