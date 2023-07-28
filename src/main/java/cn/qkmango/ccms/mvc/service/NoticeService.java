@@ -7,7 +7,6 @@ import cn.qkmango.ccms.domain.entity.Notice;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 公告
@@ -21,17 +20,15 @@ public interface NoticeService {
      * 管理员发布公告
      *
      * @param notice 公告
-     * @param locale 语言环境
      */
-    void insert(Notice notice, Locale locale) throws InsertException;
+    void insert(Notice notice) throws InsertException;
 
     /**
      * 管理员删除公告
      *
-     * @param notice 公告
-     * @param locale 语言环境
+     * @param id
      */
-    void delete(Notice notice, Locale locale) throws DeleteException;
+    void delete(Integer id) throws DeleteException;
 
     /**
      * 公告分页列表
@@ -43,8 +40,9 @@ public interface NoticeService {
 
     /**
      * 获取公告详情
-     * @param notice id
+     *
+     * @param id
      * @return 公告详情
      */
-    Notice detail(Notice notice);
+    Notice detail(Integer id);
 }

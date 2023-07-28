@@ -57,4 +57,6 @@ public interface AccountDao extends BaseDao<Account, String> {
     List<Account> list(Pagination<Account> pagination);
 
     int insert(Account account);
+
+    String getNameById(Integer id);
 }

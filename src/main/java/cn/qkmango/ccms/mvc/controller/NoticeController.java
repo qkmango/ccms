@@ -4,23 +4,21 @@ import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.exception.database.DeleteException;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.common.validate.group.Delete;
 import cn.qkmango.ccms.common.validate.group.Insert;
-import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Notice;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.service.NoticeService;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 公告
@@ -44,32 +42,29 @@ public class NoticeController {
      * 管理员发布公告
      *
      * @param notice 公告
-     * @param locale 语言环境
      * @return 插入结果
      */
     @Permission(Role.admin)
     @PostMapping("one/insert.do")
-    public R<Object> insert(@Validated(Insert.class) Notice notice, HttpSession session, Locale locale) throws InsertException {
-        Account account = (Account) session.getAttribute("account");
-        notice.setAuthor(account.getId());
+    public R<Object> insert(@Validated(Insert.class) Notice notice) throws InsertException {
+        Integer account = AccountHolder.getId();
+        notice.setAuthor(account);
         notice.setCreateTime(new Date());
-        service.insert(notice, locale);
+        service.insert(notice);
 
-        return R.success(messageSource.getMessage("db.notice.insert.success", null, locale));
+        return R.success(messageSource.getMessage("db.notice.insert.success", null, LocaleContextHolder.getLocale()));
     }
 
     /**
      * 管理员删除公告
      *
-     * @param notice 公告
-     * @param locale 语言环境
+     * @param id
      */
     @Permission(Role.admin)
     @PostMapping("one/delete.do")
-    public R<Object> delete(@Validated(Delete.class) Notice notice, Locale locale) throws DeleteException {
-        service.delete(notice, locale);
-
-        return R.success(messageSource.getMessage("db.deleteNotice.success", null, locale));
+    public R<Object> delete(@NotNull Integer id) throws DeleteException {
+        service.delete(id);
+        return R.success(messageSource.getMessage("db.deleteNotice.success", null, LocaleContextHolder.getLocale()));
     }
 
     /**
@@ -86,12 +81,13 @@ public class NoticeController {
 
     /**
      * 获取公告详情
-     * @param notice id
+     *
+     * @param id
      * @return 公告详情
      */
     @GetMapping("one/detail.do")
-    public R<Notice> detail(@Validated(Query.class) Notice notice) {
-        Notice detail = service.detail(notice);
+    public R<Notice> detail(@NotNull Integer id) {
+        Notice detail = service.detail(id);
         return R.success(detail);
     }
 

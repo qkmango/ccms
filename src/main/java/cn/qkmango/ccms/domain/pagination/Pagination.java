@@ -36,6 +36,13 @@ public class Pagination<T> implements Serializable {
      * <li>false 关闭预览，查询全部内容
      */
     private Boolean preview;
+
+    /**
+     * 预览长度
+     * <p>默认 20
+     */
+    private int previewLength = 20;
+
     /**
      * 是否分页
      * <p>默认就是分页
@@ -47,18 +54,6 @@ public class Pagination<T> implements Serializable {
      */
     @Valid
     private T param;
-
-    public Pagination() {
-    }
-
-    public Pagination(Integer page, Integer limit, Integer skipCount, Boolean pagination, Boolean preview, T param) {
-        this.page = page;
-        this.limit = limit;
-        this.skipCount = skipCount;
-        this.pagination = pagination;
-        this.preview = preview;
-        this.param = param;
-    }
 
     public Integer getPage() {
         return page;
@@ -105,7 +100,7 @@ public class Pagination<T> implements Serializable {
         this.param = param;
     }
 
-    public Boolean isPreview() {
+    public Boolean getPreview() {
         return preview;
     }
 
@@ -113,14 +108,22 @@ public class Pagination<T> implements Serializable {
         this.preview = preview;
     }
 
+    public int getPreviewLength() {
+        return previewLength;
+    }
+
+    public void setPreviewLength(int previewLength) {
+        this.previewLength = previewLength;
+    }
+
     @Override
     public String toString() {
         return "Pagination{" +
-                "MAX_LIMIT=" + MAX_LIMIT +
-                ", page=" + page +
+                "page=" + page +
                 ", limit=" + limit +
                 ", skipCount=" + skipCount +
                 ", preview=" + preview +
+                ", previewLength=" + previewLength +
                 ", pagination=" + pagination +
                 ", param=" + param +
                 '}';

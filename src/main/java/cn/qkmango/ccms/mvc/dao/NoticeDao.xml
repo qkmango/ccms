@@ -3,55 +3,45 @@
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.NoticeDao">
 
-    <select id="getCount" resultType="int">
-        SELECT FOUND_ROWS()
+    <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Notice">
+        select id,
+               title,
+               content,
+               author,
+               create_time
+        from t_notice
+        where id = #{id}
     </select>
 
     <select id="list" resultType="cn.qkmango.ccms.domain.entity.Notice">
         SELECT SQL_CALC_FOUND_ROWS
-        n.id,
-        n.title,
+        id,
+        title,
         <if test="preview == false">
-            n.content,
+            content,
         </if>
         <if test="preview != false">
-            LEFT(n.content,20) as content,
+            LEFT(content,#{previewLength}) as content,
         </if>
-        n.createTime,
-        a.name as author
-        FROM t_notice n, t_admin a
-        <where>
-            n.author = a.id
-            <if test="param != null">
+        author,
+        create_time
+        FROM t_notice
+        <if test="param != null">
+            <where>
                 <if test="param.id != null">
-                    and n.id=#{param.id}
+                    id = #{param.id}
                 </if>
-                <if test="param.title != null and param.title != ''">
-                    and n.title like '%' #{param.title} '%'
+                <if test="param.title != null">
+                    and title like concat('%',#{param.title},'%')
                 </if>
-                <if test="param.content != null and param.content != ''">
-                    and n.content like '%' #{param.content} '%'
-                </if>
-            </if>
-        </where>
-        order by n.createTime desc
+            </where>
+        </if>
+        order by id desc
         LIMIT #{skipCount},#{limit}
     </select>
 
-    <select id="detail" resultType="cn.qkmango.ccms.domain.entity.Notice">
-        SELECT n.id,
-               n.title,
-               n.content,
-               n.createTime,
-               a.name as author
-        FROM t_notice n,
-             t_admin a
-        WHERE n.author = a.id
-          and n.id = #{id}
-    </select>
-
     <insert id="insert">
-        INSERT INTO t_notice (title, content, author, createTime)
+        INSERT INTO t_notice (title, content, author, create_time)
         VALUES (#{title}, #{content}, #{author}, #{createTime})
     </insert>
 

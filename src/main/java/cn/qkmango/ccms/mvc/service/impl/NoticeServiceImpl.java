@@ -3,20 +3,18 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.exception.database.DeleteException;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.domain.entity.Notice;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.dao.NoticeDao;
 import cn.qkmango.ccms.mvc.service.NoticeService;
+import jakarta.annotation.Resource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
-import jakarta.annotation.Resource;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 公告
@@ -32,7 +30,7 @@ public class NoticeServiceImpl implements NoticeService {
     private NoticeDao dao;
 
     @Resource
-    private ReloadableResourceBundleMessageSource messageSource;
+    private ReloadableResourceBundleMessageSource ms;
 
     /**
      * 公告分页列表
@@ -42,23 +40,24 @@ public class NoticeServiceImpl implements NoticeService {
      */
     @Override
     public R<List<Notice>> list(Pagination<Notice> pagination) {
+        //设置为预览模式
+        pagination.setPreview(true);
         List<Notice> noticeList = dao.list(pagination);
-        int count = dao.getCount(pagination);
+        int count = dao.count();
         return R.success(noticeList).setCount(count);
     }
 
     /**
      * 管理员删除公告
      *
-     * @param notice 公告
-     * @param locale 语言环境
+     * @param id
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void delete(Notice notice, Locale locale) throws DeleteException {
-        int affectedRows = dao.delete(notice);
+    public void delete(Integer id) throws DeleteException {
+        int affectedRows = dao.delete(id);
         if (affectedRows != 1) {
-            throw new DeleteException(messageSource.getMessage("db.deleteNotice.failure", null, locale));
+            throw new DeleteException(ms.getMessage("db.deleteNotice.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -66,25 +65,24 @@ public class NoticeServiceImpl implements NoticeService {
      * 管理员发布公告
      *
      * @param notice 公告
-     * @param locale 语言环境
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void insert(@Validated(Insert.class) Notice notice, Locale locale) throws InsertException {
+    public void insert(Notice notice) throws InsertException {
         int affectedRows = dao.insert(notice);
         if (affectedRows != 1) {
-            throw new InsertException(messageSource.getMessage("db.notice.insert.failure", null, locale));
+            throw new InsertException(ms.getMessage("db.notice.insert.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
     /**
      * 获取公告详情
      *
-     * @param notice id
+     * @param id
      * @return 公告详情
      */
     @Override
-    public Notice detail(Notice notice) {
-        return dao.detail(notice);
+    public Notice detail(Integer id) {
+        return dao.getRecordById(id);
     }
 }
