@@ -1,11 +1,11 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
+import cn.qkmango.ccms.common.cache.security.SecurityCache;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.bo.OpenPlatformBo;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.mvc.dao.OpenPlatformDao;
 import cn.qkmango.ccms.mvc.service.OpenPlatformService;
-import cn.qkmango.ccms.security.cache.SecurityCache;
 import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
 import org.springframework.context.i18n.LocaleContextHolder;

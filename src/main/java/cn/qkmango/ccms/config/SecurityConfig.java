@@ -1,8 +1,5 @@
 package cn.qkmango.ccms.config;
 
-import cn.qkmango.ccms.common.util.RedisUtil;
-import cn.qkmango.ccms.security.cache.DefaultSecurityCache;
-import cn.qkmango.ccms.security.cache.SecurityCache;
 import cn.qkmango.ccms.security.client.AlipayAuthHttpClient;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
 import cn.qkmango.ccms.security.client.DingtalkAuthHttpClient;
@@ -28,21 +25,6 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
  */
 @Configuration
 public class SecurityConfig {
-
-    // redis工具类
-    @Resource(name = "redisUtil")
-    private RedisUtil redisUtil;
-
-    // 认证 state 缓存工具
-    @Bean("authStateCache")
-    public SecurityCache authStateCache() {
-        return new DefaultSecurityCache("auth:state:", redisUtil, 60 * 5);
-    }
-
-    @Bean("authAccessCodeCache")
-    public SecurityCache authAccessCodeCache() {
-        return new DefaultSecurityCache("auth:code:", redisUtil, 60 * 5);
-    }
 
     @Value("${ccms.jwt.secret}")
     private String secret;

@@ -1,5 +1,6 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
+import cn.qkmango.ccms.common.cache.security.SecurityCache;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.bind.AccountState;
@@ -11,7 +12,6 @@ import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.dao.OpenPlatformDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import cn.qkmango.ccms.security.AuthenticationResult;
-import cn.qkmango.ccms.security.cache.SecurityCache;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
 import cn.qkmango.ccms.security.request.RequestURL;
 import cn.qkmango.ccms.security.token.Jwt;

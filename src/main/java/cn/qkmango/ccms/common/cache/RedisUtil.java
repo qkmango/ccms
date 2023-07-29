@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.util;
+package cn.qkmango.ccms.common.cache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,18 +24,6 @@ public class RedisUtil {
 
     @Resource(name = "objectMapper")
     private ObjectMapper objectMapper;
-
-    public String key(String name, Object param, String... tables) {
-        String tableStr = "";
-        for (String table : tables) {
-            tableStr = tableStr + "@" + table;
-        }
-        try {
-            return "table[" + tableStr + "]:name[" + name + "]:param[" + objectMapper.writeValueAsString(param) + "]";
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * 将对象存入redis
@@ -155,20 +143,6 @@ public class RedisUtil {
             if (delete != null) {
                 count += delete;
             }
-        }
-        return count;
-    }
-
-    /**
-     * 判断删除关联指定表的key
-     *
-     * @param tables
-     * @return
-     */
-    public long deleteWithTable(String... tables) {
-        long count = 0;
-        for (String table : tables) {
-            count += patternDelete("*@" + table + "*");
         }
         return count;
     }

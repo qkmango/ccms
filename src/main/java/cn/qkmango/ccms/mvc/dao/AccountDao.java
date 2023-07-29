@@ -20,11 +20,11 @@ public interface AccountDao extends BaseDao<Account, String> {
     /**
      * 更新用户email
      *
-     * @param account 账户
+     * @param id 账户ID
      * @param email   新的email
      * @return 数据库影响的行数
      */
-    int updateEmail(@Param("account") Account account,
+    int updateEmail(@Param("id") Integer id,
                     @Param("email") String email);
 
 

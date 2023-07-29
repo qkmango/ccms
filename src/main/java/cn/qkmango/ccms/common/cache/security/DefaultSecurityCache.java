@@ -1,6 +1,6 @@
-package cn.qkmango.ccms.security.cache;
+package cn.qkmango.ccms.common.cache.security;
 
-import cn.qkmango.ccms.common.util.RedisUtil;
+import cn.qkmango.ccms.common.cache.RedisUtil;
 
 import java.util.UUID;
 
@@ -44,8 +44,9 @@ public class DefaultSecurityCache implements SecurityCache {
     }
 
     @Override
-    public void set(String key) {
+    public String set(String key) {
         redisUtil.set(key, 1, timeout);
+        return "1";
     }
 
     @Override
@@ -62,6 +63,16 @@ public class DefaultSecurityCache implements SecurityCache {
     public boolean check(String key) {
         String value = get(key);
         if (value != null) {
+            this.delete(key);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean check(String key, String value) {
+        String cacheValue = get(key);
+        if (cacheValue != null && cacheValue.equals(value)) {
             this.delete(key);
             return true;
         }

@@ -1,11 +1,12 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
+import cn.qkmango.ccms.common.cache.captcha.DefaultCaptchaCache;
+import cn.qkmango.ccms.common.cache.security.SecurityCache;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.SnowFlake;
-import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.Role;
@@ -23,7 +24,6 @@ import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.UserDao;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
-import cn.qkmango.ccms.security.cache.SecurityCache;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
@@ -33,7 +33,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -67,6 +66,9 @@ public class AccountServiceImpl implements AccountService {
     @Resource(name = "authAccessCodeCache")
     public SecurityCache authAccessCodeCache;
 
+    @Resource(name = "captchaCache")
+    private DefaultCaptchaCache captchaCache;
+
     @Resource
     private SnowFlake snowFlake;
 
@@ -89,9 +91,9 @@ public class AccountServiceImpl implements AccountService {
      * @throws LoginException 登陆异常
      */
     @Override
-    public Account systemLogin(@Validated(Query.Login.class) Account account) throws LoginException {
+    public Account systemLogin(Account account) throws LoginException {
 
-        Account loginAccount = dao.getRecordById(account.getId());
+        Account loginAccount = dao.getRecordById(account.getId(), true);
 
         //检查账户状态
         checkLoginAccount(loginAccount);
@@ -231,26 +233,19 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void updateEmail(Account account, String email, String captcha) throws UpdateException {
-        // 生成redis key
-        String key = String.format("captcha:change:email:%s:%s:%s",
-                account.getRole(),
-                account.getId(), email);
+    public void updateEmail(Integer account, String email, String captcha) throws UpdateException {
+        // 验证码校验
+        boolean check = captchaCache.check(new String[]{account.toString(), email}, captcha);
 
-        // 获取redis中的验证码
-        String redisCaptcha = srt.opsForValue().get(key);
-        boolean equals = captcha.equals(redisCaptcha);
-        if (!equals) {
+        if (!check) {
             throw new UpdateException(messageSource.getMessage("response.captcha.valid.failure", null, LocaleContextHolder.getLocale()));
         }
 
         //更新email
         int affectedRows = dao.updateEmail(account, email);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.update.email.failure", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(messageSource.getMessage("db.account.update.email.failure", null, LocaleContextHolder.getLocale()));
         }
-        // 删除redis中的验证码
-        srt.delete(key);
     }
 
 

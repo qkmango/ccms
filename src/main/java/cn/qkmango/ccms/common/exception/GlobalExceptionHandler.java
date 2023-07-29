@@ -1,6 +1,7 @@
 package cn.qkmango.ccms.common.exception;
 
 import cn.qkmango.ccms.common.exception.database.OperationDatabaseException;
+import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.exception.permission.PermissionException;
 import cn.qkmango.ccms.common.map.R;
 import jakarta.validation.ValidationException;
@@ -32,7 +33,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 常见的异常处理
-     * SQL异常、权限异常、数据库操作异常、请求参数异常、缺少请求参数
+     * SQL异常、请求参数异常、缺少请求参数
      * 状态码为 409 存在冲突
      *
      * @param e 异常
@@ -40,8 +41,6 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler({
             SQLException.class,
-            PermissionException.class,
-            OperationDatabaseException.class,
             HttpMessageNotReadableException.class,
             MissingServletRequestParameterException.class,
     })
@@ -82,6 +81,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public R<String> validationExceptionHandle(ValidationException e) {
         logger.info("控制器入参校验异常处理");
+        logger.warn(e.getLocalizedMessage());
+        return R.fail(e.getLocalizedMessage());
+    }
+
+    /**
+     * 系统自定义异常处理
+     *
+     * @param e
+     * @return
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({
+            LoginException.class,
+            PermissionException.class,
+            OperationDatabaseException.class,
+    })
+    public R<String> customExceptionHandle(Exception e) {
         logger.warn(e.getLocalizedMessage());
         return R.fail(e.getLocalizedMessage());
     }

@@ -7,13 +7,12 @@ package cn.qkmango.ccms.mvc.service;
  * @version 1.0
  * @date 2023-01-31 20:05
  */
-public interface CaptchaService {
+public interface MailSenderService {
 
     /**
      * 发送修改邮箱验证码
      *
      * @param email  邮箱
-     * @param locale 语言环境
      */
     void sendChangeEmail(String email);
 

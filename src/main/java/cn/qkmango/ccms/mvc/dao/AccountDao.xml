@@ -10,15 +10,9 @@
     </insert>
 
     <update id="updateEmail">
-        update
-        <if test="account.role == @cn.qkmango.ccms.domain.bind.Role@user">
-            t_user
-        </if>
-        <if test="account.role == @cn.qkmango.ccms.domain.bind.Role@admin">
-            t_admin
-        </if>
+        update t_account
         set email = #{email}
-        where id = #{account.id}
+        where id = #{id}
     </update>
 
     <update id="update">
@@ -42,6 +36,7 @@
         select id,
         state,
         role,
+        email,
         department
         <if test="password==true">
             ,password
@@ -55,6 +50,7 @@
         id,
         state,
         role,
+        email,
         department
         from t_account
         <where>

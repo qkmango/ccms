@@ -1,5 +1,10 @@
 package cn.qkmango.ccms.config;
 
+import cn.qkmango.ccms.common.cache.RedisUtil;
+import cn.qkmango.ccms.common.cache.captcha.DefaultCaptchaCache;
+import cn.qkmango.ccms.common.cache.security.DefaultSecurityCache;
+import cn.qkmango.ccms.common.cache.security.SecurityCache;
+import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -37,6 +42,27 @@ public class RedisConfig {
 
         template.afterPropertiesSet();
         return template;
+    }
+
+
+    // redis工具类
+    @Resource(name = "redisUtil")
+    private RedisUtil redisUtil;
+
+    // 认证 state 缓存工具
+    @Bean("authStateCache")
+    public SecurityCache authStateCache() {
+        return new DefaultSecurityCache("auth:state:", redisUtil, 60 * 5);
+    }
+
+    @Bean("authAccessCodeCache")
+    public SecurityCache authAccessCodeCache() {
+        return new DefaultSecurityCache("auth:code:", redisUtil, 60 * 5);
+    }
+
+    @Bean("captchaCache")
+    public DefaultCaptchaCache captchaCache() {
+        return new DefaultCaptchaCache("captcha:email", redisUtil, 60 * 5);
     }
 
 

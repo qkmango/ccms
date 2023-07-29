@@ -44,5 +44,5 @@ public interface NoticeService {
      * @param id
      * @return 公告详情
      */
-    Notice detail(Integer id);
+    Notice record(Integer id);
 }

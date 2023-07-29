@@ -12,8 +12,7 @@
         select id,
                account,
                card,
-               name,
-               email
+               name
         from t_user
         where account = #{account}
     </select>

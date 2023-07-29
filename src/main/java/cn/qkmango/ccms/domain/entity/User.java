@@ -16,7 +16,6 @@ public class User {
 
     private String name;
 
-    private String email;
 
     public Long getId() {
         return id;
@@ -54,15 +53,6 @@ public class User {
         return this;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public User setEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
     @Override
     public String toString() {
         return "User{" +
@@ -70,7 +60,6 @@ public class User {
                 ", account=" + account +
                 ", card=" + card +
                 ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
                 '}';
     }
 }

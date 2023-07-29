@@ -40,8 +40,6 @@ public class NoticeServiceImpl implements NoticeService {
      */
     @Override
     public R<List<Notice>> list(Pagination<Notice> pagination) {
-        //设置为预览模式
-        pagination.setPreview(true);
         List<Notice> noticeList = dao.list(pagination);
         int count = dao.count();
         return R.success(noticeList).setCount(count);
@@ -82,7 +80,7 @@ public class NoticeServiceImpl implements NoticeService {
      * @return 公告详情
      */
     @Override
-    public Notice detail(Integer id) {
+    public Notice record(Integer id) {
         return dao.getRecordById(id);
     }
 }

@@ -53,7 +53,7 @@ public interface AccountService {
      * @param email   新的email
      * @throws UpdateException 更新异常
      */
-    void updateEmail(Account account, String email, String captcha) throws UpdateException;
+    void updateEmail(Integer account, String email, String captcha) throws UpdateException;
 
 
     /**

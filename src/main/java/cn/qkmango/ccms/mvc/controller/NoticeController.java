@@ -85,10 +85,10 @@ public class NoticeController {
      * @param id
      * @return 公告详情
      */
-    @GetMapping("one/detail.do")
-    public R<Notice> detail(@NotNull Integer id) {
-        Notice detail = service.detail(id);
-        return R.success(detail);
+    @GetMapping("one/record.do")
+    public R<Notice> record(@NotNull Integer id) {
+        Notice record = service.record(id);
+        return R.success(record);
     }
 
 

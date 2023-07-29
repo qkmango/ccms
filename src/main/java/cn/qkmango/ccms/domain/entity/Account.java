@@ -3,6 +3,7 @@ package cn.qkmango.ccms.domain.entity;
 import cn.qkmango.ccms.common.validate.group.Query.Login;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.Role;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
@@ -18,12 +19,14 @@ public class Account implements Serializable {
     /**
      * ID
      */
+    @NotNull(groups = {Login.class})
     private Integer id;
 
-    @NotNull(groups = Login.class)
+    @NotBlank(groups = Login.class)
     private String password;
 
-    @NotNull(groups = {Login.class})
+    private String email;
+
     private Role role;
 
     private AccountState state;
@@ -87,11 +90,21 @@ public class Account implements Serializable {
         return this;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
     @Override
     public String toString() {
         return "Account{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
                 ", role=" + role +
                 ", state=" + state +
                 ", department=" + department +

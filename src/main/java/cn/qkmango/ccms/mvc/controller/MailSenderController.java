@@ -3,10 +3,9 @@ package cn.qkmango.ccms.mvc.controller;
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.mvc.service.CaptchaService;
+import cn.qkmango.ccms.mvc.service.MailSenderService;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * 验证码
+ * 邮件发送控制器
  *
  * @author qkmango
  * @version 1.0
@@ -24,14 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Validated
 @RestController
-@RequestMapping("captcha")
-public class CaptchaController {
+@RequestMapping("sender")
+public class MailSenderController {
 
     @Resource
-    private ReloadableResourceBundleMessageSource messageSource;
+    private ReloadableResourceBundleMessageSource ms;
 
     @Resource
-    private CaptchaService service;
+    private MailSenderService service;
 
     /**
      * 发送修改邮箱验证码
@@ -40,11 +39,10 @@ public class CaptchaController {
      * @return 发送验证码结果
      */
     @Permission({Role.admin, Role.user})
-    @GetMapping("send/change/email.do")
-    public R sendChangeEmail(@NotBlank(message = "{valid.email.notBlank}")
-                             @Email(message = "{valid.email.illegal}") String email) {
+    @GetMapping("captcha/update-email.do")
+    public R sendChangeEmail(@Email String email) {
         service.sendChangeEmail(email);
-        return R.success(messageSource.getMessage("response.email.send.success", null, LocaleContextHolder.getLocale()));
+        return R.success(ms.getMessage("response.email.send.success", null, LocaleContextHolder.getLocale()));
     }
 
 }

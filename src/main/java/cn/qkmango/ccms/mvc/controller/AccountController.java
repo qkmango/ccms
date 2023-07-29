@@ -5,6 +5,7 @@ import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
@@ -57,7 +58,7 @@ public class AccountController {
      * @throws LoginException 登陆异常登陆失败
      */
     @PostMapping("system-login.do")
-    public R<Object> systemLogin(Account account) throws LoginException {
+    public R<Object> systemLogin(@Validated(Query.Login.class) Account account) throws LoginException {
         Account loginAccount = service.systemLogin(account);
         //创建 TokenEntity, 包含 token 和 过期时间
         TokenEntity tokenEntity = jwt.createEntity(loginAccount);
@@ -174,16 +175,13 @@ public class AccountController {
      * @throws UpdateException 修改失败
      */
     @Permission({Role.admin, Role.user})
-    @PostMapping("user/update/email.do")
-    public R updateEmail(@NotBlank(message = "{valid.email.notBlank}") @Email(message = "{valid.email.illegal}") String email,
-                         @Pattern(regexp = "^[a-zA-Z0-9]{5}$", message = "{valid.captcha.illegal}") String captcha) throws UpdateException {
+    @PostMapping("update/email.do")
+    public R updateEmail(@Email String email,
+                         @Pattern(regexp = "^[a-zA-Z0-9]{5}$") String captcha) throws UpdateException {
 
-        Integer id = AccountHolder.getId();
-        Role role = AccountHolder.getRole();
-
-        Account account = new Account().setId(id).setRole(role);
+        Integer account = AccountHolder.getId();
         service.updateEmail(account, email, captcha);
-        return R.success(ms.getMessage("db.update.email.success", null, LocaleContextHolder.getLocale()));
+        return R.success(ms.getMessage("db.account.update.email.success", null, LocaleContextHolder.getLocale()));
     }
 
     /**
