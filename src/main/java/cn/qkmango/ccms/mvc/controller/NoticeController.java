@@ -27,6 +27,7 @@ import java.util.List;
  * @version 1.0
  * @date 2022-12-07 22:50
  */
+@Validated
 @RestController
 @RequestMapping("notice")
 public class NoticeController {
@@ -88,7 +89,8 @@ public class NoticeController {
     @GetMapping("one/record.do")
     public R<Notice> record(@NotNull Integer id) {
         Notice record = service.record(id);
-        return R.success(record);
+        return record == null ? R.fail() : R.success(record);
+        // return R.success(record);
     }
 
 

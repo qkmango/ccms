@@ -6,7 +6,11 @@ server:
       enabled: true
       force: true
 
+
 spring:
+  mvc:
+    servlet:
+        path: /api
   datasource:
     druid:
       initial-size: 1
