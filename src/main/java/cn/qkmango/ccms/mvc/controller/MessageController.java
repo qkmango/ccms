@@ -9,11 +9,14 @@ import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.dto.MessageDto;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Message;
+import cn.qkmango.ccms.domain.pagination.Flow;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.MessageVO;
 import cn.qkmango.ccms.mvc.service.MessageService;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,18 +45,14 @@ public class MessageController {
      * 添加留言
      *
      * @param message 留言
-     * @param locale  语言环境
      * @return 添加结果
      * @throws InsertException 添加失败
      */
     @PostMapping("one/insert.do")
-    public R insert(@Validated(Insert.class) Message message, Locale locale, HttpSession session) throws InsertException {
-
-        Account account = (Account) session.getAttribute("account");
-        message.setAuthor(account.getId());
-
-        service.insert(message, locale);
-        return R.success(messageSource.getMessage("db.message.insert.success", null, locale));
+    public R insert(@Validated(Insert.class) Message message) throws InsertException {
+        message.setAuthor(AccountHolder.getId());
+        service.insert(message);
+        return R.success(messageSource.getMessage("db.message.insert.success", null, LocaleContextHolder.getLocale()));
     }
 
     /**
@@ -87,6 +86,19 @@ public class MessageController {
     @PostMapping("pagination/list.do")
     public R<List<MessageVO>> list(@RequestBody Pagination<MessageDto> pagination) {
         return service.list(pagination);
+    }
+
+    /**
+     * 流式分页查询留言列表
+     * 查询条件 last 必填
+     *
+     * @param flow 分页查询条件
+     * @return 留言列表
+     */
+    @PostMapping("flow/list.do")
+    public R<List<Message>> list(@RequestBody @Validated Flow<MessageDto> flow) {
+        List<Message> list = service.list(flow);
+        return R.success(list);
     }
 
     /**

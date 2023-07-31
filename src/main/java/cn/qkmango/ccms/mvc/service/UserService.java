@@ -1,5 +1,9 @@
 package cn.qkmango.ccms.mvc.service;
 
+import cn.qkmango.ccms.domain.entity.User;
+
+import java.util.List;
+
 /**
  * 学生信息服务层接口
  *
@@ -9,4 +13,5 @@ package cn.qkmango.ccms.mvc.service;
  */
 public interface UserService {
 
+    List<User> departmentUserList(Integer department);
 }

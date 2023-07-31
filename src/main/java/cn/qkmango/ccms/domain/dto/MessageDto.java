@@ -2,8 +2,6 @@ package cn.qkmango.ccms.domain.dto;
 
 import cn.qkmango.ccms.domain.entity.Message;
 
-import java.util.Date;
-
 /**
  * 查询留言的参数
  * <p>用于在 {@link Message} domain无法完整提供查询的参数时的扩充</p>
@@ -13,47 +11,33 @@ import java.util.Date;
  * @date 2022-12-21 13:27
  */
 public class MessageDto extends Message {
-    private Date startCreateTime;
-    private Date endCreateTime;
+    private Long startCreateTime;
+    private Long endCreateTime;
 
-    public MessageDto() {
-    }
-
-    public MessageDto(Integer id, String content, Integer author, Date createTime, Date startCreateTime, Date endCreateTime) {
-        super(id, content, author, createTime);
-        this.startCreateTime = startCreateTime;
-        this.endCreateTime = endCreateTime;
-    }
-
-    public MessageDto(Date startCreateTime, Date endCreateTime) {
-        this.startCreateTime = startCreateTime;
-        this.endCreateTime = endCreateTime;
-    }
-
-    public Date getStartCreateTime() {
+    public Long getStartCreateTime() {
         return startCreateTime;
     }
 
-    public void setStartCreateTime(Date startCreateTime) {
+    public void setStartCreateTime(Long startCreateTime) {
         this.startCreateTime = startCreateTime;
     }
 
-    public Date getEndCreateTime() {
+    public Long getEndCreateTime() {
         return endCreateTime;
     }
 
-    public void setEndCreateTime(Date endCreateTime) {
+    public void setEndCreateTime(Long endCreateTime) {
         this.endCreateTime = endCreateTime;
     }
 
     @Override
     public String toString() {
-        return "MessageParam{" +
+        return "MessageDto{" +
                 "startCreateTime=" + startCreateTime +
                 ", endCreateTime=" + endCreateTime +
                 ", id=" + getId() +
                 ", content='" + getContent() + '\'' +
-                ", author='" + getAuthor() + '\'' +
+                ", author=" + getAuthor() +
                 ", createTime=" + getCreateTime() +
                 '}';
     }

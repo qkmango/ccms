@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 留言
@@ -25,13 +24,13 @@ public class Message implements Serializable {
     @Length(message = "留言内容长度必须 < 200", groups = {Insert.class})
     private String content;
     private Integer author;
-    private Date createTime;
+    private Long createTime;
 
 
     public Message() {
     }
 
-    public Message(Integer id, String content, Integer author, Date createTime) {
+    public Message(Integer id, String content, Integer author, Long createTime) {
         this.id = id;
         this.content = content;
         this.author = author;
@@ -62,11 +61,11 @@ public class Message implements Serializable {
         this.author = author;
     }
 
-    public Date getCreateTime() {
+    public Long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(Long createTime) {
         this.createTime = createTime;
     }
 

@@ -75,6 +75,13 @@
         </if>
     </select>
 
+    <select id="accountIdsByDepartment" resultType="java.lang.Integer">
+        select id
+        from t_account
+        where department = #{department}
+    </select>
+
+
     <resultMap id="AccountInfoVO" type="cn.qkmango.ccms.domain.vo.AccountDetailVO">
         <association property="account">
             <id property="id" column="id"/>

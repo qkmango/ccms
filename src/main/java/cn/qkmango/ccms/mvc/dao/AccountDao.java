@@ -58,5 +58,7 @@ public interface AccountDao extends BaseDao<Account, String> {
 
     int insert(Account account);
 
-    String getNameById(Integer id);
+    // String getNameById(Integer id);
+
+    List<Integer> accountIdsByDepartment(Integer department);
 }

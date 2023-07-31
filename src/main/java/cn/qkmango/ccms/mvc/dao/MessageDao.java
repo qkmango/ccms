@@ -2,6 +2,7 @@ package cn.qkmango.ccms.mvc.dao;
 
 import cn.qkmango.ccms.domain.dto.MessageDto;
 import cn.qkmango.ccms.domain.entity.Message;
+import cn.qkmango.ccms.domain.pagination.Flow;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.MessageVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,11 +19,14 @@ import java.util.List;
 @Mapper
 public interface MessageDao {
     int count();
+
     int insert(Message message);
 
     int delete(Message message);
 
     List<MessageVO> list(Pagination<MessageDto> pagination);
+
+    List<Message> flow(Flow<MessageDto> flow);
 
     MessageVO detail(String id);
 }

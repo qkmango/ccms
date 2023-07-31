@@ -46,6 +46,7 @@ public class Jwt {
         return builder
                 .claim("id", account.getId())
                 .claim("role", account.getRole().name())
+                .claim("department", account.getDepartment())
                 .setExpiration(new Date(expireIn))
                 .compact();
     }

@@ -5,6 +5,7 @@ import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.dto.MessageDto;
 import cn.qkmango.ccms.domain.entity.Message;
+import cn.qkmango.ccms.domain.pagination.Flow;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.MessageVO;
 
@@ -23,10 +24,9 @@ public interface MessageService {
      * 添加留言
      *
      * @param message 留言
-     * @param locale  语言环境
      * @throws InsertException 添加失败
      */
-    void insert(Message message, Locale locale) throws InsertException;
+    void insert(Message message) throws InsertException;
 
     /**
      * 删除留言
@@ -44,6 +44,8 @@ public interface MessageService {
      * @return 留言列表
      */
     R<List<MessageVO>> list(Pagination<MessageDto> pagination);
+
+    List<Message> list(Flow<MessageDto> flow);
 
     /**
      * 查询留言详情

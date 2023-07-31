@@ -3,7 +3,6 @@ package cn.qkmango.ccms.domain.vo;
 import cn.qkmango.ccms.domain.entity.Message;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 留言展示视图对象
@@ -26,7 +25,7 @@ public class MessageVO extends Message implements Serializable {
     public MessageVO() {
     }
 
-    public MessageVO(Integer id, String content, Integer author, Date createTime, String authorName) {
+    public MessageVO(Integer id, String content, Integer author, Long createTime, String authorName) {
         super(id, content, author, createTime);
         this.authorName = authorName;
     }

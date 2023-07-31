@@ -53,6 +53,7 @@ public class AccountHolder {
         Account account = new Account();
         account.setId(getId());
         account.setRole(getRole());
+        account.setDepartment((Integer) get().get("department"));
         return account;
     }
 
