@@ -17,16 +17,14 @@ import java.util.List;
  * @date 2022-12-09 15:22
  */
 @Mapper
-public interface MessageDao {
+public interface MessageDao extends BaseDao<Message, Integer> {
     int count();
 
     int insert(Message message);
 
-    int delete(Message message);
+    int delete(Integer id, Integer author);
 
     List<MessageVO> list(Pagination<MessageDto> pagination);
 
     List<Message> flow(Flow<MessageDto> flow);
-
-    MessageVO detail(String id);
 }

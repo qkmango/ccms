@@ -22,30 +22,34 @@
         select SQL_CALC_FOUND_ROWS
         id,
         author,
-        content,
+        <if test="preview == false">
+            content,
+        </if>
+        <if test="preview != false">
+            LEFT(content,#{previewLength}) as content,
+        </if>
         create_time
         from t_message
         <where>
-            m.author = u.id
             <if test="param != null">
                 <if test="param.startCreateTime!= null">
-                    and m.createTime >=#{param.startCreateTime}
+                    and create_time >=#{param.startCreateTime}
                 </if>
                 <if test="param.endCreateTime!= null">
-                    and m.createTime &lt;=#{param.endCreateTime}
+                    and create_time &lt;=#{param.endCreateTime}
                 </if>
                 <if test="param.id != null">
-                    and m.id = #{param.id}
+                    and id = #{param.id}
                 </if>
                 <if test="param.author != null and param.author != ''">
-                    and m.author = #{param.author}
+                    and author = #{param.author}
                 </if>
                 <if test="param.content != null and param.content != ''">
-                    and m.content like concat('%',#{param.content},'%')
+                    and content like concat('%',#{param.content},'%')
                 </if>
             </if>
         </where>
-        order by m.createTime desc
+        order by id desc
         LIMIT #{skipCount},#{limit}
     </select>
 
@@ -72,14 +76,9 @@
         LIMIT #{limit}
     </select>
 
-    <select id="detail" resultType="cn.qkmango.ccms.domain.vo.MessageVO">
-        select m.id,
-               m.content,
-               m.author,
-               m.create_time,
-               u.name as authorName
-        from t_message m
-                 join t_user u on m.author = u.id
-        where m.id = #{id}
+    <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Message">
+        select id, author, content, create_time
+        from t_message
+        where id = #{id}
     </select>
 </mapper>

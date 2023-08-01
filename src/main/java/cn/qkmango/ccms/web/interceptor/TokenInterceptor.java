@@ -36,7 +36,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         String token = request.getHeader("Authorization");
         Claims claims = jwt.parser(token);
 
-        //将解析的用户信息 Map<String,Object> claims 存入 UserSession
+        //将解析的用户信息 Map<String,Object> claims 存入 AccountHolder
         if (claims != null) {
             AccountHolder.set(claims);
         }

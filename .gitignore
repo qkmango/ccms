@@ -15,8 +15,6 @@ src/test/
 out
 /src/main/java/cn/qkmango/ccms/mvc/controller/Test2.java
 /src/main/resources/application.properties
-/src/main/java/cn/qkmango/ccms/mvc/dao/TestDao.java
-/src/main/java/cn/qkmango/ccms/mvc/dao/TestDao.xml
 /src/main/resources/rebel.xml
 
 # 这两个文件包含第三方平台配置信息，不能上传到仓库

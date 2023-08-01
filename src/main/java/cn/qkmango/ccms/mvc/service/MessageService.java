@@ -10,7 +10,6 @@ import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.MessageVO;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 留言
@@ -31,11 +30,11 @@ public interface MessageService {
     /**
      * 删除留言
      *
-     * @param message 留言
-     * @param locale  语言环境
+     * @param id      留言id
+     * @param author 留言者账号
      * @throws DeleteException 删除失败
      */
-    void delete(Message message, Locale locale) throws DeleteException;
+    void delete(Integer id, Integer author) throws DeleteException;
 
     /**
      * 分页查询留言列表
@@ -53,5 +52,5 @@ public interface MessageService {
      * @param id 留言id
      * @return 留言详情
      */
-    MessageVO detail(String id);
+    Message record(Integer id);
 }

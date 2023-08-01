@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 留言
@@ -54,17 +53,13 @@ public class MessageServiceImpl implements MessageService {
 
     /**
      * 删除留言
-     *
-     * @param message 留言
-     * @param locale  语言环境
-     * @throws DeleteException 删除失败
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void delete(Message message, Locale locale) throws DeleteException {
-        int affectedRows = messageDao.delete(message);
+    public void delete(Integer id, Integer author) throws DeleteException {
+        int affectedRows = messageDao.delete(id, author);
         if (affectedRows != 1) {
-            throw new DeleteException(messageSource.getMessage("db.message.delete.failure", null, locale));
+            throw new DeleteException(messageSource.getMessage("db.message.delete.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -94,7 +89,7 @@ public class MessageServiceImpl implements MessageService {
      * @return 留言详情
      */
     @Override
-    public MessageVO detail(String id) {
-        return messageDao.detail(id);
+    public Message record(Integer id) {
+        return messageDao.getRecordById(id);
     }
 }

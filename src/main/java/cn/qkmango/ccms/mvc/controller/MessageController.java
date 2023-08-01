@@ -1,9 +1,9 @@
 package cn.qkmango.ccms.mvc.controller;
 
+import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.exception.database.DeleteException;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.common.validate.group.Delete;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.dto.MessageDto;
@@ -15,14 +15,13 @@ import cn.qkmango.ccms.domain.vo.MessageVO;
 import cn.qkmango.ccms.mvc.service.MessageService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 留言
@@ -57,32 +56,29 @@ public class MessageController {
 
     /**
      * 删除留言
+     * 如果是管理员，可以删除任意留言，如果是用户，只能删除自己的留言
      *
-     * @param message 留言
-     * @param session 会话
-     * @param locale  语言环境
-     * @return 删除结果
-     * @throws DeleteException 删除失败
+     * @param id 留言id
      */
     @PostMapping("one/delete.do")
-    public R delete(@Validated(Delete.class) Message message, HttpSession session, Locale locale) throws DeleteException {
-
-        Account account = (Account) session.getAttribute("account");
-        if (account.getRole() == Role.user) {
-            message.setAuthor(account.getId());
+    @Permission({Role.admin, Role.user})
+    public R delete(@NotNull Integer id) throws DeleteException {
+        Account account = AccountHolder.getAccount();
+        Role role = account.getRole();
+        Integer author = null;
+        switch (role) {
+            case user -> author = account.getId();
         }
-
-        service.delete(message, locale);
-        return R.success(messageSource.getMessage("db.message.delete.success", null, locale));
+        service.delete(id, author);
+        return R.success(messageSource.getMessage("db.message.delete.success", null, LocaleContextHolder.getLocale()));
     }
 
 
     /**
      * 分页查询留言列表
-     *
-     * @param pagination 分页查询条件
-     * @return 留言列表
+     * <p>此分页查询仅供管理员使用，用户的分页查询请使用流式分页查询{@link cn.qkmango.ccms.mvc.controller.MessageController#list(Flow)}</p>
      */
+    @Permission(Role.admin)
     @PostMapping("pagination/list.do")
     public R<List<MessageVO>> list(@RequestBody Pagination<MessageDto> pagination) {
         return service.list(pagination);
@@ -95,6 +91,7 @@ public class MessageController {
      * @param flow 分页查询条件
      * @return 留言列表
      */
+    @Permission(Role.user)
     @PostMapping("flow/list.do")
     public R<List<Message>> list(@RequestBody @Validated Flow<MessageDto> flow) {
         List<Message> list = service.list(flow);
@@ -107,10 +104,10 @@ public class MessageController {
      * @param id 留言id
      * @return 留言详情
      */
-    @GetMapping("one/detail.do")
-    public R<MessageVO> detail(@RequestParam String id) {
-        MessageVO detail = service.detail(id);
-        return R.success(detail);
+    @GetMapping("one/record.do")
+    public R<Message> record(@RequestParam Integer id) {
+        Message record = service.record(id);
+        return R.success(record);
     }
 
 }

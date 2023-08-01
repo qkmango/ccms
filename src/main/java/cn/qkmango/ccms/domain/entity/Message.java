@@ -1,9 +1,7 @@
 package cn.qkmango.ccms.domain.entity;
 
-import cn.qkmango.ccms.common.validate.group.Delete;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
@@ -17,7 +15,6 @@ import java.io.Serializable;
  */
 public class Message implements Serializable {
 
-    @NotNull(groups = {Delete.class}, message = "id不能为空")
     private Integer id;
 
     @NotEmpty(message = "留言内容不能为空", groups = {Insert.class})
