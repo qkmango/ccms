@@ -25,8 +25,7 @@ ccms:
       authorize: https://gitee.com/oauth/authorize
       accessToken: https://gitee.com/oauth/token
       userInfo: https://gitee.com/api/v5/user
-#      callback: http://localhost/auth/gitee/callback.do
-      callback: http://localhost:5500/page/common/authentication/callback.html
+      callback: http://localhost/api/auth/gitee/callback.do
       redirect: redirect:/page/common/authentication/result.html
 
     dingtalk:
@@ -35,14 +34,14 @@ ccms:
       authorize: https://login.dingtalk.com/oauth2/auth
       accessToken: https://oapi.dingtalk.com/gettoken
       userInfo: https://oapi.dingtalk.com/sns/getuserinfo_bycode
-      callback: http://localhost/auth/dingtalk/callback.do
+      callback: http://localhost/api/auth/dingtalk/callback.do
       redirect: redirect:/page/common/authentication/result.html
 
     #支付宝开发环境使用沙箱
     alipay:
       id:
       authorize: https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm
-      callback: http://localhost/auth/alipay/callback.do
+      callback: http://localhost/api/auth/alipay/callback.do
       redirect: redirect:/page/common/authentication/result.html
       gateway: https://openapi.alipaydev.com/gateway.do
       appPrivateKey:
