@@ -37,13 +37,13 @@ public class DepartmentController {
 
     /**
      * 获取子节点列表
-     * 默认 {@code ID == null} 时获取根节点
+     * 默认 {@code ID == 0} 时获取根节点
      *
      * @param id 父节点id
      * @return
      */
     @GetMapping("/child-list.do")
-    public R<List<Department>> childList(Integer id) {
+    public R<List<Department>> childList(@RequestParam Integer id) {
         return R.success(service.childList(id));
     }
 
