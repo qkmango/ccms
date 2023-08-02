@@ -10,6 +10,7 @@ import cn.qkmango.ccms.domain.dto.MessageDto;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Message;
 import cn.qkmango.ccms.domain.pagination.Flow;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.MessageVO;
 import cn.qkmango.ccms.mvc.service.MessageService;
@@ -80,8 +81,9 @@ public class MessageController {
      */
     @Permission(Role.admin)
     @PostMapping("pagination/list.do")
-    public R<List<MessageVO>> list(@RequestBody Pagination<MessageDto> pagination) {
-        return service.list(pagination);
+    public R<PageData<MessageVO>> list(@RequestBody Pagination<MessageDto> pagination) {
+        PageData<MessageVO> page = service.list(pagination);
+        return R.success(page);
     }
 
     /**

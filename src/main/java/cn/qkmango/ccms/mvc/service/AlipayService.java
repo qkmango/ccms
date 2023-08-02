@@ -24,7 +24,6 @@ public interface AlipayService {
      *
      * @param subject     支付的名称
      * @param totalAmount 订单的总金额
-     * @param locale      语言
      * @return R
      */
     String createPay(String subject, String totalAmount) throws InsertException;
@@ -49,7 +48,6 @@ public interface AlipayService {
      * @param gmtPayment    交易付款时间, 格式为 yyyy-MM-dd HH:mm:ss
      * @param receiptAmount 实收金额, 商家在交易中实际收到的款项，单位为人民币（元），精确到小数点后 2 位
      * @param sign          签名
-     * @param locale        语言
      * @param request       http请求
      */
     void payNotify(String tradeNo,

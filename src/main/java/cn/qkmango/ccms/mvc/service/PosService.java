@@ -3,13 +3,12 @@ package cn.qkmango.ccms.mvc.service;
 import cn.qkmango.ccms.common.exception.database.DeleteException;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.dto.PosDto;
 import cn.qkmango.ccms.domain.entity.Pos;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.PosVO;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -44,7 +43,7 @@ public interface PosService {
      * @param pagination 分页查询条件
      * @return 分页查询结果
      */
-    R<List<PosVO>> list(Pagination<PosDto> pagination);
+    PageData<PosVO> list(Pagination<PosDto> pagination);
 
     /**
      * 获取刷卡机详细信息

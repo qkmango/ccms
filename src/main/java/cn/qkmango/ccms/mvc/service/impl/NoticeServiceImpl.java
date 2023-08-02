@@ -2,8 +2,8 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.database.DeleteException;
 import cn.qkmango.ccms.common.exception.database.InsertException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.entity.Notice;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.dao.NoticeDao;
 import cn.qkmango.ccms.mvc.service.NoticeService;
@@ -39,10 +39,10 @@ public class NoticeServiceImpl implements NoticeService {
      * @return 分页列表
      */
     @Override
-    public R<List<Notice>> list(Pagination<Notice> pagination) {
-        List<Notice> noticeList = dao.list(pagination);
+    public PageData<Notice> list(Pagination<Notice> pagination) {
+        List<Notice> list = dao.list(pagination);
         int count = dao.count();
-        return R.success(noticeList).setCount(count);
+        return PageData.of(list, count);
     }
 
     /**

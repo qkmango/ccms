@@ -5,8 +5,7 @@ import cn.qkmango.ccms.domain.entity.Trade;
 import java.util.Locale;
 
 /**
- * 描述
- * <p></p>
+ * 交易
  *
  * @author qkmango
  * @version 1.0

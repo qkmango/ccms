@@ -1,9 +1,9 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.database.InsertException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.DepartmentType;
 import cn.qkmango.ccms.domain.entity.Department;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.dao.DepartmentDao;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
@@ -101,9 +101,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public R<List<Department>> list(Pagination<Department> pagination) {
+    public PageData<Department> list(Pagination<Department> pagination) {
         List<Department> list = dao.list(pagination);
         int count = dao.count();
-        return R.success(list, count);
+        return PageData.of(list, count);
     }
 }

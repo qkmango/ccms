@@ -7,6 +7,7 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Notice;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.service.NoticeService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
@@ -18,7 +19,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * 公告
@@ -76,8 +76,9 @@ public class NoticeController {
      */
     @Permission({Role.user, Role.admin})
     @PostMapping("pagination/list.do")
-    public R<List<Notice>> list(@RequestBody Pagination<Notice> pagination) {
-        return service.list(pagination);
+    public R<PageData<Notice>> list(@RequestBody Pagination<Notice> pagination) {
+        PageData<Notice> page = service.list(pagination);
+        return R.success(page);
     }
 
     /**

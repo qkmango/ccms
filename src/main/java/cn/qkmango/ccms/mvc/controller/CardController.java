@@ -6,6 +6,7 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Card;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.service.CardService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -47,8 +47,9 @@ public class CardController {
      */
     @Permission(Role.admin)
     @PostMapping("pagination/list.do")
-    public R<List<Card>> list(@RequestBody Pagination<Card> pagination) {
-        return service.list(pagination);
+    public R<PageData<Card>> list(@RequestBody Pagination<Card> pagination) {
+        PageData<Card> page = service.list(pagination);
+        return R.success(page);
     }
 
 

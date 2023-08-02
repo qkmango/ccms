@@ -1,12 +1,11 @@
 package cn.qkmango.ccms.mvc.service;
 
 import cn.qkmango.ccms.common.exception.database.UpdateException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.entity.Card;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -23,7 +22,7 @@ public interface CardService {
      * @param pagination 分页查询条件
      * @return 分页查询结果
      */
-    R<List<Card>> list(Pagination<Card> pagination);
+    PageData<Card> list(Pagination<Card> pagination);
 
     /**
      * 根据用户ID查询卡详细信息

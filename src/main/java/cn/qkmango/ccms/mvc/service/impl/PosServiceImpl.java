@@ -3,9 +3,9 @@ package cn.qkmango.ccms.mvc.service.impl;
 import cn.qkmango.ccms.common.exception.database.DeleteException;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.dto.PosDto;
 import cn.qkmango.ccms.domain.entity.Pos;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.PosVO;
 import cn.qkmango.ccms.mvc.dao.PosDao;
@@ -38,6 +38,7 @@ public class PosServiceImpl implements PosService {
     /**
      * 添加刷卡机
      * TODO 修改表结构，密码字段待处理
+     *
      * @param pos    刷卡机
      * @param locale 语言环境
      * @return 新添加的刷卡机ID
@@ -77,9 +78,10 @@ public class PosServiceImpl implements PosService {
      * @return 分页查询结果
      */
     @Override
-    public R<List<PosVO>> list(Pagination<PosDto> pagination) {
+    public PageData<PosVO> list(Pagination<PosDto> pagination) {
         List<PosVO> list = dao.list(pagination);
-        return new R<List<PosVO>>().setSuccess(true).setData(list).setCount(dao.count());
+        int count = dao.count();
+        return PageData.of(list, count);
     }
 
     /**

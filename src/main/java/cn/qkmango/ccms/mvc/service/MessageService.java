@@ -2,10 +2,10 @@ package cn.qkmango.ccms.mvc.service;
 
 import cn.qkmango.ccms.common.exception.database.DeleteException;
 import cn.qkmango.ccms.common.exception.database.InsertException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.dto.MessageDto;
 import cn.qkmango.ccms.domain.entity.Message;
 import cn.qkmango.ccms.domain.pagination.Flow;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.MessageVO;
 
@@ -42,7 +42,7 @@ public interface MessageService {
      * @param pagination 分页查询条件
      * @return 留言列表
      */
-    R<List<MessageVO>> list(Pagination<MessageDto> pagination);
+    PageData<MessageVO> list(Pagination<MessageDto> pagination);
 
     List<Message> list(Flow<MessageDto> flow);
 

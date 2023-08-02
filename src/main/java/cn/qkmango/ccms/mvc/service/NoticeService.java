@@ -2,11 +2,9 @@ package cn.qkmango.ccms.mvc.service;
 
 import cn.qkmango.ccms.common.exception.database.DeleteException;
 import cn.qkmango.ccms.common.exception.database.InsertException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.entity.Notice;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-
-import java.util.List;
 
 /**
  * 公告
@@ -36,7 +34,7 @@ public interface NoticeService {
      * @param pagination 分页查询条件
      * @return 分页列表
      */
-    R<List<Notice>> list(Pagination<Notice> pagination);
+    PageData<Notice> list(Pagination<Notice> pagination);
 
     /**
      * 获取公告详情

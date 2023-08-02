@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.database.UpdateException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.SnowFlake;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
@@ -10,6 +9,7 @@ import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.Trade;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.TradeDao;
@@ -58,10 +58,10 @@ public class CardServiceImpl implements CardService {
      * @return 分页查询结果
      */
     @Override
-    public R<List<Card>> list(Pagination<Card> pagination) {
-        List<Card> cardList = cardDao.list(pagination);
+    public PageData<Card> list(Pagination<Card> pagination) {
+        List<Card> list = cardDao.list(pagination);
         int count = cardDao.count();
-        return R.success(cardList).setCount(count);
+        return PageData.of(list, count);
     }
 
     /**

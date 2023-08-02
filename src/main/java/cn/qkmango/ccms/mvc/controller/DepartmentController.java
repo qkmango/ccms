@@ -6,6 +6,7 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Insert;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Department;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
 import jakarta.annotation.Resource;
@@ -55,8 +56,9 @@ public class DepartmentController {
 
     @Permission(Role.admin)
     @PostMapping("pagination/list.do")
-    public R<List<Department>> list(@RequestBody Pagination<Department> pagination) {
-        return service.list(pagination);
+    public R<PageData<Department>> list(@RequestBody Pagination<Department> pagination) {
+        PageData<Department> page = service.list(pagination);
+        return R.success(page);
     }
 
     @Permission(Role.admin)
