@@ -3,14 +3,12 @@ package cn.qkmango.ccms.mvc.service;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.exception.permission.LoginException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
 import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
 import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
-
-import java.util.List;
 
 /**
  * 账户
@@ -76,7 +74,7 @@ public interface AccountService {
      * @param pagination
      * @return
      */
-    R<List<Account>> list(Pagination<Account> pagination);
+    PageData<Account> list(Pagination<Account> pagination);
 
     /**
      * 添加账户

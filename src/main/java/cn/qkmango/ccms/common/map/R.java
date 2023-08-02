@@ -1,8 +1,6 @@
 package cn.qkmango.ccms.common.map;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 响应 Map
@@ -21,6 +19,11 @@ public class R<T> implements Serializable {
     private boolean success;
 
     /**
+     * 响应状态码
+     */
+    private int code;
+
+    /**
      * 响应消息
      */
     private String message;
@@ -36,21 +39,15 @@ public class R<T> implements Serializable {
      */
     private Integer count;
 
-    /**
-     * 元数据
-     * <p>存放一些额外的信息
-     */
-    private Object meta;
-
     public R() {
     }
 
-    public R(boolean success, String message, T data, Integer count, Object meta) {
+    public R(boolean success, int code, String message, T data, Integer count) {
         this.success = success;
+        this.code = code;
         this.message = message;
         this.data = data;
         this.count = count;
-        this.meta = meta;
     }
 
     public boolean isSuccess() {
@@ -94,70 +91,61 @@ public class R<T> implements Serializable {
         return this;
     }
 
-    public Object getMeta() {
-        return meta;
+    public int getCode() {
+        return code;
     }
 
-    public R<T> setMeta(Object meta) {
-        this.meta = meta;
+    public R<T> setCode(int code) {
+        this.code = code;
         return this;
     }
 
     public static <T> R<T> success() {
-        return new R<>(true, null, null, null, null);
+        return new R<>(true, 0, null, null, null);
     }
 
     public static <T> R<T> success(T data) {
-        return new R<>(true, null, data, null, null);
+        return new R<>(true, 0, null, data, null);
     }
 
     public static <T> R<T> success(String message) {
-        return new R<>(true, message, null, null, null);
+        return new R<>(true, 0, message, null, null);
     }
 
     public static <T> R<T> success(T data, String message) {
-        return new R<>(true, message, data, null, null);
+        return new R<>(true, 0, message, data, null);
     }
 
     public static <T> R<T> success(T data, int count) {
-        return new R<>(true, null, data, count, null);
+        return new R<>(true, 0, null, data, count);
     }
 
     public static <T> R<T> fail() {
-        return new R<>(false, null, null, null, null);
+        return new R<>(false, 400, null, null, null);
     }
 
     public static <T> R<T> fail(T data) {
-        return new R<>(false, null, data, null, null);
+        return new R<>(false, 400, null, data, null);
     }
 
     public static <T> R<T> fail(String message) {
-        return new R<>(false, message, null, null, null);
+        return new R<>(false, 400, message, null, null);
     }
 
     public static <T> R<T> fail(T data, String message) {
-        return new R<>(false, message, data, null, null);
+        return new R<>(false, 400, message, data, null);
     }
 
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("success", success);
-        map.put("message", message);
-        map.put("data", data);
-        map.put("count", count);
-        map.put("meta", meta);
-        return map;
-    }
 
     @Override
     public String toString() {
-        return "ResponseMap{" +
+        return "R{" +
                 "success=" + success +
+                ", code=" + code +
                 ", message='" + message + '\'' +
                 ", data=" + data +
                 ", count=" + count +
-                ", meta='" + meta + '\'' +
+                ", setSuccess=" + setSuccess() +
                 '}';
     }
 }

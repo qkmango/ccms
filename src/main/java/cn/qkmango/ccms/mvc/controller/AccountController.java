@@ -11,6 +11,7 @@ import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
 import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
 import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
 import cn.qkmango.ccms.mvc.service.AccountService;
@@ -26,7 +27,6 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -191,8 +191,9 @@ public class AccountController {
      */
     @Permission(Role.admin)
     @PostMapping("pagination/list.do")
-    public R<List<Account>> list(@RequestBody Pagination<Account> pagination) {
-        return service.list(pagination);
+    public R<PageData<Account>> list(@RequestBody Pagination<Account> pagination) {
+        PageData<Account> pageData = service.list(pagination);
+        return R.success(pageData);
     }
 
     @Permission(Role.admin)

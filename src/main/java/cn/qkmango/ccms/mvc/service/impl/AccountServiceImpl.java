@@ -5,7 +5,6 @@ import cn.qkmango.ccms.common.cache.security.SecurityCache;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.exception.permission.LoginException;
-import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.SnowFlake;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.CardState;
@@ -17,6 +16,7 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.Department;
 import cn.qkmango.ccms.domain.entity.User;
+import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
 import cn.qkmango.ccms.mvc.dao.AccountDao;
@@ -299,10 +299,11 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public R<List<Account>> list(Pagination<Account> pagination) {
+    public PageData<Account> list(Pagination<Account> pagination) {
         List<Account> list = dao.list(pagination);
         int count = dao.count();
-        return R.success(list).setCount(count);
+        PageData<Account> page = PageData.of(list, count);
+        return page;
     }
 
     @Override
