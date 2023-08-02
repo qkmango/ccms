@@ -6,13 +6,11 @@ import cn.qkmango.ccms.common.exception.permission.PermissionException;
 import cn.qkmango.ccms.common.map.R;
 import jakarta.validation.ValidationException;
 import org.apache.log4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.sql.SQLException;
@@ -44,7 +42,7 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             MissingServletRequestParameterException.class,
     })
-    @ResponseStatus(HttpStatus.CONFLICT)
+    // @ResponseStatus(HttpStatus.CONFLICT)
     public R<String> commonExceptionHandler(Exception e) {
         logger.warn(e.getLocalizedMessage());
         return R.fail(e.getLocalizedMessage());
@@ -57,7 +55,7 @@ public class GlobalExceptionHandler {
      * @param e BindException
      * @return 含有异常信息的 R
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    // @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     public R<String> bindExceptionHandle(BindException e) {
         List<ObjectError> errors = e.getAllErrors();
@@ -77,7 +75,7 @@ public class GlobalExceptionHandler {
      * @param e ValidationException
      * @return 含有异常信息的 R
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    // @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ValidationException.class)
     public R<String> validationExceptionHandle(ValidationException e) {
         logger.info("控制器入参校验异常处理");
@@ -91,7 +89,7 @@ public class GlobalExceptionHandler {
      * @param e
      * @return
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    // @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
             LoginException.class,
             PermissionException.class,
@@ -108,7 +106,7 @@ public class GlobalExceptionHandler {
      * @param e 异常
      * @return 含有异常信息的 R
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    // @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({Throwable.class, Exception.class})
     public R<String> allThrowableHandler(Throwable e) {
         logger.warn("捕获所有异常");
