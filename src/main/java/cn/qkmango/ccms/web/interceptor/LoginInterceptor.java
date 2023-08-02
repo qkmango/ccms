@@ -27,7 +27,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         response.setStatus(401);
-        ResponseUtil.responseJson(response, "{\"success\":false,\"message\":\"未登录\"}");
+        ResponseUtil.responseJson(response, "{\"success\":false,\"code\":400,\"message\":\"未登录\"}");
         return false;
 
     }

@@ -2,8 +2,8 @@ package cn.qkmango.ccms.web.interceptor;
 
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.util.ResponseUtil;
-import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
  */
 public class PermissionsInterceptor implements HandlerInterceptor {
 
-    private final String OPERATION_WITHOUT_ROLE_JSON = "{\"success\":false,\"message\":\"无权操作\"}";
+    private final String OPERATION_WITHOUT_ROLE_JSON = "{\"success\":false,\"code\":400,\"message\":\"无权操作\"}";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
