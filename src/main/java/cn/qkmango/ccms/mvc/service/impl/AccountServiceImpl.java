@@ -83,6 +83,11 @@ public class AccountServiceImpl implements AccountService {
         return dao.getRecordById(id);
     }
 
+    @Override
+    public Account getRecordById(Integer id, boolean password) {
+        return dao.getRecordById(id, password);
+    }
+
     /**
      * 登陆接口
      *

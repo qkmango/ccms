@@ -30,7 +30,7 @@ public interface AccountService {
     /**
      * 修改密码
      *
-     * @param dto  新的密码和
+     * @param dto 新的密码和
      * @throws UpdateException 更新异常
      */
     void updatePassword(UpdatePasswordDto dto) throws UpdateException;
@@ -84,6 +84,14 @@ public interface AccountService {
     void insert(AccountInsertDto account) throws InsertException;
 
     Account getRecordById(Integer id);
+
+    /**
+     * 根据id获取账户信息
+     *
+     * @param id       账户id
+     * @param password 是否包含密码
+     */
+    Account getRecordById(Integer id, boolean password);
 
     Account accessLogin(String accessCode) throws LoginException;
 

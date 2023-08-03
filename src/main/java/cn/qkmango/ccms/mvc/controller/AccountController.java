@@ -148,8 +148,8 @@ public class AccountController {
     @GetMapping("one/current-account-info.do")
     public R currentAccountInfo() {
         Integer id = AccountHolder.getId();
-        Account account = service.getRecordById(id);
-        return R.success(account);
+        Account account = service.getRecordById(id, false);
+        return account == null ? R.fail() : R.success(account);
     }
 
     /**
