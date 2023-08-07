@@ -50,12 +50,9 @@ public class MailSenderServiceImpl implements MailSenderService {
         String captcha = captchaCache.set(new String[]{id.toString(), email});
 
         //发送验证码到用户邮箱
-        // String content = String.format(mailCaptchaTemplate, id, captcha);
-        String content = captcha;
-
         //发送邮件
         try {
-            emailUtil2.sendWithHtml(email, "修改邮箱验证码", content);
+            emailUtil2.sendWithHtml(email, "修改邮箱验证码", captcha);
         } catch (MessagingException e) {
             e.printStackTrace();
             throw new MailSendException(message.getMessage("response.email.send.failure", null, LocaleContextHolder.getLocale()));

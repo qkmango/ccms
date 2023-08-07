@@ -2,6 +2,7 @@ package cn.qkmango.ccms.config;
 
 import cn.qkmango.ccms.common.cache.RedisUtil;
 import cn.qkmango.ccms.common.cache.captcha.DefaultCaptchaCache;
+import cn.qkmango.ccms.common.cache.qrcode.DefaultQrCodeCache;
 import cn.qkmango.ccms.common.cache.security.DefaultSecurityCache;
 import cn.qkmango.ccms.common.cache.security.SecurityCache;
 import jakarta.annotation.Resource;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
@@ -49,6 +51,9 @@ public class RedisConfig {
     @Resource(name = "redisUtil")
     private RedisUtil redisUtil;
 
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
     // 认证 state 缓存工具
     @Bean("authStateCache")
     public SecurityCache authStateCache() {
@@ -65,5 +70,9 @@ public class RedisConfig {
         return new DefaultCaptchaCache("captcha:email", redisUtil, 60 * 5);
     }
 
+    @Bean("qrCodeCache")
+    public DefaultQrCodeCache qrCodeCache() {
+        return new DefaultQrCodeCache("pay:qrcode:", stringRedisTemplate, 60 * 5);
+    }
 
 }

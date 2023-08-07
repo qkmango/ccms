@@ -2,14 +2,14 @@ package cn.qkmango.ccms.common.cache;
 
 /**
  * 安全缓存
- * KM key的组成map
- * VM value的组成map
+ * K key的组成
+ * V value的组成
  *
  * @author qkmango
  * @version 1.0
  * @date 2023-05-19 9:50
  */
-public interface BaseCache<KM, VM> {
+public interface BaseCache<K, V> {
 
     /**
      * 保存 state
@@ -17,24 +17,24 @@ public interface BaseCache<KM, VM> {
      * @param key   key
      * @param value value
      */
-    void set(KM key, VM value);
+    void set(K key, V value);
 
 
-    VM set(KM key);
+    V set(K key);
 
     /**
      * 获取 value
      *
      * @return value
      */
-    VM get(KM key);
+    V get(K key);
 
     /**
      * 删除 value
      *
      * @param key key
      */
-    void delete(KM key);
+    void delete(K key);
 
 
     /**
@@ -43,9 +43,16 @@ public interface BaseCache<KM, VM> {
      * @param key
      * @return
      */
-    boolean check(KM key);
+    boolean check(K key);
 
-    boolean check(KM key, String value);
+    /**
+     * 检查指定的key是否存在，并且检查value是否正确,正确则删除
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    boolean check(K key, V value);
 
 
 }
