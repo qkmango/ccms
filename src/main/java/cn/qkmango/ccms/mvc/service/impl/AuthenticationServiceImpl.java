@@ -133,7 +133,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         // 检查state
-        boolean check = authStateCache.check(state);
+        boolean check = authStateCache.checkAndDelete(state);
         if (!check) {
             message = ms.getMessage("response.authentication.state.failure", null, LocaleContextHolder.getLocale());
             return builder

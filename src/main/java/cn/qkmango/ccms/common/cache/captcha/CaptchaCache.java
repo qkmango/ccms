@@ -11,6 +11,6 @@ import cn.qkmango.ccms.common.cache.BaseCache;
  * @date 2023-07-29 17:34
  */
 public interface CaptchaCache extends BaseCache<String[], String> {
-    String generateKey(String[] keymap);
+    // String generateKey(String[] keymap);
 
 }

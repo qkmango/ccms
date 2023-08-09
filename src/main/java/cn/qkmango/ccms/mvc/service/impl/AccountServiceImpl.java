@@ -240,7 +240,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void updateEmail(Integer account, String email, String captcha) throws UpdateException {
         // 验证码校验
-        boolean check = captchaCache.check(new String[]{account.toString(), email}, captcha);
+        boolean check = captchaCache.checkOkDelete(new String[]{account.toString(), email}, captcha);
 
         if (!check) {
             throw new UpdateException(messageSource.getMessage("response.captcha.valid.failure", null, LocaleContextHolder.getLocale()));

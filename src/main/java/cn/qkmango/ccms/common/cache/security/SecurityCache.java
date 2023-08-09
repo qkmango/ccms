@@ -11,6 +11,9 @@ import cn.qkmango.ccms.common.cache.BaseCache;
  * @date 2023-07-29 17:36
  */
 public interface SecurityCache extends BaseCache<String, String> {
+
+    boolean checkAndDelete(String key);
+
     /**
      * 生成 码，并保存到缓存中
      *

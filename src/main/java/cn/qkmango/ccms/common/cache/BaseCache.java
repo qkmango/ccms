@@ -34,16 +34,8 @@ public interface BaseCache<K, V> {
      *
      * @param key key
      */
-    void delete(K key);
+    boolean delete(K key);
 
-
-    /**
-     * 判断指定的key是否存在，并且删除
-     *
-     * @param key
-     * @return
-     */
-    boolean check(K key);
 
     /**
      * 检查指定的key是否存在，并且检查value是否正确,正确则删除
@@ -53,6 +45,10 @@ public interface BaseCache<K, V> {
      * @return
      */
     boolean check(K key, V value);
+
+    boolean checkAndDelete(K key, V value);
+
+    boolean checkOkDelete(K key, V value);
 
 
 }

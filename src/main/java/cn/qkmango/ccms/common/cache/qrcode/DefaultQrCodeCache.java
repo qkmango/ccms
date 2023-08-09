@@ -1,9 +1,8 @@
 package cn.qkmango.ccms.common.cache.qrcode;
 
-import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 /**
  * 描述
@@ -15,20 +14,23 @@ import java.util.concurrent.TimeUnit;
  */
 public class DefaultQrCodeCache implements QrCodeCache {
 
-    @Resource
-    StringRedisTemplate template;
+    private final StringRedisTemplate template;
 
     //默认有效期 5 分钟,单位秒
-    private long timeout = 60 * 5;
+    private final Duration timeout;
 
     private final String prefix;
 
     public DefaultQrCodeCache(String prefix, StringRedisTemplate template, long timeout) {
         this.prefix = prefix;
         this.template = template;
-        this.timeout = timeout;
+        this.timeout = Duration.ofSeconds(timeout);
     }
 
+    @Override
+    public String set(Integer key) {
+        throw new UnsupportedOperationException("不支持的操作");
+    }
 
     /**
      * 缓存
@@ -38,12 +40,7 @@ public class DefaultQrCodeCache implements QrCodeCache {
      */
     @Override
     public void set(Integer key, String value) {
-        template.opsForValue().set(prefix + key.toString(), value, timeout, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public String set(Integer key) {
-        throw new RuntimeException("不支持该方法");
+        template.opsForValue().set(prefix + key.toString(), value, timeout);
     }
 
     @Override
@@ -52,29 +49,67 @@ public class DefaultQrCodeCache implements QrCodeCache {
     }
 
     @Override
-    public void delete(Integer key) {
-        template.delete(prefix + key.toString());
+    public boolean delete(Integer key) {
+        return template.delete(prefix + key.toString());
     }
 
-    @Override
-    public boolean check(Integer key) {
-        String value = get(key);
-        if (value == null) {
-            return false;
-        }
-        delete(key);
-        return true;
-    }
-
+    /**
+     * 检查指定的key是否存在，并且检查value是否正确
+     *
+     * @param key
+     * @param value
+     * @return
+     */
     @Override
     public boolean check(Integer key, String value) {
         String cacheValue = get(key);
-        //不存在返回false
+        //不存在
         if (cacheValue == null) {
             return false;
         }
 
-        //存在并且值也相同，删除，返回true
+        //比较值
+        return value.equals(cacheValue);
+    }
+
+    /**
+     * 检查指定的key是否存在，并且检查value是否正确,无论正确与否都删除
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    @Override
+    public boolean checkAndDelete(Integer key, String value) {
+        String cacheValue = get(key);
+        //不存在
+        if (cacheValue == null) {
+            return false;
+        }
+
+        //存在
+        delete(key);
+        //比较值
+        return value.equals(cacheValue);
+    }
+
+    /**
+     * 检查指定的key是否存在，并且检查value是否正确,正确则删除
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    @Override
+    public boolean checkOkDelete(Integer key, String value) {
+        String cacheValue = get(key);
+        //不存在
+        if (cacheValue == null) {
+            return false;
+        }
+
+        //存在
+        //存在并且值也相同，返回true
         if (value.equals(cacheValue)) {
             delete(key);
             return true;

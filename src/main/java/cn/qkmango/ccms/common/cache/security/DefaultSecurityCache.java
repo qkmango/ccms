@@ -1,7 +1,8 @@
 package cn.qkmango.ccms.common.cache.security;
 
-import cn.qkmango.ccms.common.cache.RedisUtil;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
+import java.time.Duration;
 import java.util.UUID;
 
 /**
@@ -13,22 +14,17 @@ import java.util.UUID;
  */
 public class DefaultSecurityCache implements SecurityCache {
 
-    private final RedisUtil redisUtil;
+    private final StringRedisTemplate template;
 
     //默认有效期 5 分钟,单位秒
-    private long timeout = 60 * 5;
+    private final Duration timeout;
 
     private final String prefix;
 
-    public DefaultSecurityCache(String prefix, RedisUtil redisUtil) {
+    public DefaultSecurityCache(String prefix, StringRedisTemplate template, long timeout) {
         this.prefix = prefix;
-        this.redisUtil = redisUtil;
-    }
-
-    public DefaultSecurityCache(String prefix, RedisUtil redisUtil, long timeout) {
-        this.prefix = prefix;
-        this.redisUtil = redisUtil;
-        this.timeout = timeout;
+        this.template = template;
+        this.timeout = Duration.ofSeconds(timeout);
     }
 
     /**
@@ -40,27 +36,34 @@ public class DefaultSecurityCache implements SecurityCache {
      */
     @Override
     public void set(String key, String value) {
-        redisUtil.set(key, value, timeout);
+        template.opsForValue().set(key, value, timeout);
     }
 
     @Override
     public String set(String key) {
-        redisUtil.set(key, 1, timeout);
-        return "1";
+        String value = "1";
+        template.opsForValue().set(key, value, timeout);
+        return value;
     }
 
     @Override
     public String get(String key) {
-        return redisUtil.get(key);
+        return template.opsForValue().get(key);
     }
 
     @Override
-    public void delete(String key) {
-        redisUtil.delete(key);
+    public boolean delete(String key) {
+        return template.delete(key);
     }
 
     @Override
-    public boolean check(String key) {
+    public boolean check(String key, String value) {
+        String cacheValue = get(key);
+        return cacheValue != null && cacheValue.equals(value);
+    }
+
+    @Override
+    public boolean checkAndDelete(String key) {
         String value = get(key);
         if (value != null) {
             this.delete(key);
@@ -70,10 +73,24 @@ public class DefaultSecurityCache implements SecurityCache {
     }
 
     @Override
-    public boolean check(String key, String value) {
+    public boolean checkAndDelete(String key, String value) {
         String cacheValue = get(key);
-        if (cacheValue != null && cacheValue.equals(value)) {
-            this.delete(key);
+        if (cacheValue == null) {
+            return false;
+        }
+        delete(key);
+        return cacheValue.equals(value);
+    }
+
+    @Override
+    public boolean checkOkDelete(String key, String value) {
+        String cacheValue = get(key);
+        if (cacheValue == null) {
+            return false;
+        }
+
+        if (cacheValue.equals(value)) {
+            delete(key);
             return true;
         }
         return false;
@@ -82,14 +99,14 @@ public class DefaultSecurityCache implements SecurityCache {
     @Override
     public String create() {
         String code = prefix + UUID.randomUUID();
-        redisUtil.set(code, 1, timeout);
+        template.opsForValue().set(code, "1", timeout);
         return code;
     }
 
     @Override
     public String create(String value) {
         String code = prefix + UUID.randomUUID();
-        redisUtil.set(code, value, timeout);
+        template.opsForValue().set(code, value, timeout);
         return code;
     }
 }

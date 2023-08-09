@@ -1,7 +1,9 @@
 package cn.qkmango.ccms.common.cache.captcha;
 
-import cn.qkmango.ccms.common.cache.RedisUtil;
 import cn.qkmango.ccms.common.util.CaptchaUtil;
+import org.springframework.data.redis.core.StringRedisTemplate;
+
+import java.time.Duration;
 
 /**
  * StateCache 实现类
@@ -12,80 +14,90 @@ import cn.qkmango.ccms.common.util.CaptchaUtil;
  */
 public class DefaultCaptchaCache implements CaptchaCache {
 
-    private final RedisUtil redisUtil;
+    private final StringRedisTemplate template;
 
-    //默认有效期 5 分钟,单位秒
-    private long timeout = 60 * 5;
+    //单位秒
+    private final Duration timeout;
 
     private final String prefix;
 
-    public DefaultCaptchaCache(String prefix, RedisUtil redisUtil) {
+    public DefaultCaptchaCache(String prefix, StringRedisTemplate template, long timeout) {
         this.prefix = prefix;
-        this.redisUtil = redisUtil;
-    }
-
-    public DefaultCaptchaCache(String prefix, RedisUtil redisUtil, long timeout) {
-        this.prefix = prefix;
-        this.redisUtil = redisUtil;
-        this.timeout = timeout;
+        this.template = template;
+        this.timeout = Duration.ofSeconds(timeout);
     }
 
     @Override
-    public void set(String[] keymap, String value) {
+    public void set(String[] key, String value) {
 
     }
 
     @Override
-    public String set(String[] keymap) {
-        String key = generateKey(keymap);
+    public String set(String[] key) {
         String value = CaptchaUtil.generate();
-        redisUtil.set(key, value, timeout);
+        template.opsForValue().set(generateKey(key), value, timeout);
         return value;
     }
 
     @Override
-    public String get(String[] keymap) {
-        return redisUtil.get(generateKey(keymap));
+    public String get(String[] key) {
+        return template.opsForValue().get(generateKey(key));
     }
 
     /**
-     * @param keymap keymap[0] : 账号ID
-     *               keymap[1] : 邮箱
-     * @param keymap key
-     */
-    @Override
-    public void delete(String[] keymap) {
-        redisUtil.delete(generateKey(keymap));
-    }
-
-    @Override
-    public boolean check(String[] keymap) {
-        String value = get(keymap);
-        if (value != null) {
-            delete(keymap);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param keymap keymap[0] : 账号ID
-     *               keymap[1] : 邮箱
-     * @param value  验证码
+     * @param key key[0] : 账号ID
+     *            key[1] : 邮箱
      * @return
      */
     @Override
-    public boolean check(String[] keymap, String value) {
-        String redisValue = get(keymap);
-        if (redisValue != null && redisValue.equals(value)) {
-            delete(keymap);
+    public boolean delete(String[] key) {
+        return template.delete(generateKey(key));
+    }
+
+    /**
+     * @param key   key[0] : 账号ID
+     *              key[1] : 邮箱
+     * @param value 验证码
+     * @return
+     */
+    @Override
+    public boolean check(String[] key, String value) {
+        String redisValue = get(key);
+        return redisValue != null && redisValue.equals(value);
+    }
+
+    @Override
+    public boolean checkAndDelete(String[] key, String value) {
+        String redisValue = get(key);
+        if (redisValue == null) {
+            return false;
+        }
+
+        delete(key);
+        return redisValue.equals(value);
+    }
+
+    @Override
+    public boolean checkOkDelete(String[] key, String value) {
+        String redisValue = get(key);
+        if (redisValue == null) {
+            return false;
+        }
+        if (redisValue.equals(value)) {
+            delete(key);
             return true;
         }
         return false;
     }
 
-    @Override
-    public String generateKey(String[] keymap) {
+
+    /**
+     * 生成key
+     *
+     * @param keymap
+     * @return
+     */
+    private String generateKey(String[] keymap) {
         if (keymap == null || keymap.length == 0) {
             return null;
         }
