@@ -24,7 +24,7 @@ public abstract class BaseDomain<T> implements Serializable {
 
     public T setVersion(Integer version) {
         this.version = version;
-        return (T)this;
+        return (T) this;
     }
 
     public Integer getNewVersion() {

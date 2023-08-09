@@ -12,9 +12,9 @@ import jakarta.validation.constraints.NotNull;
  * @version 1.0
  * @date 2022-10-22 20:09
  */
-public class Card extends BaseDomain {
+public class Card extends BaseDomain<Card> {
 
-    private String id;
+    private Long id;
 
     private String account;
 
@@ -26,11 +26,11 @@ public class Card extends BaseDomain {
     public Card() {
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public Card setId(String id) {
+    public Card setId(Long id) {
         this.id = id;
         return this;
     }

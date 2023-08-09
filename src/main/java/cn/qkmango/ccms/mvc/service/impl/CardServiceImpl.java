@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -90,13 +89,13 @@ public class CardServiceImpl implements CardService {
 
         Trade trade = new Trade()
                 .setId(snowFlake.nextId())
-                .setAccount(account.toString())
+                .setAccount(account)
                 .setLevel1(TradeLevel1.in)
                 .setLevel2(TradeLevel2.system)
                 .setLevel3(TradeLevel3.recharge)
                 .setState(TradeState.success)
                 .setAmount(amount)
-                .setCreateTime(new Date())
+                .setCreateTime(System.currentTimeMillis())
                 .setVersion(0);
 
         //插入消费记录(充值)
@@ -106,7 +105,7 @@ public class CardServiceImpl implements CardService {
         }
 
         //更新卡余额
-        affectedRows = cardDao.recharge(account, amount, CardState.normal);
+        affectedRows = cardDao.recharge(account, amount);
         if (affectedRows != 1) {
             throw new UpdateException(messageSource.getMessage("db.update.recharge.failure", null, locale));
         }

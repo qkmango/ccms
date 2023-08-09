@@ -343,10 +343,11 @@ public class AccountServiceImpl implements AccountService {
         // 3. 添加 card 卡片
         long cardId = snowFlake.nextId();
         Card card = new Card()
-                .setId(Long.toString(cardId))
+                .setId(cardId)
                 .setAccount(param.getId().toString())
                 .setBalance(0)
-                .setState(CardState.normal);
+                .setState(CardState.normal)
+                .setVersion(0);
         affectedRows = cardDao.insert(card);
         if (affectedRows != 1) {
             throw new InsertException(messageSource.getMessage("db.account.insert.failure", null, LocaleContextHolder.getLocale()));

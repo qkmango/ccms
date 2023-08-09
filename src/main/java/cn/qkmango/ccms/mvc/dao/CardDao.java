@@ -40,14 +40,6 @@ public interface CardDao {
     int insert(Card card);
 
     /**
-     * 根据账号查询校园卡信息
-     *
-     * @param user 账号
-     * @return 校园卡信息
-     */
-    Card getCardByUserId(String user);
-
-    /**
      * 更新校园卡状态
      */
     int state(Integer account, CardState state);
@@ -64,10 +56,10 @@ public interface CardDao {
     /**
      * 充值
      *
-     * @param card 校园卡（账号，充值金额）
-     * @return
+     * @param account 账号
+     * @param amount  充值金额
      */
-    int recharge(Integer account, Integer amount, CardState state);
+    int recharge(Integer account, Integer amount);
 
     /**
      * 查询校园卡信息
@@ -78,4 +70,5 @@ public interface CardDao {
     List<Card> list(Pagination<Card> pagination);
 
 
+    int updateBalance(Long id, Integer amount, Integer version);
 }

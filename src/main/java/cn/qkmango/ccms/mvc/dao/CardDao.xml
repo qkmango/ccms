@@ -10,8 +10,8 @@
 
     <insert id="insert">
         insert into t_card
-            (id, balance, state, account)
-        values (#{id}, #{balance}, #{state}, #{account})
+            (id, balance, state, account, version)
+        values (#{id}, #{balance}, #{state}, #{account}, #{version})
     </insert>
 
     <update id="state">
@@ -25,17 +25,19 @@
         update t_card
         set balance = balance + #{amount}
         where account = #{account}
-          and state = #{state}
+    </update>
+
+    <update id="updateBalance">
+        update t_card
+        set balance = balance - #{amount},
+            version = version + 1
+        where id = #{id}
+          and version = #{version}
+          and balance >= #{amount}
     </update>
 
     <select id="lastInsertId" resultType="java.lang.Integer">
         SELECT LAST_INSERT_ID()
-    </select>
-
-    <select id="getCardByUserId" resultType="cn.qkmango.ccms.domain.entity.Card">
-        select user, balance,`lock`
-        from t_card
-        where user = #{user}
     </select>
 
     <select id="getRecordByAccount" resultType="cn.qkmango.ccms.domain.entity.Card">

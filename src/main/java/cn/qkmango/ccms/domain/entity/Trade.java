@@ -6,8 +6,6 @@ import cn.qkmango.ccms.domain.bind.trade.TradeLevel2;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
 
-import java.util.Date;
-
 /**
  * 交易
  *
@@ -18,7 +16,7 @@ import java.util.Date;
 public class Trade extends BaseDomain<Trade> {
 
     private Long id;
-    private String account;
+    private Integer account;
     private TradeLevel1 level1;
     private TradeLevel2 level2;
     private TradeLevel3 level3;
@@ -38,7 +36,7 @@ public class Trade extends BaseDomain<Trade> {
     private String inId;
 
     private Integer amount;
-    private Date createTime;
+    private Long createTime;
     private String description;
 
     public Long getId() {
@@ -50,11 +48,11 @@ public class Trade extends BaseDomain<Trade> {
         return this;
     }
 
-    public String getAccount() {
+    public Integer getAccount() {
         return account;
     }
 
-    public Trade setAccount(String account) {
+    public Trade setAccount(Integer account) {
         this.account = account;
         return this;
     }
@@ -122,11 +120,11 @@ public class Trade extends BaseDomain<Trade> {
         return this;
     }
 
-    public Date getCreateTime() {
+    public Long getCreateTime() {
         return createTime;
     }
 
-    public Trade setCreateTime(Date createTime) {
+    public Trade setCreateTime(Long createTime) {
         this.createTime = createTime;
         return this;
     }

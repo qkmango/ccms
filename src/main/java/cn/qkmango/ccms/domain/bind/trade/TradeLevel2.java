@@ -13,6 +13,12 @@ public enum TradeLevel2 {
      * 刷卡
      */
     card,
+
+    /**
+     * 扫码
+     */
+    qr,
+
     /**
      * 系统
      */
