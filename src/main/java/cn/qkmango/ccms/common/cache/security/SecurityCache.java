@@ -3,8 +3,7 @@ package cn.qkmango.ccms.common.cache.security;
 import cn.qkmango.ccms.common.cache.BaseCache;
 
 /**
- * 描述
- * <p></p>
+ * 安全相关的缓存
  *
  * @author qkmango
  * @version 1.0

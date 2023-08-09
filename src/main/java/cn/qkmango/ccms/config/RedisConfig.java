@@ -48,25 +48,28 @@ public class RedisConfig {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    // 认证 state 缓存工具
+    // 第三方认证时防止 CSRF的 state 缓存工具
     @Bean("authStateCache")
     public SecurityCache authStateCache() {
-        return new DefaultSecurityCache("auth:state:", stringRedisTemplate, 60 * 5);
+        return new DefaultSecurityCache(new String[]{"auth", "state"}, stringRedisTemplate, 60 * 5);
     }
 
+    // 第三方认证成功后系统生成的 access_code 缓存工具
     @Bean("authAccessCodeCache")
     public SecurityCache authAccessCodeCache() {
-        return new DefaultSecurityCache("auth:code:", stringRedisTemplate, 60 * 5);
+        return new DefaultSecurityCache(new String[]{"auth", "access_code"}, stringRedisTemplate, 60 * 5);
     }
 
+    // 验证码缓存工具
     @Bean("captchaCache")
     public DefaultCaptchaCache captchaCache() {
-        return new DefaultCaptchaCache("captcha:email", stringRedisTemplate, 60 * 5);
+        return new DefaultCaptchaCache(new String[]{"captcha", "email"}, stringRedisTemplate, 60 * 5);
     }
 
+    // 二维码缓存工具
     @Bean("qrCodeCache")
     public DefaultQrCodeCache qrCodeCache() {
-        return new DefaultQrCodeCache("pay:qrcode:", stringRedisTemplate, 60 * 5);
+        return new DefaultQrCodeCache(new String[]{"pay", "qrcode"}, stringRedisTemplate, 60 * 5);
     }
 
 }

@@ -39,10 +39,6 @@ public interface BaseCache<K, V> {
 
     /**
      * 检查指定的key是否存在，并且检查value是否正确,正确则删除
-     *
-     * @param key
-     * @param value
-     * @return
      */
     boolean check(K key, V value);
 

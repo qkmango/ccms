@@ -21,8 +21,12 @@ public class DefaultSecurityCache implements SecurityCache {
 
     private final String prefix;
 
-    public DefaultSecurityCache(String prefix, StringRedisTemplate template, long timeout) {
-        this.prefix = prefix;
+    public DefaultSecurityCache(String[] prefix, StringRedisTemplate template, long timeout) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : prefix) {
+            sb.append(s).append(":");
+        }
+        this.prefix = sb.toString();
         this.template = template;
         this.timeout = Duration.ofSeconds(timeout);
     }

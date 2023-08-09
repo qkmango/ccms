@@ -3,8 +3,7 @@ package cn.qkmango.ccms.common.cache.qrcode;
 import cn.qkmango.ccms.common.cache.BaseCache;
 
 /**
- * 描述
- * <p></p>
+ * 支付二维码缓存
  *
  * @author qkmango
  * @version 1.0

@@ -6,7 +6,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import java.time.Duration;
 
 /**
- * StateCache 实现类
+ * 验证码缓存
  *
  * @author qkmango
  * @version 1.0
@@ -21,8 +21,12 @@ public class DefaultCaptchaCache implements CaptchaCache {
 
     private final String prefix;
 
-    public DefaultCaptchaCache(String prefix, StringRedisTemplate template, long timeout) {
-        this.prefix = prefix;
+    public DefaultCaptchaCache(String[] prefix, StringRedisTemplate template, long timeout) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : prefix) {
+            sb.append(s).append(":");
+        }
+        this.prefix = sb.toString();
         this.template = template;
         this.timeout = Duration.ofSeconds(timeout);
     }
@@ -47,7 +51,6 @@ public class DefaultCaptchaCache implements CaptchaCache {
     /**
      * @param key key[0] : 账号ID
      *            key[1] : 邮箱
-     * @return
      */
     @Override
     public boolean delete(String[] key) {
@@ -58,7 +61,6 @@ public class DefaultCaptchaCache implements CaptchaCache {
      * @param key   key[0] : 账号ID
      *              key[1] : 邮箱
      * @param value 验证码
-     * @return
      */
     @Override
     public boolean check(String[] key, String value) {
@@ -93,9 +95,6 @@ public class DefaultCaptchaCache implements CaptchaCache {
 
     /**
      * 生成key
-     *
-     * @param keymap
-     * @return
      */
     private String generateKey(String[] keymap) {
         if (keymap == null || keymap.length == 0) {

@@ -5,8 +5,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import java.time.Duration;
 
 /**
- * 描述
- * <p></p>
+ * 支付二维码缓存
  *
  * @author qkmango
  * @version 1.0
@@ -21,8 +20,12 @@ public class DefaultQrCodeCache implements QrCodeCache {
 
     private final String prefix;
 
-    public DefaultQrCodeCache(String prefix, StringRedisTemplate template, long timeout) {
-        this.prefix = prefix;
+    public DefaultQrCodeCache(String[] prefix, StringRedisTemplate template, long timeout) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : prefix) {
+            sb.append(s).append(":");
+        }
+        this.prefix = sb.toString();
         this.template = template;
         this.timeout = Duration.ofSeconds(timeout);
     }
@@ -55,10 +58,6 @@ public class DefaultQrCodeCache implements QrCodeCache {
 
     /**
      * 检查指定的key是否存在，并且检查value是否正确
-     *
-     * @param key
-     * @param value
-     * @return
      */
     @Override
     public boolean check(Integer key, String value) {
@@ -74,10 +73,6 @@ public class DefaultQrCodeCache implements QrCodeCache {
 
     /**
      * 检查指定的key是否存在，并且检查value是否正确,无论正确与否都删除
-     *
-     * @param key
-     * @param value
-     * @return
      */
     @Override
     public boolean checkAndDelete(Integer key, String value) {
@@ -95,10 +90,6 @@ public class DefaultQrCodeCache implements QrCodeCache {
 
     /**
      * 检查指定的key是否存在，并且检查value是否正确,正确则删除
-     *
-     * @param key
-     * @param value
-     * @return
      */
     @Override
     public boolean checkOkDelete(Integer key, String value) {
