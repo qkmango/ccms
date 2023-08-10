@@ -13,7 +13,6 @@ public class QrCodeConsume extends BaseConsume {
     @NotNull
     private String code;
 
-
     public String getCode() {
         return code;
     }

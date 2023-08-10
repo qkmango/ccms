@@ -14,6 +14,7 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
+import cn.qkmango.ccms.domain.vo.LoginResult;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.Jwt;
@@ -60,9 +61,10 @@ public class AccountController {
     @PostMapping("system-login.do")
     public R<Object> systemLogin(@Validated(Query.Login.class) Account account) throws LoginException {
         Account loginAccount = service.systemLogin(account);
-        //创建 TokenEntity, 包含 token 和 过期时间
+        // 创建 TokenEntity, 包含 token 和 过期时间
         TokenEntity tokenEntity = jwt.createEntity(loginAccount);
-        return R.success(tokenEntity, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
+        LoginResult resp = new LoginResult(loginAccount, tokenEntity);
+        return R.success(resp, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
     }
 
     /**
@@ -75,9 +77,10 @@ public class AccountController {
     @PostMapping("access-login.do")
     public R accessLogin(@NotBlank String accessCode) throws LoginException {
         Account loginAccount = service.accessLogin(accessCode);
-        //创建 TokenEntity, 包含 token 和 过期时间
+        // 创建 TokenEntity, 包含 token 和 过期时间
         TokenEntity tokenEntity = jwt.createEntity(loginAccount);
-        return R.success(tokenEntity, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
+        LoginResult resp = new LoginResult(loginAccount, tokenEntity);
+        return R.success(resp, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
     }
 
 

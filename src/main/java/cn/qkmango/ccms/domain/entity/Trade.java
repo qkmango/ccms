@@ -33,7 +33,12 @@ public class Trade extends BaseDomain<Trade> {
      * 内部系统的ID
      * 如 缴费项目ID
      */
-    private String inId;
+    private Long inId;
+
+    /**
+     * 创建者
+     */
+    private Integer creator;
 
     private Integer amount;
     private Long createTime;
@@ -102,11 +107,11 @@ public class Trade extends BaseDomain<Trade> {
         return this;
     }
 
-    public String getInId() {
+    public Long getInId() {
         return inId;
     }
 
-    public Trade setInId(String inId) {
+    public Trade setInId(Long inId) {
         this.inId = inId;
         return this;
     }
@@ -138,20 +143,31 @@ public class Trade extends BaseDomain<Trade> {
         return this;
     }
 
+    public Integer getCreator() {
+        return creator;
+    }
+
+    public Trade setCreator(Integer creator) {
+        this.creator = creator;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Trade{" +
-                "id='" + id + '\'' +
-                ", account='" + account + '\'' +
+                "id=" + id +
+                ", account=" + account +
                 ", level1=" + level1 +
                 ", level2=" + level2 +
                 ", level3=" + level3 +
                 ", state=" + state +
-                ", ouId='" + outId + '\'' +
-                ", inId='" + inId + '\'' +
+                ", outId='" + outId + '\'' +
+                ", inId=" + inId +
+                ", creator=" + creator +
                 ", amount=" + amount +
                 ", createTime=" + createTime +
                 ", description='" + description + '\'' +
+                ", version=" + getVersion() +
                 '}';
     }
 }
