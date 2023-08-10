@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.validator;
+package cn.qkmango.ccms.common.validate.validator;
 
 
 import jakarta.validation.Constraint;

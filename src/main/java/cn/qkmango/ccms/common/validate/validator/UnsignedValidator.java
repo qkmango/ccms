@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.validator;
+package cn.qkmango.ccms.common.validate.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -25,6 +25,14 @@ public class UnsignedValidator implements ConstraintValidator<Unsigned, Number> 
             return true;
         }
 
+        if (value instanceof Long) {
+            return (Long) value >= 0;
+        }
+
+        if (value instanceof Integer) {
+            return (Integer) value >= 0;
+        }
+
         // 校验逻辑：判断数值是否大于等于0
         if (value instanceof Byte) {
             return (Byte) value >= 0;
@@ -32,14 +40,6 @@ public class UnsignedValidator implements ConstraintValidator<Unsigned, Number> 
 
         if (value instanceof Short) {
             return (Short) value >= 0;
-        }
-
-        if (value instanceof Integer) {
-            return (Integer) value >= 0;
-        }
-
-        if (value instanceof Long) {
-            return (Long) value >= 0;
         }
 
         return false;
