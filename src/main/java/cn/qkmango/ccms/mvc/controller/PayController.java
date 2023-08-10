@@ -13,8 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 描述
- * <p></p>
+ * 支付
  *
  * @author qkmango
  * @version 1.0
@@ -47,12 +46,16 @@ public class PayController {
 
     /**
      * 二维码支付消费
+     * 接口只能是收款者（POS）才能请求，消费方式为扫码支付
      *
-     * @param consume 二维码
+     * @param consume 二维码消费信息
      */
     @Permission(Role.pos)
     @PostMapping("consume-by-qrcode.do")
     public R<Object> consumeByQrCode(@RequestBody @Validated QrCodeConsume consume) {
+        // 创建者为当前登录用户，也即为收款者（POS）
+        // TODO
+        Integer creator = AccountHolder.getId();
         return service.consumeByQrCode(consume);
     }
 

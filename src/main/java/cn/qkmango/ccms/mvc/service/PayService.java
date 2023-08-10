@@ -5,8 +5,7 @@ import cn.qkmango.ccms.domain.bo.AccountPayQrcode;
 import cn.qkmango.ccms.domain.dto.QrCodeConsume;
 
 /**
- * 描述
- * <p></p>
+ * 支付
  *
  * @author qkmango
  * @version 1.0

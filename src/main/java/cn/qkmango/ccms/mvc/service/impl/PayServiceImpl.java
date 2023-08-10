@@ -25,8 +25,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * 描述
- * <p></p>
+ * 支付
  *
  * @author qkmango
  * @version 1.0
@@ -71,37 +70,42 @@ public class PayServiceImpl implements PayService {
         return qrcode;
     }
 
+    /**
+     * 二维码支付消费
+     *
+     * @param consume 二维码消费信息
+     */
     @Override
     public R consumeByQrCode(QrCodeConsume consume) {
         Locale locale = LocaleContextHolder.getLocale();
-        //账户
+        // 账户
         Integer account = consume.getAccount();
-        //提交的二维码
-        String postCode = consume.getCode();
+        // 提交的二维码
+        String postQrcode = consume.getCode();
 
-        //1. 检查二维码是否与缓存中的二维码一致
-        boolean checked = qrCodeCache.checkOkDelete(account, postCode);
+        // 1. 检查二维码是否与缓存中的二维码一致
+        boolean checked = qrCodeCache.checkOkDelete(account, postQrcode);
         if (!checked) {
             return R.fail(ms.getMessage("response.cache.not.exist@qrcode", null, locale));
         }
 
-        //2. 检查卡
+        // 2. 检查卡
         Card card = cardDao.getRecordByAccount(account);
-        //卡不存在
+        // 卡不存在
         if (card == null) {
             return R.fail(ms.getMessage("db.card.failure@notExist", null, locale));
         }
-        //卡状态
+        // 卡状态
         if (card.getState() != CardState.normal) {
             return R.fail(ms.getMessage("db.card.failure@state", null, locale));
         }
-        //卡余额
+        // 卡余额
         if (card.getBalance() < consume.getAmount()) {
             return R.fail(ms.getMessage("db.card.balance.insufficient", null, locale));
         }
 
 
-        //交易记录
+        // 交易记录
         Trade trade = new Trade()
                 .setId(snowFlake.nextId())
                 .setAccount(account)
@@ -113,7 +117,7 @@ public class PayServiceImpl implements PayService {
                 .setCreateTime(System.currentTimeMillis())
                 .setVersion(0);
 
-        //执行事务
+        // 执行事务
         R<Object> result = tx.execute(status -> {
             int affectedRows;
             // 3. 扣除卡余额
@@ -130,6 +134,7 @@ public class PayServiceImpl implements PayService {
                 return R.fail(ms.getMessage("db.card.update.failure@balance", null, locale));
             }
 
+            // 成功
             return R.success(ms.getMessage("db.trade.insert.success@pay", null, locale));
         });
 
