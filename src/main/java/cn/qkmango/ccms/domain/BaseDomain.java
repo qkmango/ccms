@@ -16,7 +16,6 @@ import java.io.Serializable;
 public abstract class BaseDomain<T> implements Serializable {
 
     private Integer version;
-    private Integer newVersion;
 
     public Integer getVersion() {
         return version;
@@ -25,14 +24,5 @@ public abstract class BaseDomain<T> implements Serializable {
     public T setVersion(Integer version) {
         this.version = version;
         return (T) this;
-    }
-
-    public Integer getNewVersion() {
-        return newVersion;
-    }
-
-    public T setNewVersion(Integer newVersion) {
-        this.newVersion = newVersion;
-        return (T)this;
     }
 }

@@ -9,7 +9,7 @@ import cn.qkmango.ccms.security.config.AppConfig;
 import cn.qkmango.ccms.security.encoder.BCryptPasswordEncoder;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.security.token.Jwt;
-import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -42,44 +42,46 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Resource
-    private ReloadableResourceBundleMessageSource messageSource;
-
+    // ============================= 第三方授权登陆 =============================
     // Gitee 第三方平台配置
     @Bean("giteeAuthConfig")
     @ConfigurationProperties(prefix = "ccms.authentication.gitee")
-    public AppConfig giteeConfig() {
+    public AppConfig giteeAuthConfig() {
         return new AppConfig();
     }
 
     // Dingtalk 第三方平台配置
     @Bean("dingtalkAuthConfig")
     @ConfigurationProperties(prefix = "ccms.authentication.dingtalk")
-    public AppConfig dingtalkConfig() {
+    public AppConfig dingtalkAuthConfig() {
         return new AppConfig();
     }
 
     // Alipay 第三方平台配置
     @Bean("alipayAuthConfig")
     @ConfigurationProperties(prefix = "ccms.authentication.alipay")
-    public AlipayAppConfig alipayConfig() {
+    public AlipayAppConfig alipayAuthConfig() {
         return new AlipayAppConfig();
     }
 
     // Gitee 第三方平台授权登陆客户端
     @Bean("giteeAuthHttpClient")
-    public AuthHttpClient giteeHttpRequest() {
-        return new GiteeAuthHttpClient(giteeConfig(), messageSource);
+    public AuthHttpClient giteeHttpRequest(@Qualifier("giteeAuthConfig") AppConfig config,
+                                           ReloadableResourceBundleMessageSource ms) {
+        return new GiteeAuthHttpClient(config, ms);
     }
 
     // Dingtalk 第三方平台授权登陆客户端
     @Bean("dingtalkAuthHttpClient")
-    public AuthHttpClient dingtalkHttpRequest() {
-        return new DingtalkAuthHttpClient(dingtalkConfig(), messageSource);
+    public AuthHttpClient dingtalkHttpRequest(@Qualifier("dingtalkAuthConfig") AppConfig config,
+                                              ReloadableResourceBundleMessageSource ms) {
+        return new DingtalkAuthHttpClient(config, ms);
     }
 
+    // Alipay 第三方平台授权登陆客户端
     @Bean("alipayAuthHttpClient")
-    public AuthHttpClient alipayHttpRequest() {
-        return new AlipayAuthHttpClient(alipayConfig(), messageSource);
+    public AuthHttpClient alipayHttpRequest(@Qualifier("alipayAuthConfig") AlipayAppConfig config,
+                                            ReloadableResourceBundleMessageSource ms) {
+        return new AlipayAuthHttpClient(config, ms);
     }
 }

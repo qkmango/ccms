@@ -1,8 +1,7 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.cache.qrcode.QrCodeCache;
-import cn.qkmango.ccms.common.exception.database.QueryException;
-import cn.qkmango.ccms.common.exception.database.UpdateException;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.SnowFlake;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
@@ -20,9 +19,9 @@ import jakarta.annotation.Resource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -38,6 +37,9 @@ public class PayServiceImpl implements PayService {
 
     @Resource
     private ReloadableResourceBundleMessageSource ms;
+
+    @Resource
+    private TransactionTemplate tx;
 
     @Resource
     private QrCodeCache qrCodeCache;
@@ -70,8 +72,8 @@ public class PayServiceImpl implements PayService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void consumeByQrCode(QrCodeConsume consume) throws QueryException, UpdateException {
+    public R consumeByQrCode(QrCodeConsume consume) {
+        Locale locale = LocaleContextHolder.getLocale();
         //账户
         Integer account = consume.getAccount();
         //提交的二维码
@@ -80,32 +82,26 @@ public class PayServiceImpl implements PayService {
         //1. 检查二维码是否与缓存中的二维码一致
         boolean checked = qrCodeCache.checkOkDelete(account, postCode);
         if (!checked) {
-            throw new QueryException(ms.getMessage("response.cache.not.exist@qrcode", null, LocaleContextHolder.getLocale()));
+            return R.fail(ms.getMessage("response.cache.not.exist@qrcode", null, locale));
         }
 
         //2. 检查卡
         Card card = cardDao.getRecordByAccount(account);
         //卡不存在
         if (card == null) {
-            throw new QueryException(ms.getMessage("db.card.failure@notExist", null, LocaleContextHolder.getLocale()));
+            return R.fail(ms.getMessage("db.card.failure@notExist", null, locale));
         }
         //卡状态
         if (card.getState() != CardState.normal) {
-            throw new QueryException(ms.getMessage("db.card.failure@state", null, LocaleContextHolder.getLocale()));
+            return R.fail(ms.getMessage("db.card.failure@state", null, locale));
         }
         //卡余额
         if (card.getBalance() < consume.getAmount()) {
-            throw new QueryException(ms.getMessage("db.card.balance.insufficient", null, LocaleContextHolder.getLocale()));
+            return R.fail(ms.getMessage("db.card.balance.insufficient", null, locale));
         }
 
-        int affectedRows = 0;
 
-        // 3. 扣除卡余额
-        affectedRows = cardDao.updateBalance(card.getId(), consume.getAmount(), card.getVersion());
-        if (affectedRows != 1) {
-            throw new UpdateException(ms.getMessage("db.card.update.failure@balance", null, LocaleContextHolder.getLocale()));
-        }
-
+        //交易记录
         Trade trade = new Trade()
                 .setId(snowFlake.nextId())
                 .setAccount(account)
@@ -117,11 +113,26 @@ public class PayServiceImpl implements PayService {
                 .setCreateTime(System.currentTimeMillis())
                 .setVersion(0);
 
+        //执行事务
+        R<Object> result = tx.execute(status -> {
+            int affectedRows;
+            // 3. 扣除卡余额
+            affectedRows = cardDao.updateBalance(card.getId(), consume.getAmount(), card.getVersion());
+            if (affectedRows != 1) {
+                status.setRollbackOnly();
+                return R.fail(ms.getMessage("db.card.update.failure@balance", null, locale));
+            }
 
-        // 4. 添加交易记录
-        affectedRows = tradeDao.insert(trade);
-        if (affectedRows != 1) {
-            throw new UpdateException(ms.getMessage("db.trade.insert.failure", null, LocaleContextHolder.getLocale()));
-        }
+            // 4. 添加交易记录
+            affectedRows = tradeDao.insert(trade);
+            if (affectedRows != 1) {
+                status.setRollbackOnly();
+                return R.fail(ms.getMessage("db.card.update.failure@balance", null, locale));
+            }
+
+            return R.success(ms.getMessage("db.trade.insert.success@pay", null, locale));
+        });
+
+        return result;
     }
 }

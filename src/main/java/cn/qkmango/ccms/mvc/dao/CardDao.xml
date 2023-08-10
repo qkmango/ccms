@@ -41,11 +41,11 @@
     </select>
 
     <select id="getRecordByAccount" resultType="cn.qkmango.ccms.domain.entity.Card">
-        select
-        id,
-        balance,
-        state,
-        account
+        select id,
+               balance,
+               state,
+               account,
+               version
         from t_card
         where account = #{account}
     </select>

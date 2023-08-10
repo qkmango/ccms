@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.mvc.service;
 
-import cn.qkmango.ccms.common.exception.database.QueryException;
-import cn.qkmango.ccms.common.exception.database.UpdateException;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bo.AccountPayQrcode;
 import cn.qkmango.ccms.domain.dto.QrCodeConsume;
 
@@ -16,5 +15,5 @@ import cn.qkmango.ccms.domain.dto.QrCodeConsume;
 public interface PayService {
     AccountPayQrcode createQrCode(Integer account);
 
-    void consumeByQrCode(QrCodeConsume consume) throws QueryException, UpdateException;
+    R consumeByQrCode(QrCodeConsume consume);
 }

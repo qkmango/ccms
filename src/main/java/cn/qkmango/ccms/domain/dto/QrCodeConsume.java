@@ -1,33 +1,34 @@
 package cn.qkmango.ccms.domain.dto;
 
-import cn.qkmango.ccms.domain.bo.AccountPayQrcode;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 二维码消费
- * <p></p>
  *
  * @author qkmango
  * @version 1.0
  * @date 2023-08-09 22:18
  */
-public class QrCodeConsume extends AccountPayQrcode {
-    private Integer amount;
+public class QrCodeConsume extends BaseConsume {
+    @NotNull
+    private String code;
 
-    public Integer getAmount() {
-        return amount;
+
+    public String getCode() {
+        return code;
     }
 
-    public QrCodeConsume setAmount(Integer amount) {
-        this.amount = amount;
+    public QrCodeConsume setCode(String code) {
+        this.code = code;
         return this;
     }
 
     @Override
     public String toString() {
         return "QrCodeConsume{" +
-                "amount=" + amount +
-                ", code='" + getCode() + '\'' +
+                "code='" + code + '\'' +
                 ", account=" + getAccount() +
+                ", amount=" + getAmount() +
                 '}';
     }
 }
