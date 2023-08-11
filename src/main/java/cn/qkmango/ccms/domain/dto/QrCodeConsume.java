@@ -13,6 +13,11 @@ public class QrCodeConsume extends BaseConsume {
     @NotNull
     private String code;
 
+    /**
+     * 创建者
+     */
+    private Integer creator;
+
     public String getCode() {
         return code;
     }
@@ -22,10 +27,20 @@ public class QrCodeConsume extends BaseConsume {
         return this;
     }
 
+    public Integer getCreator() {
+        return creator;
+    }
+
+    public QrCodeConsume setCreator(Integer creator) {
+        this.creator = creator;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "QrCodeConsume{" +
                 "code='" + code + '\'' +
+                ", creator='" + creator + '\'' +
                 ", account=" + getAccount() +
                 ", amount=" + getAmount() +
                 '}';

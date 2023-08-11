@@ -13,7 +13,6 @@ import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.TradeDao;
-import cn.qkmango.ccms.mvc.dao.UserDao;
 import cn.qkmango.ccms.mvc.service.CardService;
 import jakarta.annotation.Resource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -39,8 +38,7 @@ public class CardServiceImpl implements CardService {
 
     @Resource
     private CardDao cardDao;
-    @Resource
-    private UserDao userDao;
+
     @Resource
     private TradeDao tradeDao;
 
@@ -126,7 +124,8 @@ public class CardServiceImpl implements CardService {
      * @return 卡详细信息
      */
     @Override
-    public Card detail(Integer account) {
+    public Card recordByAccount(Integer account) {
         return cardDao.getRecordByAccount(account);
     }
+
 }

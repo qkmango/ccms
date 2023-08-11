@@ -15,6 +15,7 @@
                              amount,
                              create_time,
                              description,
+                             creator,
                              version)
         values (#{id},
                 #{account},
@@ -27,6 +28,7 @@
                 #{amount},
                 #{createTime},
                 #{description},
+                #{creator},
                 #{version})
     </insert>
 </mapper>

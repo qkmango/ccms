@@ -15,10 +15,7 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
 
@@ -96,6 +93,17 @@ public class CardController {
         Integer id = AccountHolder.getId();
         service.state(id, state);
         return R.success(messageSource.getMessage("db.card.update.state.success", null, LocaleContextHolder.getLocale()));
+    }
+
+    /**
+     * 查询当前登陆用户的卡信息
+     */
+    @Permission(Role.user)
+    @GetMapping("one/current-card-info.do")
+    public R<Card> currentInfo() {
+        Integer account = AccountHolder.getId();
+        Card card = service.recordByAccount(account);
+        return R.success(card);
     }
 
 }

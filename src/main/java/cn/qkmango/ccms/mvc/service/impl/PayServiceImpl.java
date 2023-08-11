@@ -114,6 +114,7 @@ public class PayServiceImpl implements PayService {
                 .setLevel3(TradeLevel3.consume)
                 .setState(TradeState.success)
                 .setAmount(consume.getAmount())
+                .setCreator(consume.getCreator())
                 .setCreateTime(System.currentTimeMillis())
                 .setVersion(0);
 

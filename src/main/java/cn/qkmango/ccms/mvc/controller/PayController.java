@@ -56,6 +56,7 @@ public class PayController {
         // 创建者为当前登录用户，也即为收款者（POS）
         // TODO
         Integer creator = AccountHolder.getId();
+        consume.setCreator(creator);
         return service.consumeByQrCode(consume);
     }
 

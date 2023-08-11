@@ -30,12 +30,11 @@ public interface CardService {
      * @param account 用户ID
      * @return 详细信息
      */
-    Card detail(Integer account);
+    Card recordByAccount(Integer account);
 
     /**
      * 充值
      *
-     * @param card   校园卡
      * @param locale 语言环境
      * @throws UpdateException 更新异常
      */
