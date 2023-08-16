@@ -2,6 +2,7 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.cache.captcha.DefaultCaptchaCache;
 import cn.qkmango.ccms.common.util.EmailUtil;
+import cn.qkmango.ccms.common.util.MailTemplate;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.mvc.service.MailSenderService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
@@ -27,10 +28,10 @@ public class MailSenderServiceImpl implements MailSenderService {
     private ReloadableResourceBundleMessageSource message;
 
     @Resource
-    private EmailUtil emailUtil2;
+    private EmailUtil emailUtil;
 
     @Resource
-    private String mailCaptchaTemplate;
+    private MailTemplate mailTemplate;
 
     @Resource(name = "captchaCache")
     private DefaultCaptchaCache captchaCache;
@@ -41,18 +42,17 @@ public class MailSenderServiceImpl implements MailSenderService {
      * @param email 邮箱
      */
     @Override
-    public void sendChangeEmail(String email) {
+    public void sendCaptchaEmail(String email) {
         Account account = AccountHolder.getAccount();
-
         Integer id = account.getId();
 
-        //生成验证码，并存入缓存
+        // 生成验证码，并存入缓存
         String captcha = captchaCache.set(new String[]{id.toString(), email});
-
-        //发送验证码到用户邮箱
-        //发送邮件
+        String mailContent = mailTemplate.build(captcha);
+        // 发送验证码到用户邮箱
+        // 发送邮件
         try {
-            emailUtil2.sendWithHtml(email, "修改邮箱验证码", captcha);
+            emailUtil.sendWithHtml(email, "修改邮箱验证码", mailContent);
         } catch (MessagingException e) {
             e.printStackTrace();
             throw new MailSendException(message.getMessage("response.email.send.failure", null, LocaleContextHolder.getLocale()));

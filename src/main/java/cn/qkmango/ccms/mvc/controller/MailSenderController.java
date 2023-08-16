@@ -40,8 +40,8 @@ public class MailSenderController {
      */
     @Permission({Role.admin, Role.user})
     @GetMapping("captcha/update-email.do")
-    public R sendChangeEmail(@Email String email) {
-        service.sendChangeEmail(email);
+    public R sendCaptchaEmail(@Email String email) {
+        service.sendCaptchaEmail(email);
         return R.success(ms.getMessage("response.email.send.success", null, LocaleContextHolder.getLocale()));
     }
 

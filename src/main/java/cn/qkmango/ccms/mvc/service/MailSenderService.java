@@ -14,7 +14,7 @@ public interface MailSenderService {
      *
      * @param email  邮箱
      */
-    void sendChangeEmail(String email);
+    void sendCaptchaEmail(String email);
 
 
 }
