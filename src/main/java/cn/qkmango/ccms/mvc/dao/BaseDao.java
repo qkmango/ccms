@@ -27,7 +27,7 @@ public interface BaseDao<T, I> {
      * @param id id
      * @return 记录
      */
-    T getRecordById(Integer id);
+    T getRecordById(I id);
 
     int delete(Integer id);
 

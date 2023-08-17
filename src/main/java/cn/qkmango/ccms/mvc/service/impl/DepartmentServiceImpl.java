@@ -34,7 +34,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     private DepartmentDao dao;
 
     @Override
-    public Department getRecordById(Integer id) {
+    public Department record(Integer id) {
         return dao.getRecordById(id);
     }
 

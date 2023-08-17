@@ -189,8 +189,6 @@ public class AccountController {
 
     /**
      * 账户分页查询
-     *
-     * @param pagination
      */
     @Permission(Role.admin)
     @PostMapping("pagination/list.do")

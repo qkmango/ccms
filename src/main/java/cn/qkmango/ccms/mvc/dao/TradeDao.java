@@ -1,7 +1,11 @@
 package cn.qkmango.ccms.mvc.dao;
 
+import cn.qkmango.ccms.domain.dto.TradeDto;
 import cn.qkmango.ccms.domain.entity.Trade;
+import cn.qkmango.ccms.domain.pagination.Pagination;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 描述
@@ -16,5 +20,8 @@ public interface TradeDao extends BaseDao<Trade, Long> {
     int insert(Trade trade);
 
     @Override
-    Trade getRecordById(Integer id);
+    Trade getRecordById(Long id);
+
+    List<Trade> list(Pagination<TradeDto> pagination);
+
 }

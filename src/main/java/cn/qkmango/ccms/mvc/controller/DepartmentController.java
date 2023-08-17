@@ -63,8 +63,8 @@ public class DepartmentController {
 
     @Permission(Role.admin)
     @GetMapping("/one/record.do")
-    public R<Department> getRecordById(@NotNull Integer id) {
-        return R.success(service.getRecordById(id));
+    public R<Department> record(@NotNull Integer id) {
+        return R.success(service.record(id));
     }
 
     /**

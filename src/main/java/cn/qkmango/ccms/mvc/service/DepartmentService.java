@@ -22,7 +22,7 @@ public interface DepartmentService {
      * @param id
      * @return
      */
-    Department getRecordById(Integer id);
+    Department record(Integer id);
 
     /**
      * 根据子部门id查询部门链
