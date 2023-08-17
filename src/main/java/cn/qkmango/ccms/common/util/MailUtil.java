@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  * @date 2023-01-31 20:05
  */
 @Component
-public class EmailUtil {
+public class MailUtil {
 
     /**
      * 发送发邮箱地址
@@ -36,7 +36,6 @@ public class EmailUtil {
      * @param to      接收者邮箱
      * @param subject 邮件主题
      * @param content 邮件内容
-     * @return 发送成功返回true，否则返回false
      */
     public void sendSimpleText(String to, String subject, String content) throws MailException {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -56,7 +55,6 @@ public class EmailUtil {
      * @param to      接收者邮箱
      * @param subject 邮件主题
      * @param html    邮件内容
-     * @return 发送成功返回true，否则返回false
      */
     public void sendWithHtml(String to, String subject, String html) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -68,7 +66,7 @@ public class EmailUtil {
         mimeMessageHelper.setSubject(subject);
         mimeMessageHelper.setText(html, true);
 
-        //发送
+        // 发送
         mailSender.send(mimeMessage);
     }
 }

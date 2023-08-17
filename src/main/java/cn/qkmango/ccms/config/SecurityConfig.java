@@ -10,7 +10,6 @@ import cn.qkmango.ccms.security.encoder.BCryptPasswordEncoder;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.security.token.Jwt;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,14 +25,10 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 @Configuration
 public class SecurityConfig {
 
-    @Value("${ccms.jwt.secret}")
-    private String secret;
-    @Value("${ccms.jwt.expire}")
-    private int expire;
-
     @Bean(name = "jwt")
+    @ConfigurationProperties(prefix = "ccms.jwt")
     public Jwt jwt() {
-        return new Jwt(secret, expire);
+        return new Jwt();
     }
 
     // 密码加密器
