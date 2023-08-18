@@ -83,15 +83,11 @@ public class NoticeController {
 
     /**
      * 获取公告详情
-     *
-     * @param id
-     * @return 公告详情
      */
     @GetMapping("one/record.do")
     public R<Notice> record(@NotNull Integer id) {
         Notice record = service.record(id);
         return record == null ? R.fail() : R.success(record);
-        // return R.success(record);
     }
 
 

@@ -9,6 +9,7 @@ import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.TradeVO;
 import cn.qkmango.ccms.mvc.service.TradeService;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -34,9 +35,27 @@ public class TradeController {
     @Resource
     private TradeService service;
 
-    @Permission(Role.admin)
+    /**
+     * 分页
+     * 如果是admin，可以查看所有交易记录
+     * 如果是user，只能查看自己的交易记录
+     * 如果是pos，只能查看自己创建的交易记录
+     */
     @PostMapping("pagination/list.do")
     public R<PageData<Trade>> list(@RequestBody Pagination<TradeDto> pagination) {
+        Role role = AccountHolder.getRole();
+        Integer account = AccountHolder.getId();
+        TradeDto param = pagination.getParam();
+
+        if (param == null) {
+            param = new TradeDto();
+            pagination.setParam(param);
+        }
+
+        switch (role) {
+            case user -> param.setAccount(account);
+            case pos -> param.setCreator(account);
+        }
         PageData<Trade> pageData = service.list(pagination);
         return R.success(pageData);
     }
@@ -50,6 +69,9 @@ public class TradeController {
                 R.success(record);
     }
 
+    /**
+     * 交易详情
+     */
     @Permission(Role.admin)
     @GetMapping("/one/detail.do")
     public R<TradeVO> detail(@NotNull Long id) {

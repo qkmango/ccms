@@ -14,6 +14,7 @@ import cn.qkmango.ccms.domain.bind.trade.TradeState;
 public class TradeDto {
     private Long id;
     private Integer account;
+    private Integer creator;
     private Long startCreateTime;
     private Long endCreateTime;
     private TradeState state;
@@ -67,11 +68,20 @@ public class TradeDto {
         this.level1 = level1;
     }
 
+    public Integer getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Integer creator) {
+        this.creator = creator;
+    }
+
     @Override
     public String toString() {
         return "TradeDto{" +
                 "id=" + id +
                 ", account=" + account +
+                ", creator=" + creator +
                 ", startCreateTime=" + startCreateTime +
                 ", endCreateTime=" + endCreateTime +
                 ", state=" + state +

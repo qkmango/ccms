@@ -53,9 +53,6 @@
                 <if test="param.id != null and param.id != ''">
                     id = #{param.id}
                 </if>
-                <if test="param.account != null">
-                    and account = #{param.account}
-                </if>
                 <if test="param.state != null">
                     and state = #{param.state}
                 </if>
@@ -67,6 +64,12 @@
                 </if>
                 <if test="param.endCreateTime != null">
                     and create_time &lt;= #{param.endCreateTime}
+                </if>
+                <if test="param.account != null">
+                    and account = #{param.account}
+                </if>
+                <if test="param.creator != null">
+                    and creator = #{param.creator}
                 </if>
             </if>
         </where>
