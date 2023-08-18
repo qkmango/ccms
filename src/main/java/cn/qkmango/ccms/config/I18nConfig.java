@@ -18,16 +18,16 @@ import java.util.Locale;
 public class I18nConfig {
     @Bean(name = "messageSource")
     public ReloadableResourceBundleMessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageBundle = new ReloadableResourceBundleMessageSource();
-        messageBundle.setBasenames(
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasenames(
                 "classpath:i18n/db",
                 "classpath:i18n/response",
                 "classpath:i18n/valid"
         );
 
-        messageBundle.setUseCodeAsDefaultMessage(false);
-        messageBundle.setDefaultEncoding("UTF-8");
-        return messageBundle;
+        messageSource.setUseCodeAsDefaultMessage(false);
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
     }
 
     @Bean(name = "localeResolver")

@@ -2,16 +2,12 @@ package cn.qkmango.ccms.config;
 
 import cn.qkmango.ccms.common.util.MailTemplate;
 import cn.qkmango.ccms.common.util.SnowFlake;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * Bean 配置类
+ * 用于配置一些工具类的 Bean
  *
  * @author qkmango
  * @version 1.0
@@ -19,26 +15,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class Beans {
-
-    /**
-     * 配置jackson的ObjectMapper
-     */
-    @Bean(name = "objectMapper")
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        // 读取未知的枚举值为 null
-        objectMapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
-
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
-
-        return objectMapper;
-    }
 
     /**
      * 邮件模板
