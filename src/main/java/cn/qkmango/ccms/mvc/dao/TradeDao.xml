@@ -56,6 +56,12 @@
                 <if test="param.account != null">
                     and account = #{param.account}
                 </if>
+                <if test="param.state != null">
+                    and state = #{param.state}
+                </if>
+                <if test="param.level1 != null">
+                    and level1 = #{param.level1}
+                </if>
                 <if test="param.startCreateTime != null">
                     and create_time &gt;= #{param.startCreateTime}
                 </if>

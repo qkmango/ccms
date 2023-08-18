@@ -1,5 +1,8 @@
 package cn.qkmango.ccms.domain.dto;
 
+import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
+import cn.qkmango.ccms.domain.bind.trade.TradeState;
+
 /**
  * 交易DTO
  * 用于接收前端传来的交易查询条件
@@ -13,6 +16,8 @@ public class TradeDto {
     private Integer account;
     private Long startCreateTime;
     private Long endCreateTime;
+    private TradeState state;
+    private TradeLevel1 level1;
 
     public Long getId() {
         return id;
@@ -46,6 +51,22 @@ public class TradeDto {
         this.endCreateTime = endCreateTime;
     }
 
+    public TradeState getState() {
+        return state;
+    }
+
+    public void setState(TradeState state) {
+        this.state = state;
+    }
+
+    public TradeLevel1 getLevel1() {
+        return level1;
+    }
+
+    public void setLevel1(TradeLevel1 level1) {
+        this.level1 = level1;
+    }
+
     @Override
     public String toString() {
         return "TradeDto{" +
@@ -53,6 +74,8 @@ public class TradeDto {
                 ", account=" + account +
                 ", startCreateTime=" + startCreateTime +
                 ", endCreateTime=" + endCreateTime +
+                ", state=" + state +
+                ", level1=" + level1 +
                 '}';
     }
 }

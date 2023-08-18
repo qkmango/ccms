@@ -11,6 +11,7 @@ import cn.qkmango.ccms.domain.vo.TradeVO;
 import cn.qkmango.ccms.mvc.service.TradeService;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -43,13 +44,19 @@ public class TradeController {
     @Permission(Role.admin)
     @GetMapping("/one/record.do")
     public R<Trade> record(@NotNull Long id) {
-        return R.success(service.record(id));
+        Trade record = service.record(id);
+        return record == null ?
+                R.fail(ms.getMessage("response.no-record", null, LocaleContextHolder.getLocale())) :
+                R.success(record);
     }
 
     @Permission(Role.admin)
     @GetMapping("/one/detail.do")
     public R<TradeVO> detail(@NotNull Long id) {
-        return R.success(service.detail(id));
+        TradeVO detail = service.detail(id);
+        return detail == null ?
+                R.fail(ms.getMessage("response.no-record", null, LocaleContextHolder.getLocale())) :
+                R.success(detail);
     }
 
 
