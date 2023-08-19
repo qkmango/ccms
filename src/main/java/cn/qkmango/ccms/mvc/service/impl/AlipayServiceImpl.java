@@ -16,11 +16,9 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,12 +45,6 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Resource(name = "snowFlake")
     private SnowFlake sf;
-
-    @Resource(name = "objectMapper")
-    private ObjectMapper om;
-
-    @Resource
-    private ReloadableResourceBundleMessageSource ms;
 
     private static final RequestURL REQUEST_URL = new RequestURL("http://localhost/pay/alipay/pay.do");
 
@@ -160,7 +152,6 @@ public class AlipayServiceImpl implements AlipayService {
             String content = AlipaySignature.getSignCheckContentV1(params);
             boolean checkSignature = AlipaySignature.rsa256CheckContent(content, sign, config.alipayPublicKey, "UTF-8"); // 验证签名
             if (!checkSignature) {
-                return;
             }
 
 //            Pay pay = new Pay()

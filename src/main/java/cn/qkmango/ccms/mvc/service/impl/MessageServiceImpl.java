@@ -30,10 +30,10 @@ import java.util.List;
 public class MessageServiceImpl implements MessageService {
 
     @Resource
-    private ReloadableResourceBundleMessageSource messageSource;
+    private ReloadableResourceBundleMessageSource ms;
 
     @Resource
-    private MessageDao messageDao;
+    private MessageDao dao;
 
     /**
      * 添加留言
@@ -45,9 +45,9 @@ public class MessageServiceImpl implements MessageService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void insert(Message message) throws InsertException {
         message.setCreateTime(System.currentTimeMillis());
-        int affectedRows = messageDao.insert(message);
+        int affectedRows = dao.insert(message);
         if (affectedRows != 1) {
-            throw new InsertException(messageSource.getMessage("db.message.insert.failure", null, LocaleContextHolder.getLocale()));
+            throw new InsertException(ms.getMessage("db.message.insert.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -57,9 +57,9 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void delete(Integer id, Integer author) throws DeleteException {
-        int affectedRows = messageDao.delete(id, author);
+        int affectedRows = dao.delete(id, author);
         if (affectedRows != 1) {
-            throw new DeleteException(messageSource.getMessage("db.message.delete.failure", null, LocaleContextHolder.getLocale()));
+            throw new DeleteException(ms.getMessage("db.message.delete.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -71,14 +71,14 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public PageData<MessageVO> list(Pagination<MessageDto> pagination) {
-        List<MessageVO> list = messageDao.list(pagination);
-        int count = messageDao.count();
+        List<MessageVO> list = dao.list(pagination);
+        int count = dao.count();
         return PageData.of(list, count);
     }
 
     @Override
     public List<Message> list(Flow<MessageDto> flow) {
-        List<Message> list = messageDao.flow(flow);
+        List<Message> list = dao.flow(flow);
         return list;
     }
 
@@ -90,6 +90,6 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public Message record(Integer id) {
-        return messageDao.getRecordById(id);
+        return dao.getRecordById(id);
     }
 }

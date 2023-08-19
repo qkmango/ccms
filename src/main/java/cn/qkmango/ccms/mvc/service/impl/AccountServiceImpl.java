@@ -29,7 +29,6 @@ import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +48,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Resource
-    private ReloadableResourceBundleMessageSource messageSource;
+    private ReloadableResourceBundleMessageSource ms;
 
     @Resource
     private AccountDao dao;
@@ -71,9 +70,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Resource
     private SnowFlake snowFlake;
-
-    @Resource
-    private StringRedisTemplate srt;
 
     @Resource
     private PasswordEncoder passwordEncoder;
@@ -100,42 +96,42 @@ public class AccountServiceImpl implements AccountService {
 
         Account loginAccount = dao.getRecordById(account.getId(), true);
 
-        //检查账户状态
+        // 检查账户状态
         checkLoginAccount(loginAccount);
 
-        //判断密码是否正确
+        // 判断密码是否正确
         String dbPassword = loginAccount.getPassword();
         boolean matches = passwordEncoder.matches(account.getPassword(), dbPassword);
         if (!matches) {
-            throw new LoginException(messageSource.getMessage("response.login.password.error", null, LocaleContextHolder.getLocale()));
+            throw new LoginException(ms.getMessage("response.login.password.error", null, LocaleContextHolder.getLocale()));
         }
 
-        //清除密码
+        // 清除密码
         loginAccount.setPassword(null);
 
-        //返回登陆用户信息，创建 token 由 controller 层完成
+        // 返回登陆用户信息，创建 token 由 controller 层完成
         return loginAccount;
     }
 
 
     @Override
     public Account accessLogin(String accessCode) throws LoginException {
-        //从 redis 中获取 accessCode 对应的账户ID
+        // 从 redis 中获取 accessCode 对应的账户ID
         String value = authAccessCodeCache.get(accessCode);
-        //删除 accessCode
+        // 删除 accessCode
         authAccessCodeCache.delete(accessCode);
 
-        //判断 accessCode 是否存在/是否过期
+        // 判断 accessCode 是否存在/是否过期
         if (value == null) {
-            throw new LoginException(messageSource.getMessage("response.login.access-code.not.exist", null, LocaleContextHolder.getLocale()));
+            throw new LoginException(ms.getMessage("response.login.access-code.not.exist", null, LocaleContextHolder.getLocale()));
         }
 
-        //将 value 转换为 OpenPlatformBo 对象
+        // 将 value 转换为 OpenPlatformBo 对象
         OpenPlatformBo platform = JSON.parseObject(value, OpenPlatformBo.class);
 
-        //查询数据库
+        // 查询数据库
         Account loginAccount = dao.getRecordById(platform.getAccount(), false);
-        //检查账户状态
+        // 检查账户状态
         checkLoginAccount(loginAccount);
 
         return loginAccount;
@@ -153,22 +149,22 @@ public class AccountServiceImpl implements AccountService {
 
         Account account = dao.getRecordById(dto.getAccount(), true);
 
-        //判断输入的旧密码和数据库的旧密码是否一致
+        // 判断输入的旧密码和数据库的旧密码是否一致
         String oldBCryptPassword = account.getPassword();
         if (!passwordEncoder.matches(dto.getOldPassword(), oldBCryptPassword)) {
-            throw new UpdateException(messageSource.getMessage("db.update.password.failure@different", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.update.password.failure@different", null, LocaleContextHolder.getLocale()));
         }
 
-        //加密新密码
+        // 加密新密码
         String newBCryptPassword = passwordEncoder.encode(dto.getNewPassword());
 
-        //更新密码
+        // 更新密码
         Account updateAccount = new Account()
                 .setId(dto.getAccount())
                 .setPassword(newBCryptPassword);
         int affectedRows = dao.update(updateAccount);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.update.password.failure", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.update.password.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -187,7 +183,7 @@ public class AccountServiceImpl implements AccountService {
 
         int affectedRows = dao.update(updateAccount);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.account.update.failure", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.account.update.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -204,16 +200,16 @@ public class AccountServiceImpl implements AccountService {
         User userRecord = null;
         LinkedList<Department> departmentChain;
 
-        //获取账户信息
+        // 获取账户信息
         accountRecord = dao.getRecordById(accountId);
-        //判断账户是否存在
+        // 判断账户是否存在
         if (accountRecord == null) {
             return null;
         }
-        //获取部门链
+        // 获取部门链
         departmentChain = departmentService.departmentChain(accountRecord.getDepartment());
 
-        //获取 卡信息/用户信息, 如果是user角色才有卡信息
+        // 获取 卡信息/用户信息, 如果是user角色才有卡信息
         if (accountRecord.getRole() == Role.user) {
             cardRecord = cardDao.getRecordByAccount(accountId);
             userRecord = userDao.getRecordByAccount(accountId);
@@ -243,13 +239,13 @@ public class AccountServiceImpl implements AccountService {
         boolean check = captchaCache.checkOkDelete(new String[]{account.toString(), email}, captcha);
 
         if (!check) {
-            throw new UpdateException(messageSource.getMessage("response.captcha.valid.failure", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("response.captcha.valid.failure", null, LocaleContextHolder.getLocale()));
         }
 
-        //更新email
+        // 更新email
         int affectedRows = dao.updateEmail(account, email);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.account.update.email.failure", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.account.update.email.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -267,24 +263,24 @@ public class AccountServiceImpl implements AccountService {
         Card card = cardDao.getRecordByAccount(accountId);
         // 卡不存在
         if (card == null) {
-            throw new UpdateException(messageSource.getMessage("db.card.failure@notExist", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.card.failure@notExist", null, LocaleContextHolder.getLocale()));
         }
 
         // 判断金额是否为0
         if (card.getBalance() != 0) {
-            throw new UpdateException(messageSource.getMessage("db.account.canceled.failure@balance", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.account.canceled.failure@balance", null, LocaleContextHolder.getLocale()));
         }
 
         // 获取账户信息
         Account account = dao.getRecordById(accountId);
 
-        //判断是否已经注销
+        // 判断是否已经注销
         if (AccountState.canceled == account.getState()) {
-            throw new UpdateException(messageSource.getMessage("db.account.canceled.failure@canceled", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.account.canceled.failure@canceled", null, LocaleContextHolder.getLocale()));
         }
 
 
-        //注销账户
+        // 注销账户
         int affectedRows;
         // 1. 将账户状态改为注销
         Account updateAccount = new Account();
@@ -292,13 +288,13 @@ public class AccountServiceImpl implements AccountService {
         updateAccount.setState(AccountState.canceled);
         affectedRows = dao.update(updateAccount);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.account.canceled.failure", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.account.canceled.failure", null, LocaleContextHolder.getLocale()));
         }
 
         // 2. 将账户下的卡片状态改为注销
         affectedRows = cardDao.state(accountId, CardState.canceled);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.account.canceled.failure", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.account.canceled.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -319,7 +315,7 @@ public class AccountServiceImpl implements AccountService {
         // 1. 判断是否已经存在
         Account dbRecord = dao.getRecordById(param.getId());
         if (dbRecord != null) {
-            throw new InsertException(messageSource.getMessage("db.account.insert.failure@exist", null, LocaleContextHolder.getLocale()));
+            throw new InsertException(ms.getMessage("db.account.insert.failure@exist", null, LocaleContextHolder.getLocale()));
         }
 
         // 2. 添加 account 账户
@@ -332,10 +328,10 @@ public class AccountServiceImpl implements AccountService {
 
         affectedRows = dao.insert(account);
         if (affectedRows != 1) {
-            throw new InsertException(messageSource.getMessage("db.account.insert.failure", null, LocaleContextHolder.getLocale()));
+            throw new InsertException(ms.getMessage("db.account.insert.failure", null, LocaleContextHolder.getLocale()));
         }
 
-        //如果不是user角色, 则不需要添加 card 和 user
+        // 如果不是user角色, 则不需要添加 card 和 user
         if (param.getRole() != Role.user) {
             return;
         }
@@ -344,13 +340,13 @@ public class AccountServiceImpl implements AccountService {
         long cardId = snowFlake.nextId();
         Card card = new Card()
                 .setId(cardId)
-                .setAccount(param.getId().toString())
+                .setAccount(param.getId())
                 .setBalance(0)
                 .setState(CardState.normal)
                 .setVersion(0);
         affectedRows = cardDao.insert(card);
         if (affectedRows != 1) {
-            throw new InsertException(messageSource.getMessage("db.account.insert.failure", null, LocaleContextHolder.getLocale()));
+            throw new InsertException(ms.getMessage("db.account.insert.failure", null, LocaleContextHolder.getLocale()));
         }
 
         // 4. 添加 user 用户
@@ -362,7 +358,7 @@ public class AccountServiceImpl implements AccountService {
                 .setName(param.getName());
         affectedRows = userDao.insert(user);
         if (affectedRows != 1) {
-            throw new InsertException(messageSource.getMessage("db.account.insert.failure", null, LocaleContextHolder.getLocale()));
+            throw new InsertException(ms.getMessage("db.account.insert.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -375,17 +371,17 @@ public class AccountServiceImpl implements AccountService {
      * @param account
      */
     private void checkLoginAccount(Account account) {
-        //判断账户是否存在
+        // 判断账户是否存在
         if (account == null) {
-            throw new LoginException(messageSource.getMessage("db.account.failure@notExist", null, LocaleContextHolder.getLocale()));
+            throw new LoginException(ms.getMessage("db.account.failure@notExist", null, LocaleContextHolder.getLocale()));
         }
 
-        //判断账户状态
+        // 判断账户状态
         switch (account.getState()) {
             case canceled ->
-                    throw new LoginException(messageSource.getMessage("db.account.canceled.failure@canceled", null, LocaleContextHolder.getLocale()));
+                    throw new LoginException(ms.getMessage("db.account.canceled.failure@canceled", null, LocaleContextHolder.getLocale()));
             case frozen ->
-                    throw new LoginException(messageSource.getMessage("db.account.canceled.failure@frozen", null, LocaleContextHolder.getLocale()));
+                    throw new LoginException(ms.getMessage("db.account.canceled.failure@frozen", null, LocaleContextHolder.getLocale()));
         }
     }
 }

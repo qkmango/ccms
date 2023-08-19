@@ -54,12 +54,13 @@ public interface CardDao {
 
 
     /**
-     * 充值
+     * 添加卡余额
      *
      * @param account 账号
      * @param amount  充值金额
+     * @param version 版本号
      */
-    int recharge(Integer account, Integer amount);
+    int addBalance(Integer account, Integer amount, Integer version);
 
     /**
      * 查询校园卡信息
@@ -70,5 +71,8 @@ public interface CardDao {
     List<Card> list(Pagination<Card> pagination);
 
 
-    int updateBalance(Long id, Integer amount, Integer version);
+    /**
+     * 消费
+     */
+    int consume(Long id, Integer amount, Integer version);
 }

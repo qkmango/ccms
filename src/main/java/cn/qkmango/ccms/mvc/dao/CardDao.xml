@@ -21,13 +21,15 @@
     </update>
 
 
-    <update id="recharge">
+    <update id="addBalance">
         update t_card
-        set balance = balance + #{amount}
+        set balance = balance + #{amount},
+            version = version + 1
         where account = #{account}
+          and version = #{version}
     </update>
 
-    <update id="updateBalance">
+    <update id="consume">
         update t_card
         set balance = balance - #{amount},
             version = version + 1

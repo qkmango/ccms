@@ -1,12 +1,14 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.database.UpdateException;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.SnowFlake;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel2;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
+import cn.qkmango.ccms.domain.dto.CardRechargeDto;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.Trade;
 import cn.qkmango.ccms.domain.pagination.PageData;
@@ -18,16 +20,14 @@ import jakarta.annotation.Resource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.Locale;
 
 
 /**
- * 描述
- * <p></p>
+ * 卡
  *
  * @author qkmango
  * @version 1.0
@@ -46,7 +46,10 @@ public class CardServiceImpl implements CardService {
     private SnowFlake snowFlake;
 
     @Resource
-    private ReloadableResourceBundleMessageSource messageSource;
+    private TransactionTemplate tx;
+
+    @Resource
+    private ReloadableResourceBundleMessageSource ms;
 
     /**
      * 分页查询卡信息
@@ -63,27 +66,24 @@ public class CardServiceImpl implements CardService {
 
     /**
      * 充值
-     *
-     * @param account 账户
-     * @param amount  充值金额
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void recharge(Integer account, Integer amount, Locale locale) throws UpdateException {
+    public R recharge(CardRechargeDto dto) throws UpdateException {
+        Locale locale = LocaleContextHolder.getLocale();
+        Integer account = dto.getAccount();
+        Integer amount = dto.getAmount();
 
-        Card record = cardDao.getRecordByAccount(account);
+        Card card = cardDao.getRecordByAccount(account);
 
-        //判断卡是否存在
-        if (record == null) {
-            throw new UpdateException(messageSource.getMessage("db.account.failure@notExist", null, locale));
+        // 判断卡是否存在
+        if (card == null) {
+            throw new UpdateException(ms.getMessage("db.account.failure@notExist", null, locale));
         }
-        //判断卡状态是否正常
-        if (record.getState() != CardState.normal) {
-            throw new UpdateException(messageSource.getMessage("db.card.failure@state", null, locale));
+        // 判断卡状态是否正常
+        if (card.getState() != CardState.normal) {
+            throw new UpdateException(ms.getMessage("db.card.failure@state", null, locale));
         }
 
-
-        int affectedRows = 0;
 
         Trade trade = new Trade()
                 .setId(snowFlake.nextId())
@@ -96,24 +96,33 @@ public class CardServiceImpl implements CardService {
                 .setCreateTime(System.currentTimeMillis())
                 .setVersion(0);
 
-        //插入消费记录(充值)
-        affectedRows = tradeDao.insert(trade);
-        if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.update.recharge.failure", null, locale));
-        }
+        R result = tx.execute(status -> {
+            int affectedRows;
 
-        //更新卡余额
-        affectedRows = cardDao.recharge(account, amount);
-        if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.update.recharge.failure", null, locale));
-        }
+            // 插入交易记录(充值)
+            affectedRows = tradeDao.insert(trade);
+            if (affectedRows != 1) {
+                status.setRollbackOnly();
+                return R.fail(ms.getMessage("db.update.recharge.failure", null, locale));
+            }
+
+            // 更新卡余额
+            affectedRows = cardDao.addBalance(account, amount, card.getVersion());
+            if (affectedRows != 1) {
+                status.setRollbackOnly();
+                return R.fail(ms.getMessage("db.update.recharge.failure", null, locale));
+            }
+            return R.success(ms.getMessage("db.update.recharge.success", null, locale));
+        });
+
+        return result;
     }
 
     @Override
     public void state(Integer account, CardState state) throws UpdateException {
         int affectedRows = cardDao.state(account, state);
         if (affectedRows != 1) {
-            throw new UpdateException(messageSource.getMessage("db.card.update.state.failure", null, LocaleContextHolder.getLocale()));
+            throw new UpdateException(ms.getMessage("db.card.update.state.failure", null, LocaleContextHolder.getLocale()));
         }
     }
 

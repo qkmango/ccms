@@ -1,12 +1,12 @@
 package cn.qkmango.ccms.mvc.service;
 
 import cn.qkmango.ccms.common.exception.database.UpdateException;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.CardState;
+import cn.qkmango.ccms.domain.dto.CardRechargeDto;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
-
-import java.util.Locale;
 
 /**
  * 校园卡服务
@@ -35,10 +35,9 @@ public interface CardService {
     /**
      * 充值
      *
-     * @param locale 语言环境
      * @throws UpdateException 更新异常
      */
-    void recharge(Integer account,Integer amount, Locale locale) throws UpdateException;
+    R recharge(CardRechargeDto dto) throws UpdateException;
 
     void state(Integer account, CardState state) throws UpdateException;
 }

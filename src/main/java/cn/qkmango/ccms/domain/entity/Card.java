@@ -16,7 +16,7 @@ public class Card extends BaseDomain<Card> {
 
     private Long id;
 
-    private String account;
+    private Integer account;
 
     @NotNull(groups = {Update.class})
     private CardState state;
@@ -35,11 +35,11 @@ public class Card extends BaseDomain<Card> {
         return this;
     }
 
-    public String getAccount() {
+    public Integer getAccount() {
         return account;
     }
 
-    public Card setAccount(String account) {
+    public Card setAccount(Integer account) {
         this.account = account;
         return this;
     }

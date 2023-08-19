@@ -3,8 +3,7 @@ package cn.qkmango.ccms.domain.dto;
 import jakarta.validation.constraints.NotBlank;
 
 /**
- * 描述
- * <p></p>
+ * 修改密码DTO
  *
  * @author qkmango
  * @version 1.0

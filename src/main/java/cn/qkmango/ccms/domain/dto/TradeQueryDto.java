@@ -11,7 +11,7 @@ import cn.qkmango.ccms.domain.bind.trade.TradeState;
  * @version 1.0
  * @date 2023-08-17 17:39
  */
-public class TradeDto {
+public class TradeQueryDto {
     private Long id;
     private Integer account;
     private Integer creator;

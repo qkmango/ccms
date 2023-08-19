@@ -64,9 +64,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<Department> childList(Integer id) {
-        // if (id == null) {
-        //     id = 0;
-        // }
         return dao.childList(id);
     }
 

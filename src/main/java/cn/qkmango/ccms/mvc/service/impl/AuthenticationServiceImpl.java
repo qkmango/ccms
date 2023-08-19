@@ -14,7 +14,6 @@ import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
 import cn.qkmango.ccms.security.request.RequestURL;
-import cn.qkmango.ccms.security.token.Jwt;
 import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
@@ -50,9 +49,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Resource(name = "authAccessCodeCache")
     private SecurityCache authAccessCodeCache;
-
-    @Resource
-    private Jwt jwt;
 
     @Resource
     private ReloadableResourceBundleMessageSource ms;

@@ -3,7 +3,10 @@ package cn.qkmango.ccms.mvc.controller;
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.domain.dto.TradeDto;
+import cn.qkmango.ccms.domain.bo.AccountPayQrcode;
+import cn.qkmango.ccms.domain.dto.QrCodeConsume;
+import cn.qkmango.ccms.domain.dto.TradeQueryDto;
+import cn.qkmango.ccms.domain.dto.TradeRefundDto;
 import cn.qkmango.ccms.domain.entity.Trade;
 import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
@@ -42,13 +45,13 @@ public class TradeController {
      * 如果是pos，只能查看自己创建的交易记录
      */
     @PostMapping("pagination/list.do")
-    public R<PageData<Trade>> list(@RequestBody Pagination<TradeDto> pagination) {
+    public R<PageData<Trade>> list(@RequestBody Pagination<TradeQueryDto> pagination) {
         Role role = AccountHolder.getRole();
         Integer account = AccountHolder.getId();
-        TradeDto param = pagination.getParam();
+        TradeQueryDto param = pagination.getParam();
 
         if (param == null) {
-            param = new TradeDto();
+            param = new TradeQueryDto();
             pagination.setParam(param);
         }
 
@@ -79,6 +82,48 @@ public class TradeController {
         return detail == null ?
                 R.fail(ms.getMessage("response.no-record", null, LocaleContextHolder.getLocale())) :
                 R.success(detail);
+    }
+
+    @Permission({Role.admin, Role.pos})
+    @PostMapping("/update/refund.do")
+    public R refund(@Validated TradeRefundDto dto) {
+        // 如果是POS，则只能退款自己创建的交易
+        Role role = AccountHolder.getRole();
+        if (role == Role.pos) {
+            dto.setCreator(AccountHolder.getId());
+        }
+        return service.refund(dto);
+    }
+
+
+    /**
+     * 创建支付二维码，并缓存到redis
+     * key为 pay:qrcode:accountId
+     * value 为 UUID
+     *
+     * @return 二维码
+     */
+    @Permission(Role.user)
+    @GetMapping("create-qrcode.do")
+    public R<AccountPayQrcode> createQrCode() {
+        Integer account = AccountHolder.getId();
+        AccountPayQrcode qrcode = service.createQrCode(account);
+        return R.success(qrcode);
+    }
+
+    /**
+     * 二维码支付消费
+     * 接口只能是收款者（POS）才能请求，消费方式为扫码支付
+     *
+     * @param consume 二维码消费信息
+     */
+    @Permission(Role.pos)
+    @PostMapping("consume-by-qrcode.do")
+    public R<Object> consumeByQrCode(@RequestBody @Validated QrCodeConsume consume) {
+        // 创建者为当前登录用户，也即为收款者（POS）
+        Integer creator = AccountHolder.getId();
+        consume.setCreator(creator);
+        return service.consumeByQrCode(consume);
     }
 
 

@@ -32,6 +32,14 @@
                 #{version})
     </insert>
 
+    <update id="refund">
+        update t_trade
+        set state   = 'refund',
+            version = version + 1
+        where id = #{id}
+          and version = #{version}
+    </update>
+
     <select id="list" resultType="cn.qkmango.ccms.domain.entity.Trade">
         select SQL_CALC_FOUND_ROWS
         id,
