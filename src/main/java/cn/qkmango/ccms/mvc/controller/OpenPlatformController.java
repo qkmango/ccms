@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 描述
- * <p></p>
+ * 开放平台
+ * <p>第三方开放平台</p>
  *
  * @author qkmango
  * @version 1.0

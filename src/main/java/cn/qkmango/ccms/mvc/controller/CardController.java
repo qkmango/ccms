@@ -51,8 +51,6 @@ public class CardController {
 
     /**
      * 充值
-     *
-     * @return
      */
     @Permission(Role.admin)
     @PostMapping("update/recharge.do")
@@ -62,11 +60,6 @@ public class CardController {
 
     /**
      * 修改卡状态
-     *
-     * @param account
-     * @param state
-     * @return
-     * @throws UpdateException
      */
     @Permission(Role.admin)
     @PostMapping("update/state.do")
@@ -77,9 +70,6 @@ public class CardController {
 
     /**
      * 修改当前登陆用户的卡状态
-     *
-     * @param state
-     * @return
      */
     @Permission(Role.user)
     @PostMapping("update/current-state.do")

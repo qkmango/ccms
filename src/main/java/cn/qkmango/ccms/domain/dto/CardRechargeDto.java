@@ -18,6 +18,9 @@ public class CardRechargeDto {
     @Range(min = 100, max = 100000, message = "充值金额在1~1000元")
     private Integer amount;
 
+    @NotNull
+    private Integer version;
+
     public Integer getAccount() {
         return account;
     }
@@ -32,5 +35,13 @@ public class CardRechargeDto {
 
     public void setAmount(Integer amount) {
         this.amount = amount;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }

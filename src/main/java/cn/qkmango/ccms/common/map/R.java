@@ -3,7 +3,7 @@ package cn.qkmango.ccms.common.map;
 import java.io.Serializable;
 
 /**
- * 响应 Map
+ * 响应结果
  *
  * @author qkmango
  * @version 1.0

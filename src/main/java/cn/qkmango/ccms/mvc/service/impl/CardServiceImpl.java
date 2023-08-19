@@ -73,8 +73,8 @@ public class CardServiceImpl implements CardService {
         Integer account = dto.getAccount();
         Integer amount = dto.getAmount();
 
+        // 1. 检查卡
         Card card = cardDao.getRecordByAccount(account);
-
         // 判断卡是否存在
         if (card == null) {
             throw new UpdateException(ms.getMessage("db.account.failure@notExist", null, locale));
@@ -99,15 +99,15 @@ public class CardServiceImpl implements CardService {
         R result = tx.execute(status -> {
             int affectedRows;
 
-            // 插入交易记录(充值)
+            // 2. 插入交易记录(充值)
             affectedRows = tradeDao.insert(trade);
             if (affectedRows != 1) {
                 status.setRollbackOnly();
                 return R.fail(ms.getMessage("db.update.recharge.failure", null, locale));
             }
 
-            // 更新卡余额
-            affectedRows = cardDao.addBalance(account, amount, card.getVersion());
+            // 3. 更新卡余额
+            affectedRows = cardDao.addBalance(account, amount, dto.getVersion());
             if (affectedRows != 1) {
                 status.setRollbackOnly();
                 return R.fail(ms.getMessage("db.update.recharge.failure", null, locale));
