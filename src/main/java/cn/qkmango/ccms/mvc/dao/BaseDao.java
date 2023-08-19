@@ -29,6 +29,8 @@ public interface BaseDao<T, I> {
      */
     T getRecordById(I id);
 
-    int delete(Integer id);
+    int delete(I id);
+
+    int insert(T record);
 
 }

@@ -140,7 +140,7 @@ public class TradeServiceImpl implements TradeService {
             int affectedRows;
 
             // 1. 修改 trade 状态为已退款
-            affectedRows = dao.refund(dto.getId(), dto.getVersion());
+            affectedRows = dao.updateState(dto.getId(), TradeState.refund, dto.getVersion());
             if (affectedRows != 1) {
                 status.setRollbackOnly();
                 return R.fail(ms.getMessage("db.trade.update.failure@refund", null, locale));

@@ -1,12 +1,23 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.exception.database.DeleteException;
-import cn.qkmango.ccms.common.exception.database.InsertException;
-import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.util.SnowFlake;
+import cn.qkmango.ccms.domain.bind.CardState;
+import cn.qkmango.ccms.domain.bind.ExceptionInfoState;
+import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
+import cn.qkmango.ccms.domain.bind.trade.TradeLevel2;
+import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
+import cn.qkmango.ccms.domain.bind.trade.TradeState;
+import cn.qkmango.ccms.domain.dto.AlipayCreatePayDto;
 import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.domain.entity.Card;
+import cn.qkmango.ccms.domain.entity.ExceptionInfo;
+import cn.qkmango.ccms.domain.entity.Trade;
+import cn.qkmango.ccms.mvc.dao.CardDao;
+import cn.qkmango.ccms.mvc.dao.ExceptionInfoDao;
+import cn.qkmango.ccms.mvc.dao.TradeDao;
 import cn.qkmango.ccms.mvc.service.AlipayService;
 import cn.qkmango.ccms.pay.AlipayConfig;
+import cn.qkmango.ccms.pay.AlipayTradeStatus;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.request.RequestURL;
 import com.alibaba.fastjson2.JSONObject;
@@ -15,13 +26,13 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,66 +54,81 @@ public class AlipayServiceImpl implements AlipayService {
     @Resource(name = "alipayConfig")
     private AlipayConfig config;
 
+    @Resource
+    private TradeDao tradeDao;
+
+    @Resource
+    private CardDao cardDao;
+
+    @Resource
+    private ExceptionInfoDao exceptionInfoDao;
+
     @Resource(name = "snowFlake")
     private SnowFlake sf;
 
-    private static final RequestURL REQUEST_URL = new RequestURL("http://localhost/pay/alipay/pay.do");
+    @Resource
+    private TransactionTemplate tx;
+
+
+    private static final RequestURL REQUEST_URL = new RequestURL("api/pay/alipay/pay.do");
 
 
     /**
      * 创建支付
-     *
-     * @param subject     支付的名称
-     * @param totalAmount 订单的总金额
-     * @return R
-     * @throws InsertException 创建支付失败
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public String createPay(String subject, String totalAmount) throws InsertException {
+    public String createPay(AlipayCreatePayDto dto) {
 
-        //将金额转换为分
-        int amount = (int) (Double.parseDouble(totalAmount) * 100);
+        // 金额为 分
+        int amount = dto.getAmount();
 
         Account account = AccountHolder.getAccount();
-        Integer user = account.getId();
-        String id = String.valueOf(sf.nextId());
+        long tradeId = sf.nextId();
+        Trade trade = new Trade()
+                .setId(tradeId)
+                .setAccount(account.getId())
+                .setLevel1(TradeLevel1.in)
+                .setLevel2(TradeLevel2.alipay)
+                .setLevel3(TradeLevel3.recharge)
+                .setState(TradeState.processing)
+                .setAmount(amount)
+                .setCreator(account.getId())
+                .setCreateTime(System.currentTimeMillis())
+                .setDescription(dto.getSubject())
+                .setVersion(0);
 
-//        Pay pay = new Pay()
-//                .setId(id)
-//                .setUser(user)
-//                .setDone(false)
-//                .setAmount(amount)
-//                .setType(PayType.alipay)
-//                .setCreateTime(new Date())
-//                .setInfo(subject);
+        Boolean result = tx.execute(status -> {
+            int affectedRows = tradeDao.insert(trade);
+            if (affectedRows != 1) {
+                status.setRollbackOnly();
+                return false;
+            }
+            return true;
+        });
 
-//        int affectedRows = payDao.insert(pay);
-//        if (affectedRows != 1) {
-//            throw new InsertException(ms.getMessage("db.insert.pay.create.failure", null, locale));
-//        }
-
-        return REQUEST_URL.builder()
-                .with("subject", subject)
-                .with("traceNo", id)
-                .with("totalAmount", totalAmount)
-                .build().url();
+        return Boolean.TRUE.equals(result) ?
+                REQUEST_URL.builder()
+                        .with("subject", dto.getSubject())
+                        .with("traceId", tradeId)
+                        .with("amount", amount / 100)
+                        .build().url() :
+                null;
     }
 
     @Override
     public void pay(String subject,
-                    String traceNo,
-                    String totalAmount,
+                    String traceId,
+                    String amount,
                     HttpServletResponse httpResponse) throws AlipayApiException, IOException {
 
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
         request.setNotifyUrl(config.notify);
         JSONObject bizContent = new JSONObject();
 
-        bizContent.put("subject", subject);                   // 订单标题
-        bizContent.put("out_trade_no", traceNo);                   // 我们自己生成的订单编号
-        bizContent.put("total_amount", totalAmount);               // 订单的总金额
-        bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");  // 固定配置
+        bizContent.put("subject", subject);                         // 订单标题
+        bizContent.put("out_trade_no", traceId);                    // 我们自己生成的订单编号
+        bizContent.put("total_amount", amount);                     // 订单的总金额
+        bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");   // 固定配置
 
         request.setBizContent(bizContent.toString());
 
@@ -126,61 +152,90 @@ public class AlipayServiceImpl implements AlipayService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void payNotify(
-            String tradeNo,
-            String outTradeNo,
+            String alipayTradeNo,
+            Long tradeId,
             String gmtPayment,
             String receiptAmount,
+            AlipayTradeStatus alipayTradeStatus,
+            String totalAmount,
             String sign,
-            
-            HttpServletRequest request) throws AlipayApiException, UpdateException, DeleteException, JsonProcessingException {
+            HttpServletRequest request) throws AlipayApiException {
 
-        //将金额转换为分
-        int amount = (int) (Float.parseFloat(receiptAmount) * 100);
-
-        int affectedRows;
-
-        //判断是否支付成功
-        //TRADE_SUCCESS 交易支付成功
-        if ("TRADE_SUCCESS".equals(request.getParameter("trade_status"))) {
-            Map<String, String> params = new HashMap<>();
-            Map<String, String[]> requestParams = request.getParameterMap();
-            for (String name : requestParams.keySet()) {
-                params.put(name, request.getParameter(name));
-            }
-
-            // 支付宝验签
-            String content = AlipaySignature.getSignCheckContentV1(params);
-            boolean checkSignature = AlipaySignature.rsa256CheckContent(content, sign, config.alipayPublicKey, "UTF-8"); // 验证签名
-            if (!checkSignature) {
-            }
-
-//            Pay pay = new Pay()
-//                    .setId(outTradeNo)
-//                    .setAmount(amount)
-//                    .setTradeNo(tradeNo)
-//                    .setDone(true)
-//
-//                    //TODO 这里JSON化的字符串过长，数据库中的字段长度不够，需要修改数据库字段长度
-//                    .setDetail(om.writeValueAsString(params));
-//
-//
-//            //更新支付信息
-//            affectedRows = payDao.update(pay);
-//            //更新失败
-//            //TODO 应该将结果打印到系统日志中, 以便后续手动处理
-//            if (affectedRows != 1) {
-//                throw new UpdateException(ms.getMessage("db.update.pay.failure", null, locale));
-//            }
-
-            //TODO 更新用户余额
+        // 1. 判断是否支付成功
+        // TRADE_SUCCESS 交易支付成功
+        if (alipayTradeStatus != AlipayTradeStatus.TRADE_SUCCESS) {
+            return;
         }
 
-        //支付失败
-//        else {
-//            affectedRows = payDao.delete(outTradeNo);
-//            if (affectedRows != 1) {
-//                throw new DeleteException(ms.getMessage("db.delete.pay.failure", null, locale));
-//            }
-//        }
+        Map<String, String> params = new HashMap<>();
+        Map<String, String[]> requestParams = request.getParameterMap();
+        for (String name : requestParams.keySet()) {
+            params.put(name, request.getParameter(name));
+        }
+
+        // 2. 支付宝验签
+        String content = AlipaySignature.getSignCheckContentV1(params);
+        boolean checkSignature = AlipaySignature.rsa256CheckContent(content, sign, config.alipayPublicKey, "UTF-8"); // 验证签名
+        if (!checkSignature) {
+            return;
+        }
+
+        // 获取 交易
+        Trade trade = tradeDao.getRecordById(tradeId);
+        if (trade == null) {
+            insertExceptionInfo(tradeId, null, totalAmount);
+            return;
+        }
+        Integer account = trade.getAccount();
+
+        // 3. 支付成功，修改交易状态为 SUCCESS, 将金额添加到一卡通
+        // 版本号一定是 0，如果不为0则说明已经被修改
+        Integer version = 0;
+        tx.execute(status -> {
+            int affectedRows;
+            // 回滚点
+            Object savepoint = status.createSavepoint();
+
+            // 修改交易状态
+            affectedRows = tradeDao.updateState(tradeId, TradeState.success, version);
+            if (affectedRows != 1) {
+                // status.setRollbackOnly();
+                status.rollbackToSavepoint(savepoint);
+                // TODO 事务回滚也会将此插入回滚
+                insertExceptionInfo(tradeId, account, totalAmount);
+                return null;
+            }
+
+            // 检查卡
+            Card card = cardDao.getRecordByAccount(account);
+            if (card == null || card.getState() != CardState.normal) {
+                insertExceptionInfo(tradeId, account, totalAmount);
+            }
+
+            // 将金额添加到一卡通
+            affectedRows = cardDao.addBalance(account, trade.getAmount(), card.getVersion());
+            if (affectedRows != 1) {
+                status.rollbackToSavepoint(savepoint);
+                insertExceptionInfo(tradeId, account, totalAmount);
+                return null;
+            }
+
+            return null;
+        });
+    }
+
+    /**
+     * 添加异常信息
+     */
+    public void insertExceptionInfo(Long tradeId, Integer account, String totalAmount) {
+        String description = "交易ID [%s] 用户ID [%s]用户在支付宝成功支付一笔金额为 [%s] 的金额后系统未成功处理，导致用户实际支付了一笔金额但系统没有将其添加到账户(一卡通中)";
+        ExceptionInfo info = new ExceptionInfo()
+                .setRelationId(tradeId)
+                .setDescription(String.format(description, tradeId, account, totalAmount))
+                .setSolution(String.format("需要管理员手动对其账户(一卡通)进行充值金额为 %s", totalAmount))
+                .setState(ExceptionInfoState.pending)
+                .setVersion(0);
+        exceptionInfoDao.insert(info);
+
     }
 }

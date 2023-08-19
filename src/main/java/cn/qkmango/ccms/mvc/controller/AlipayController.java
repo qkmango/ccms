@@ -1,16 +1,17 @@
 package cn.qkmango.ccms.mvc.controller;
 
 
-import cn.qkmango.ccms.common.exception.database.DeleteException;
-import cn.qkmango.ccms.common.exception.database.InsertException;
-import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.dto.AlipayCreatePayDto;
 import cn.qkmango.ccms.mvc.service.AlipayService;
+import cn.qkmango.ccms.pay.AlipayTradeStatus;
 import com.alipay.api.AlipayApiException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -30,51 +31,59 @@ public class AlipayController {
     private AlipayService service;
 
 
-    // TODO 应该改为交易
-    @GetMapping("/createPay.do")
-    private R createPay(
-            @RequestParam String subject,
-            @RequestParam String totalAmount) throws InsertException {
-        String url = service.createPay(subject, totalAmount);
-        return R.success().setData(url);
+    @Resource
+    private ReloadableResourceBundleMessageSource ms;
+
+
+    /**
+     * 创建交易记录，并返回支付接口
+     */
+    @GetMapping("/create-pay.do")
+    private R createPay(@Validated AlipayCreatePayDto dto) {
+        String url = service.createPay(dto);
+        return url == null ?
+                R.fail(ms.getMessage("db.trade.insert.failure@create", null, LocaleContextHolder.getLocale())) :
+                R.success().setData(url);
     }
 
     /**
      * 支付接口
-     * subject=xxx&traceNo=xxx&totalAmount=xxx
+     * subject=xxx&traceId=xxx&amount=xxx
      *
      * @param subject      支付的名称
-     * @param traceNo      我们自己生成的订单编号
-     * @param totalAmount  订单的总金额
+     * @param traceId      我们自己生成的订单编号
+     * @param amount       订单的总金额
      * @param httpResponse http响应
      */
     @GetMapping("/pay.do")
     public void pay(
             @RequestParam String subject,
-            @RequestParam String traceNo,
-            @RequestParam String totalAmount,
+            @RequestParam String traceId,
+            @RequestParam String amount,
             HttpServletResponse httpResponse) throws IOException, AlipayApiException {
-        service.pay(subject, traceNo, totalAmount, httpResponse);
+        service.pay(subject, traceId, amount, httpResponse);
     }
 
     /**
      * 支付结果异步通知
      * 必须是POST
      *
-     * @param tradeNo    支付宝交易号
-     * @param outTradeNo 商家订单号, 原支付请求的商家订单号
-     * @param gmtPayment 交易付款时间, 格式为 yyyy-MM-dd HH:mm:ss
-     * @param request    http请求
+     * @param alipayTradeNo 支付宝交易号
+     * @param tradeId       本系统 trade id
+     * @param gmtPayment    交易付款时间, 格式为 yyyy-MM-dd HH:mm:ss
+     * @param request       http请求
      */
     @PostMapping("/notify.do")
     public void payNotify(
-            @RequestParam("trade_no") String tradeNo,
-            @RequestParam("out_trade_no") String outTradeNo,
+            @RequestParam("trade_no") String alipayTradeNo,
+            @RequestParam("out_trade_no") Long tradeId,
             @RequestParam("gmt_payment") String gmtPayment,
             @RequestParam("receipt_amount") String receiptAmount,
+            @RequestParam("trade_status") AlipayTradeStatus status,
+            @RequestParam("total_amount") String totalAmount,
             @RequestParam("sign") String sign,
-            HttpServletRequest request) throws AlipayApiException, UpdateException, DeleteException, JsonProcessingException {
-        service.payNotify(tradeNo, outTradeNo, gmtPayment, receiptAmount, sign, request);
+            HttpServletRequest request) throws AlipayApiException {
+        service.payNotify(alipayTradeNo, tradeId, gmtPayment, receiptAmount, status, totalAmount, sign, request);
     }
 
 }

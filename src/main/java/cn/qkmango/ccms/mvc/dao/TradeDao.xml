@@ -32,9 +32,9 @@
                 #{version})
     </insert>
 
-    <update id="refund">
+    <update id="updateState">
         update t_trade
-        set state   = 'refund',
+        set state   = #{state},
             version = version + 1
         where id = #{id}
           and version = #{version}
@@ -81,7 +81,7 @@
                 </if>
             </if>
         </where>
-        order by id asc
+        order by id desc
         LIMIT #{skipCount},#{limit}
     </select>
 

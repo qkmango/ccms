@@ -3,8 +3,7 @@ package cn.qkmango.ccms.pay;
 import cn.qkmango.ccms.security.request.RequestURL;
 
 /**
- * 描述
- * <p></p>
+ * 支付宝支付配置
  *
  * @author qkmango
  * @version 1.0

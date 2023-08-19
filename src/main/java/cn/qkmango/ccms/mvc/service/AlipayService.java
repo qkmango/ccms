@@ -1,10 +1,8 @@
 package cn.qkmango.ccms.mvc.service;
 
-import cn.qkmango.ccms.common.exception.database.DeleteException;
-import cn.qkmango.ccms.common.exception.database.InsertException;
-import cn.qkmango.ccms.common.exception.database.UpdateException;
+import cn.qkmango.ccms.domain.dto.AlipayCreatePayDto;
+import cn.qkmango.ccms.pay.AlipayTradeStatus;
 import com.alipay.api.AlipayApiException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -21,12 +19,8 @@ public interface AlipayService {
 
     /**
      * 创建支付
-     *
-     * @param subject     支付的名称
-     * @param totalAmount 订单的总金额
-     * @return R
      */
-    String createPay(String subject, String totalAmount) throws InsertException;
+    String createPay(AlipayCreatePayDto dto);
 
     /**
      * 支付接口
@@ -43,17 +37,21 @@ public interface AlipayService {
     /**
      * 支付结果异步通知
      *
-     * @param tradeNo       支付宝交易号
-     * @param outTradeNo    商家订单号, 原支付请求的商家订单号
+     * @param alipayTradeNo 支付宝交易号
+     * @param tradeId       本系统 trade id
      * @param gmtPayment    交易付款时间, 格式为 yyyy-MM-dd HH:mm:ss
      * @param receiptAmount 实收金额, 商家在交易中实际收到的款项，单位为人民币（元），精确到小数点后 2 位
+     * @param status        交易状态
+     * @param totalAmount   实收金额
      * @param sign          签名
      * @param request       http请求
      */
-    void payNotify(String tradeNo,
-                   String outTradeNo,
+    void payNotify(String alipayTradeNo,
+                   Long tradeId,
                    String gmtPayment,
                    String receiptAmount,
+                   AlipayTradeStatus status,
+                   String totalAmount,
                    String sign,
-                   HttpServletRequest request) throws AlipayApiException, UpdateException, DeleteException, JsonProcessingException;
+                   HttpServletRequest request) throws AlipayApiException;
 }
