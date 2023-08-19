@@ -119,7 +119,7 @@ public class TradeController {
      */
     @Permission(Role.pos)
     @PostMapping("consume-by-qrcode.do")
-    public R<Object> consumeByQrCode(@RequestBody @Validated QrCodeConsume consume) {
+    public R<Object> consumeByQrCode(@Validated QrCodeConsume consume) {
         // 创建者为当前登录用户，也即为收款者（POS）
         Integer creator = AccountHolder.getId();
         consume.setCreator(creator);
