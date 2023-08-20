@@ -1,5 +1,6 @@
 package cn.qkmango.ccms.mvc.dao;
 
+import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import org.apache.ibatis.annotations.Mapper;
@@ -20,8 +21,8 @@ public interface AccountDao extends BaseDao<Account, String> {
     /**
      * 更新用户email
      *
-     * @param id 账户ID
-     * @param email   新的email
+     * @param id    账户ID
+     * @param email 新的email
      * @return 数据库影响的行数
      */
     int updateEmail(@Param("id") Integer id,
@@ -42,7 +43,6 @@ public interface AccountDao extends BaseDao<Account, String> {
      *
      * @param id
      * @param password 是否查询 password
-     * @return
      */
     Account getRecordById(Integer id, Boolean password);
 
@@ -56,9 +56,18 @@ public interface AccountDao extends BaseDao<Account, String> {
 
     List<Account> list(Pagination<Account> pagination);
 
+    @Override
     int insert(Account account);
 
-    // String getNameById(Integer id);
-
     List<Integer> accountIdsByDepartment(Integer department);
+
+    /**
+     * 修改状态
+     *
+     * @param id
+     * @param state
+     * @param version
+     * @return
+     */
+    int state(Integer id, AccountState state, Integer version);
 }

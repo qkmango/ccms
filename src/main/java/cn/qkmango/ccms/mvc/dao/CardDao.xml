@@ -16,8 +16,10 @@
 
     <update id="state">
         update t_card
-        set state = #{state}
+        set state   = #{state},
+            version = version + 1
         where account = #{account}
+          and version = #{version}
     </update>
 
 

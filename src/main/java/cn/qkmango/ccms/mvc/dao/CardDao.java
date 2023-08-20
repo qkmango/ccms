@@ -42,7 +42,7 @@ public interface CardDao {
     /**
      * 更新校园卡状态
      */
-    int state(Integer account, CardState state);
+    int state(Integer account, CardState state, Integer version);
 
     /**
      * 查询校园卡详细信息

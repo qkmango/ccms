@@ -4,9 +4,6 @@ import cn.qkmango.ccms.domain.dto.AlipayCreatePayDto;
 import cn.qkmango.ccms.pay.AlipayTradeStatus;
 import com.alipay.api.AlipayApiException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
 
 /**
  * 支付宝
@@ -26,12 +23,12 @@ public interface AlipayService {
      * 支付接口
      * subject=xxx&traceNo=xxx&totalAmount=xxx
      *
-     * @param subject      支付的名称
-     * @param traceNo      我们自己生成的订单编号
-     * @param totalAmount  订单的总金额
-     * @param httpResponse http响应
+     * @param account     账户
+     * @param subject     支付的名称
+     * @param traceNo     我们自己生成的订单编号
+     * @param totalAmount 订单的总金额
      */
-    void pay(String subject, String traceNo, String totalAmount, HttpServletResponse httpResponse) throws AlipayApiException, IOException;
+    String pay(Integer account, String subject, String traceNo, String totalAmount) throws AlipayApiException;
 
 
     /**

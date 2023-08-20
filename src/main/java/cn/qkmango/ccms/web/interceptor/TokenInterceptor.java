@@ -36,10 +36,12 @@ public class TokenInterceptor implements HandlerInterceptor {
         String token = request.getHeader("Authorization");
         Claims claims = jwt.parser(token);
 
-        //将解析的用户信息 Map<String,Object> claims 存入 AccountHolder
+        // 将解析的用户信息 Map<String,Object> claims 存入 AccountHolder
         if (claims != null) {
             AccountHolder.set(claims);
         }
+        // TODO 一次请求有时候可能有几个线程，导致获取账户信息为null ;ThreadLocal
+        System.out.println("拦截器线程" + Thread.currentThread().getName());
         return true;
     }
 

@@ -12,6 +12,7 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.ExceptionInfo;
 import cn.qkmango.ccms.domain.entity.Trade;
+import cn.qkmango.ccms.domain.vo.ResultPageParam;
 import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.ExceptionInfoDao;
 import cn.qkmango.ccms.mvc.dao.TradeDao;
@@ -20,6 +21,7 @@ import cn.qkmango.ccms.pay.AlipayConfig;
 import cn.qkmango.ccms.pay.AlipayTradeStatus;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.request.RequestURL;
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -28,13 +30,14 @@ import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,9 +72,18 @@ public class AlipayServiceImpl implements AlipayService {
     @Resource
     private TransactionTemplate tx;
 
-
     private static final RequestURL REQUEST_URL = new RequestURL("api/pay/alipay/pay.do");
+    // 100
+    private static final BigDecimal DIVIDE = new BigDecimal("100");
 
+    // 支付结果页面需要的数据
+    private static final String PAY_RESULT_PAGE_PARAM = URLEncoder.encode(JSON.toJSONString(new ResultPageParam<>()
+                    .setSuccess(true)
+                    .setTitle("支付结果")
+                    .setMessage("支付宝支付成功")
+                    .setType("channel")
+                    .setChannel("recharge"))
+            , StandardCharsets.UTF_8);
 
     /**
      * 创建支付
@@ -110,21 +122,34 @@ public class AlipayServiceImpl implements AlipayService {
                 REQUEST_URL.builder()
                         .with("subject", dto.getSubject())
                         .with("traceId", tradeId)
-                        .with("amount", amount / 100)
+                        .with("amount", new BigDecimal(amount).divide(DIVIDE))
                         .build().url() :
                 null;
     }
 
     @Override
-    public void pay(String subject,
-                    String traceId,
-                    String amount,
-                    HttpServletResponse httpResponse) throws AlipayApiException, IOException {
+    public String pay(Integer account,
+                      String subject,
+                      String traceId,
+                      String amount) throws AlipayApiException {
+
+        // 先判断卡状态
+        Card card = cardDao.getRecordByAccount(account);
+        if (card.getState() != CardState.normal) {
+            return null;
+        }
+
 
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
+        // 异步通知
         request.setNotifyUrl(config.notify);
-        JSONObject bizContent = new JSONObject();
 
+
+        // 同步跳转页面
+        String redirect = config.redirect.url() + "?result=" + PAY_RESULT_PAGE_PARAM;
+        request.setReturnUrl(redirect);
+
+        JSONObject bizContent = new JSONObject();
         bizContent.put("subject", subject);                         // 订单标题
         bizContent.put("out_trade_no", traceId);                    // 我们自己生成的订单编号
         bizContent.put("total_amount", amount);                     // 订单的总金额
@@ -132,20 +157,19 @@ public class AlipayServiceImpl implements AlipayService {
 
         request.setBizContent(bizContent.toString());
 
+
         // 执行请求，拿到响应的结果，返回给浏览器
-        String form = null;
+        String form;
 
         AlipayTradePagePayResponse response = client.pageExecute(request);
-        if (!response.isSuccess()) {
-            throw new RuntimeException("调用SDK生成表单失败");
+        if (response.isSuccess()) {
+            // 调用SDK生成表单
+            form = response.getBody();
+        } else {
+            form = "调用SDK生成表单失败";
         }
 
-        form = response.getBody(); // 调用SDK生成表单
-
-        httpResponse.setContentType("text/html;charset=UTF-8");
-        httpResponse.getWriter().write(form);// 直接将完整的表单html输出到页面
-        httpResponse.getWriter().flush();
-        httpResponse.getWriter().close();
+        return form;
     }
 
 
@@ -201,7 +225,6 @@ public class AlipayServiceImpl implements AlipayService {
             if (affectedRows != 1) {
                 // status.setRollbackOnly();
                 status.rollbackToSavepoint(savepoint);
-                // TODO 事务回滚也会将此插入回滚
                 insertExceptionInfo(tradeId, account, totalAmount);
                 return null;
             }
@@ -227,7 +250,7 @@ public class AlipayServiceImpl implements AlipayService {
     /**
      * 添加异常信息
      */
-    public void insertExceptionInfo(Long tradeId, Integer account, String totalAmount) {
+    private void insertExceptionInfo(Long tradeId, Integer account, String totalAmount) {
         String description = "交易ID [%s] 用户ID [%s]用户在支付宝成功支付一笔金额为 [%s] 的金额后系统未成功处理，导致用户实际支付了一笔金额但系统没有将其添加到账户(一卡通中)";
         ExceptionInfo info = new ExceptionInfo()
                 .setRelationId(tradeId)

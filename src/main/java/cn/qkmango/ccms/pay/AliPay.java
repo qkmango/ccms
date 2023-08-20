@@ -1,5 +1,8 @@
 package cn.qkmango.ccms.pay;
 
+/**
+ * @author qkmango
+ */
 public class AliPay {
     private String traceNo;
     private double totalAmount;

@@ -3,7 +3,9 @@ package cn.qkmango.ccms.mvc.service;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.exception.permission.LoginException;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
+import cn.qkmango.ccms.domain.dto.CanceledDto;
 import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.PageData;
@@ -57,9 +59,9 @@ public interface AccountService {
     /**
      * 注销账户
      *
-     * @param account 账户 ID
+     * @return
      */
-    void canceled(Integer account) throws UpdateException;
+    R canceled(CanceledDto dto) throws UpdateException;
 
     /**
      * 重置密码

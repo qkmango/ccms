@@ -3,8 +3,6 @@ package cn.qkmango.ccms.mvc.controller;
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.domain.bo.AccountPayQrcode;
-import cn.qkmango.ccms.domain.dto.QrCodeConsume;
 import cn.qkmango.ccms.domain.dto.TradeQueryDto;
 import cn.qkmango.ccms.domain.dto.TradeRefundDto;
 import cn.qkmango.ccms.domain.entity.Trade;
@@ -63,6 +61,9 @@ public class TradeController {
         return R.success(pageData);
     }
 
+    /**
+     * 信息
+     */
     @Permission(Role.admin)
     @GetMapping("/one/record.do")
     public R<Trade> record(@NotNull Long id) {
@@ -84,6 +85,9 @@ public class TradeController {
                 R.success(detail);
     }
 
+    /**
+     * 退款
+     */
     @Permission({Role.admin, Role.pos})
     @PostMapping("/update/refund.do")
     public R refund(@Validated TradeRefundDto dto) {
@@ -96,35 +100,7 @@ public class TradeController {
     }
 
 
-    /**
-     * 创建支付二维码，并缓存到redis
-     * key为 pay:qrcode:accountId
-     * value 为 UUID
-     *
-     * @return 二维码
-     */
-    @Permission(Role.user)
-    @GetMapping("create-qrcode.do")
-    public R<AccountPayQrcode> createQrCode() {
-        Integer account = AccountHolder.getId();
-        AccountPayQrcode qrcode = service.createQrCode(account);
-        return R.success(qrcode);
-    }
 
-    /**
-     * 二维码支付消费
-     * 接口只能是收款者（POS）才能请求，消费方式为扫码支付
-     *
-     * @param consume 二维码消费信息
-     */
-    @Permission(Role.pos)
-    @PostMapping("consume-by-qrcode.do")
-    public R<Object> consumeByQrCode(@Validated QrCodeConsume consume) {
-        // 创建者为当前登录用户，也即为收款者（POS）
-        Integer creator = AccountHolder.getId();
-        consume.setCreator(creator);
-        return service.consumeByQrCode(consume);
-    }
 
 
 }

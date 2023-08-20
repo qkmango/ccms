@@ -18,6 +18,8 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Locale;
+
 /**
  * 管理员 卡模块
  *
@@ -25,12 +27,13 @@ import org.springframework.web.bind.annotation.*;
  * @version 1.0
  * @date 2022-10-22 20:07
  */
+@Validated
 @RestController
 @RequestMapping("card")
 public class CardController {
 
     @Resource
-    private ReloadableResourceBundleMessageSource messageSource;
+    private ReloadableResourceBundleMessageSource ms;
 
     @Resource
     private CardService service;
@@ -63,9 +66,12 @@ public class CardController {
      */
     @Permission(Role.admin)
     @PostMapping("update/state.do")
-    public R state(@NotNull Integer account, @NotNull CardState state) throws UpdateException {
-        service.state(account, state);
-        return R.success(messageSource.getMessage("db.card.update.state.success", null, LocaleContextHolder.getLocale()));
+    public R state(@NotNull Integer account, @NotNull CardState state, @NotNull Integer version) {
+        boolean result = service.state(account, state, version);
+        Locale locale = LocaleContextHolder.getLocale();
+        return result ?
+                R.success(ms.getMessage("db.card.update.state.success", null, locale)) :
+                R.fail(ms.getMessage("db.card.update.state.failure", null, locale));
     }
 
     /**
@@ -73,10 +79,13 @@ public class CardController {
      */
     @Permission(Role.user)
     @PostMapping("update/current-state.do")
-    public R currentState(@NotNull CardState state) throws UpdateException {
+    public R currentState(@NotNull CardState state, @NotNull Integer version) {
         Integer id = AccountHolder.getId();
-        service.state(id, state);
-        return R.success(messageSource.getMessage("db.card.update.state.success", null, LocaleContextHolder.getLocale()));
+        boolean result = service.state(id, state, version);
+        Locale locale = LocaleContextHolder.getLocale();
+        return result ?
+                R.success(ms.getMessage("db.card.update.state.success", null, locale)) :
+                R.fail(ms.getMessage("db.card.update.state.failure", null, locale));
     }
 
     /**

@@ -1,20 +1,21 @@
 package cn.qkmango.ccms.mvc.controller;
 
 
+import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.dto.AlipayCreatePayDto;
 import cn.qkmango.ccms.mvc.service.AlipayService;
 import cn.qkmango.ccms.pay.AlipayTradeStatus;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import com.alipay.api.AlipayApiException;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 /**
  * 支付宝
@@ -38,7 +39,7 @@ public class AlipayController {
     /**
      * 创建交易记录，并返回支付接口
      */
-    @GetMapping("/create-pay.do")
+    @GetMapping(value = "/create-pay.do")
     private R createPay(@Validated AlipayCreatePayDto dto) {
         String url = service.createPay(dto);
         return url == null ?
@@ -50,18 +51,18 @@ public class AlipayController {
      * 支付接口
      * subject=xxx&traceId=xxx&amount=xxx
      *
-     * @param subject      支付的名称
-     * @param traceId      我们自己生成的订单编号
-     * @param amount       订单的总金额
-     * @param httpResponse http响应
+     * @param subject 支付的名称
+     * @param traceId 我们自己生成的订单编号
+     * @param amount  订单的总金额
      */
-    @GetMapping("/pay.do")
-    public void pay(
+    @Permission(Role.user)
+    @GetMapping(value = "/pay.do", produces = MediaType.TEXT_HTML_VALUE)
+    public String pay(
             @RequestParam String subject,
             @RequestParam String traceId,
-            @RequestParam String amount,
-            HttpServletResponse httpResponse) throws IOException, AlipayApiException {
-        service.pay(subject, traceId, amount, httpResponse);
+            @RequestParam String amount) throws AlipayApiException {
+        Integer account = AccountHolder.getId();
+        return service.pay(account, subject, traceId, amount);
     }
 
     /**

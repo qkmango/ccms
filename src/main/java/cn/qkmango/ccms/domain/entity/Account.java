@@ -1,12 +1,11 @@
 package cn.qkmango.ccms.domain.entity;
 
 import cn.qkmango.ccms.common.validate.group.Query.Login;
+import cn.qkmango.ccms.domain.BaseDomain;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-import java.io.Serializable;
 
 /**
  * 账户
@@ -14,7 +13,7 @@ import java.io.Serializable;
  * @author qkmango
  * @date 2022-10-22 16:36
  */
-public class Account implements Serializable {
+public class Account extends BaseDomain<Account> {
 
     /**
      * ID

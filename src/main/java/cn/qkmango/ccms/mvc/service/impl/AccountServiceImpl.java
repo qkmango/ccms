@@ -5,12 +5,14 @@ import cn.qkmango.ccms.common.cache.security.SecurityCache;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.common.exception.permission.LoginException;
+import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.SnowFlake;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.bo.OpenPlatformBo;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
+import cn.qkmango.ccms.domain.dto.CanceledDto;
 import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Card;
@@ -32,9 +34,11 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 账户
@@ -45,7 +49,6 @@ import java.util.List;
  */
 @Service
 public class AccountServiceImpl implements AccountService {
-
 
     @Resource
     private ReloadableResourceBundleMessageSource ms;
@@ -73,6 +76,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Resource
     private PasswordEncoder passwordEncoder;
+
+    @Resource
+    private TransactionTemplate tx;
 
     @Override
     public Account getRecordById(Integer id) {
@@ -253,49 +259,53 @@ public class AccountServiceImpl implements AccountService {
     /**
      * 注销账户
      *
-     * @param accountId 账户 ID
-     * @throws UpdateException
+     * @return
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void canceled(Integer accountId) throws UpdateException {
+    // @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public R canceled(CanceledDto dto) throws UpdateException {
+        Locale locale = LocaleContextHolder.getLocale();
 
-        Card card = cardDao.getRecordByAccount(accountId);
+        Integer id = dto.getAccount();
+        Card card = cardDao.getRecordByAccount(id);
         // 卡不存在
         if (card == null) {
-            throw new UpdateException(ms.getMessage("db.card.failure@notExist", null, LocaleContextHolder.getLocale()));
+            return R.fail(ms.getMessage("db.card.failure@notExist", null, locale));
         }
 
         // 判断金额是否为0
         if (card.getBalance() != 0) {
-            throw new UpdateException(ms.getMessage("db.account.canceled.failure@balance", null, LocaleContextHolder.getLocale()));
+            return R.fail(ms.getMessage("db.account.canceled.failure@balance", null, locale));
         }
 
         // 获取账户信息
-        Account account = dao.getRecordById(accountId);
+        Account account = dao.getRecordById(id);
 
         // 判断是否已经注销
         if (AccountState.canceled == account.getState()) {
-            throw new UpdateException(ms.getMessage("db.account.canceled.failure@canceled", null, LocaleContextHolder.getLocale()));
+            return R.fail(ms.getMessage("db.account.canceled.failure@canceled", null, locale));
         }
-
 
         // 注销账户
-        int affectedRows;
-        // 1. 将账户状态改为注销
-        Account updateAccount = new Account();
-        updateAccount.setId(accountId);
-        updateAccount.setState(AccountState.canceled);
-        affectedRows = dao.update(updateAccount);
-        if (affectedRows != 1) {
-            throw new UpdateException(ms.getMessage("db.account.canceled.failure", null, LocaleContextHolder.getLocale()));
-        }
 
-        // 2. 将账户下的卡片状态改为注销
-        affectedRows = cardDao.state(accountId, CardState.canceled);
-        if (affectedRows != 1) {
-            throw new UpdateException(ms.getMessage("db.account.canceled.failure", null, LocaleContextHolder.getLocale()));
-        }
+        return tx.execute(status -> {
+            int affectedRows;
+            // 1. 将账户状态改为注销
+            affectedRows = dao.state(id, AccountState.canceled, dto.getAccountVersion());
+            if (affectedRows != 1) {
+                status.setRollbackOnly();
+                return R.fail(ms.getMessage("db.account.canceled.failure", null, locale));
+            }
+
+            // 2. 将账户下的卡片状态改为注销
+            affectedRows = cardDao.state(id, CardState.canceled, dto.getCardVersion());
+            if (affectedRows != 1) {
+                status.setRollbackOnly();
+                return R.fail(ms.getMessage("db.account.canceled.failure", null, locale));
+            }
+
+            return R.success(ms.getMessage("db.account.unsubscribe.success", null, locale));
+        });
     }
 
 

@@ -9,6 +9,7 @@ import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
+import cn.qkmango.ccms.domain.dto.CanceledDto;
 import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
 import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.PageData;
@@ -120,15 +121,13 @@ public class AccountController {
     /**
      * 注销账户
      *
-     * @param account 账户
      * @return 响应结果
      * @throws UpdateException 更新异常
      */
-    @Permission({Role.admin, Role.user})
+    @Permission(Role.admin)
     @PostMapping(value = "update/canceled.do")
-    public R<Object> canceled(Integer account) throws UpdateException {
-        service.canceled(account);
-        return R.success(ms.getMessage("db.account.unsubscribe.success", null, LocaleContextHolder.getLocale()));
+    public R canceled(@Validated CanceledDto dto) throws UpdateException {
+        return service.canceled(dto);
     }
 
     /**

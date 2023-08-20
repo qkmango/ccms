@@ -39,5 +39,5 @@ public interface CardService {
      */
     R recharge(CardRechargeDto dto) throws UpdateException;
 
-    void state(Integer account, CardState state) throws UpdateException;
+    boolean state(Integer account, CardState state, Integer version);
 }

@@ -119,11 +119,24 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public void state(Integer account, CardState state) throws UpdateException {
-        int affectedRows = cardDao.state(account, state);
-        if (affectedRows != 1) {
-            throw new UpdateException(ms.getMessage("db.card.update.state.failure", null, LocaleContextHolder.getLocale()));
+    public boolean state(Integer account, CardState state, Integer version) {
+        Card card = cardDao.getRecordByAccount(account);
+
+        // 判断状态
+        if (card.getState() == CardState.canceled) {
+            return false;
         }
+
+        Boolean result = tx.execute(status -> {
+            int affectedRows = cardDao.state(account, state, version);
+            if (affectedRows == 1) {
+                return true;
+            }
+            status.setRollbackOnly();
+            return false;
+        });
+
+        return Boolean.TRUE.equals(result);
     }
 
     /**
