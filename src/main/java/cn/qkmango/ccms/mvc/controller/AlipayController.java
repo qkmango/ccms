@@ -41,7 +41,8 @@ public class AlipayController {
      */
     @GetMapping(value = "/create-pay.do")
     private R createPay(@Validated AlipayCreatePayDto dto) {
-        String url = service.createPay(dto);
+        Integer account = AccountHolder.getId();
+        String url = service.createPay(account, dto);
         return url == null ?
                 R.fail(ms.getMessage("db.trade.insert.failure@create", null, LocaleContextHolder.getLocale())) :
                 R.success().setData(url);
@@ -62,6 +63,7 @@ public class AlipayController {
             @RequestParam String traceId,
             @RequestParam String amount) throws AlipayApiException {
         Integer account = AccountHolder.getId();
+        System.out.println("控制器线程" + Thread.currentThread());
         return service.pay(account, subject, traceId, amount);
     }
 

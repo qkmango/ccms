@@ -8,7 +8,6 @@ import cn.qkmango.ccms.domain.bind.trade.TradeLevel2;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
 import cn.qkmango.ccms.domain.dto.AlipayCreatePayDto;
-import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.ExceptionInfo;
 import cn.qkmango.ccms.domain.entity.Trade;
@@ -19,7 +18,6 @@ import cn.qkmango.ccms.mvc.dao.TradeDao;
 import cn.qkmango.ccms.mvc.service.AlipayService;
 import cn.qkmango.ccms.pay.AlipayConfig;
 import cn.qkmango.ccms.pay.AlipayTradeStatus;
-import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.request.RequestURL;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
@@ -89,22 +87,27 @@ public class AlipayServiceImpl implements AlipayService {
      * 创建支付
      */
     @Override
-    public String createPay(AlipayCreatePayDto dto) {
+    public String createPay(Integer account, AlipayCreatePayDto dto) {
+
+        // 先判断卡状态
+        Card card = cardDao.getRecordByAccount(account);
+        if (card.getState() != CardState.normal) {
+            return null;
+        }
 
         // 金额为 分
         int amount = dto.getAmount();
-
-        Account account = AccountHolder.getAccount();
         long tradeId = sf.nextId();
+
         Trade trade = new Trade()
                 .setId(tradeId)
-                .setAccount(account.getId())
+                .setAccount(account)
                 .setLevel1(TradeLevel1.in)
                 .setLevel2(TradeLevel2.alipay)
                 .setLevel3(TradeLevel3.recharge)
                 .setState(TradeState.processing)
                 .setAmount(amount)
-                .setCreator(account.getId())
+                .setCreator(account)
                 .setCreateTime(System.currentTimeMillis())
                 .setDescription(dto.getSubject())
                 .setVersion(0);
@@ -133,11 +136,12 @@ public class AlipayServiceImpl implements AlipayService {
                       String traceId,
                       String amount) throws AlipayApiException {
 
+        // TODO 由于是请求此接口是直接在地址栏请求，所以没有携带token
         // 先判断卡状态
-        Card card = cardDao.getRecordByAccount(account);
-        if (card.getState() != CardState.normal) {
-            return null;
-        }
+        // Card card = cardDao.getRecordByAccount(account);
+        // if (card.getState() != CardState.normal) {
+        //     return null;
+        // }
 
 
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
@@ -261,4 +265,5 @@ public class AlipayServiceImpl implements AlipayService {
         exceptionInfoDao.insert(info);
 
     }
+
 }

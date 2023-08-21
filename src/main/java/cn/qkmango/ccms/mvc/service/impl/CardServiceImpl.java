@@ -8,6 +8,7 @@ import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel2;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
+import cn.qkmango.ccms.domain.dto.CanceledDto;
 import cn.qkmango.ccms.domain.dto.CardRechargeDto;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.Trade;
@@ -118,12 +119,20 @@ public class CardServiceImpl implements CardService {
         return result;
     }
 
+    /**
+     * 修改卡状态
+     * 只能修改状态为 normal|loss，canceled状态只能通过注销接口来修改
+     * {@link cn.qkmango.ccms.mvc.controller.AccountController#canceled(CanceledDto)}
+     * {@link cn.qkmango.ccms.mvc.service.impl.AccountServiceImpl#canceled(CanceledDto)}
+     */
     @Override
     public boolean state(Integer account, CardState state, Integer version) {
         Card card = cardDao.getRecordByAccount(account);
 
         // 判断状态
-        if (card.getState() == CardState.canceled) {
+        // 1. 如果已注销则不能修改
+        // 2. 如果通过此接口修改状态为注销，也不行，注销状态只能通过注销接口来操作，普通的修改状态不能设置为注销
+        if (card.getState() == CardState.canceled || state == CardState.canceled) {
             return false;
         }
 
@@ -141,9 +150,6 @@ public class CardServiceImpl implements CardService {
 
     /**
      * 根据账户ID查询卡信息
-     *
-     * @param account
-     * @return 卡详细信息
      */
     @Override
     public Card recordByAccount(Integer account) {

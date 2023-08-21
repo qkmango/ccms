@@ -17,7 +17,7 @@ public interface AlipayService {
     /**
      * 创建支付
      */
-    String createPay(AlipayCreatePayDto dto);
+    String createPay(Integer account, AlipayCreatePayDto dto);
 
     /**
      * 支付接口
