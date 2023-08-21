@@ -3,10 +3,8 @@ package cn.qkmango.ccms.web.interceptor;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.Jwt;
 import io.jsonwebtoken.Claims;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -18,11 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
  * @version 1.0
  * @date 2023-07-16 13:42
  */
-@Component("tokenInterceptor")
 public class TokenInterceptor implements HandlerInterceptor {
 
-    @Resource(name = "jwt")
-    private Jwt jwt;
+    private final Jwt jwt;
 
     public TokenInterceptor(Jwt jwt) {
         this.jwt = jwt;
@@ -40,8 +36,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         if (claims != null) {
             AccountHolder.set(claims);
         }
-        // TODO 一次请求有时候可能有几个线程，导致获取账户信息为null ;ThreadLocal
-        System.out.println("拦截器线程" + Thread.currentThread().getName());
+
         return true;
     }
 
