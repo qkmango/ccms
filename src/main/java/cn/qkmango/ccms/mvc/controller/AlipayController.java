@@ -40,7 +40,9 @@ public class AlipayController {
      * 创建交易记录，并返回支付接口
      */
     @GetMapping(value = "/create-pay.do")
-    private R createPay(@Validated AlipayCreatePayDto dto) {
+    private R createPay(@Validated AlipayCreatePayDto dto, HttpServletRequest request) {
+        // 获取主机地址 如 http://localhost:5500
+        // String origin = request.getHeader("Origin");
         Integer account = AccountHolder.getId();
         String url = service.createPay(account, dto);
         return url == null ?
@@ -60,11 +62,10 @@ public class AlipayController {
     @GetMapping(value = "/pay.do", produces = MediaType.TEXT_HTML_VALUE)
     public String pay(
             @RequestParam String subject,
-            @RequestParam String traceId,
+            @RequestParam Long traceId,
             @RequestParam String amount) throws AlipayApiException {
-        Integer account = AccountHolder.getId();
-        System.out.println("控制器线程" + Thread.currentThread());
-        return service.pay(account, subject, traceId, amount);
+        // TODO 这里请求并没有携带 token
+        return service.pay(subject, traceId, amount);
     }
 
     /**

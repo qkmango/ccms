@@ -19,9 +19,9 @@ import java.util.Map;
  */
 public class AccountHolder {
 
-    private static final ThreadLocal<Map> THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String, Object>> THREAD_LOCAL = new ThreadLocal<>();
 
-    public static void set(Map account) {
+    public static void set(Map<String, Object> account) {
         THREAD_LOCAL.set(account);
     }
 

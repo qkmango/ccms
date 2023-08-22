@@ -70,7 +70,7 @@ public class AlipayServiceImpl implements AlipayService {
     @Resource
     private TransactionTemplate tx;
 
-    private static final RequestURL REQUEST_URL = new RequestURL("api/pay/alipay/pay.do");
+    private static final RequestURL REQUEST_URL = new RequestURL("/api/pay/alipay/pay.do");
     // 100
     private static final BigDecimal DIVIDE = new BigDecimal("100");
 
@@ -131,17 +131,21 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     @Override
-    public String pay(Integer account,
-                      String subject,
-                      String traceId,
-                      String amount) throws AlipayApiException {
+    public String pay(String subject, Long traceId, String amount) throws AlipayApiException {
 
-        // TODO 由于是请求此接口是直接在地址栏请求，所以没有携带token
+        // TODO 由于是请求此接口是直接在地址栏请求，所以没有携带token 可以先获取 trade，从中获取 accountId
+
+        // 查询 trade
+        Trade trade = tradeDao.getRecordById(traceId);
+        if (trade == null) {
+            return null;
+        }
+
         // 先判断卡状态
-        // Card card = cardDao.getRecordByAccount(account);
-        // if (card.getState() != CardState.normal) {
-        //     return null;
-        // }
+        Card card = cardDao.getRecordByAccount(trade.getAccount());
+        if (card.getState() != CardState.normal) {
+            return null;
+        }
 
 
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
@@ -160,20 +164,13 @@ public class AlipayServiceImpl implements AlipayService {
         bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");   // 固定配置
 
         request.setBizContent(bizContent.toString());
-
-
         // 执行请求，拿到响应的结果，返回给浏览器
-        String form;
-
         AlipayTradePagePayResponse response = client.pageExecute(request);
         if (response.isSuccess()) {
             // 调用SDK生成表单
-            form = response.getBody();
-        } else {
-            form = "调用SDK生成表单失败";
+            return response.getBody();
         }
-
-        return form;
+        return null;
     }
 
 

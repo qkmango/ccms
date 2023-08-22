@@ -23,12 +23,11 @@ public interface AlipayService {
      * 支付接口
      * subject=xxx&traceNo=xxx&totalAmount=xxx
      *
-     * @param account     账户
      * @param subject     支付的名称
      * @param traceNo     我们自己生成的订单编号
      * @param totalAmount 订单的总金额
      */
-    String pay(Integer account, String subject, String traceNo, String totalAmount) throws AlipayApiException;
+    String pay(String subject, Long traceNo, String totalAmount) throws AlipayApiException;
 
 
     /**

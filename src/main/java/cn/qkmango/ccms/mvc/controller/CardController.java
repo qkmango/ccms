@@ -95,8 +95,10 @@ public class CardController {
     @GetMapping("one/current-card-info.do")
     public R<Card> currentInfo() {
         Integer account = AccountHolder.getId();
-        Card card = service.recordByAccount(account);
-        return R.success(card);
+        Card result = service.recordByAccount(account);
+        return result == null ?
+                R.fail(ms.getMessage("response.no-record", null, LocaleContextHolder.getLocale())) :
+                R.success(result);
     }
 
 }
