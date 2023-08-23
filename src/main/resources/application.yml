@@ -6,11 +6,10 @@ server:
       enabled: true
       force: true
 
-
 spring:
   mvc:
     servlet:
-        path: /api
+      path: /api
   datasource:
     druid:
       initial-size: 1
@@ -25,7 +24,6 @@ spring:
     serialization:
       write-dates-as-timestamps: true
     date-format: java.text.SimpleDateFormat
-
   data:
     redis:
       host: localhost
@@ -38,8 +36,6 @@ spring:
           max-idle: 3
           min-idle: 1
           max-wait: 5000
-
-
   mail:
     host: smtp.qiye.aliyun.com
     port: 25
@@ -52,6 +48,14 @@ spring:
         smtp:
           socketFactoryClass: javax.net.ssl.SSLSocketFactory
         debug: true
+
+# rocketmq地址
+rocketmq:
+  name-server: 127.0.0.1:9876
+  # 默认的消息组
+  producer:
+    group: test
+
 
 
 mybatis:
