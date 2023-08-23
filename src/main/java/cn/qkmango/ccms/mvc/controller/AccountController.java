@@ -15,15 +15,16 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
-import cn.qkmango.ccms.domain.vo.LoginResult;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.Jwt;
-import cn.qkmango.ccms.security.token.TokenEntity;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
@@ -49,6 +50,9 @@ public class AccountController {
     @Resource
     private AccountService service;
 
+    @Value("${spring.mvc.servlet.path}")
+    private String contextPath;
+
     @Resource
     private Jwt jwt;
 
@@ -60,28 +64,28 @@ public class AccountController {
      * @throws LoginException 登陆异常登陆失败
      */
     @PostMapping("system-login.do")
-    public R<Object> systemLogin(@Validated(Query.Login.class) Account account) throws LoginException {
+    public R<Object> systemLogin(@Validated(Query.Login.class) Account account, HttpServletResponse response) throws LoginException {
         Account loginAccount = service.systemLogin(account);
-        // 创建 TokenEntity, 包含 token 和 过期时间
-        TokenEntity tokenEntity = jwt.createEntity(loginAccount);
-        LoginResult resp = new LoginResult(loginAccount, tokenEntity);
-        return R.success(resp, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
+        Cookie cookie = new Cookie("Authorization", jwt.create(loginAccount));
+        cookie.setMaxAge(jwt.getExpire());
+        cookie.setPath("/api/");
+        response.addCookie(cookie);
+        return R.success(loginAccount, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
     }
 
     /**
      * 使用授权码登陆
      * <p>授权码为第三方认证后回调 {@link cn.qkmango.ccms.mvc.controller.AuthenticationController#callback(PlatformType, String, Map)}
      * 时返回的重定向URL中的授权码</p>
-     *
-     * @return
      */
     @PostMapping("access-login.do")
-    public R accessLogin(@NotBlank String accessCode) throws LoginException {
+    public R accessLogin(@NotBlank String accessCode, HttpServletResponse response) throws LoginException {
         Account loginAccount = service.accessLogin(accessCode);
-        // 创建 TokenEntity, 包含 token 和 过期时间
-        TokenEntity tokenEntity = jwt.createEntity(loginAccount);
-        LoginResult resp = new LoginResult(loginAccount, tokenEntity);
-        return R.success(resp, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
+        Cookie cookie = new Cookie("Authorization", jwt.create(loginAccount));
+        cookie.setMaxAge(jwt.getExpire());
+        cookie.setPath("/api/");
+        response.addCookie(cookie);
+        return R.success(loginAccount, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
     }
 
 
@@ -90,8 +94,6 @@ public class AccountController {
      * 修改当前登陆账户的密码
      *
      * @param dto 新的密码
-     * @return 结果
-     * @throws UpdateException 修改失败
      */
 
     @PostMapping("update/password.do")
@@ -180,7 +182,6 @@ public class AccountController {
     @PostMapping("update/email.do")
     public R updateEmail(@Email String email,
                          @Pattern(regexp = "^[a-zA-Z0-9]{5}$") String captcha) throws UpdateException {
-
         Integer account = AccountHolder.getId();
         service.updateEmail(account, email, captcha);
         return R.success(ms.getMessage("db.account.update.email.success", null, LocaleContextHolder.getLocale()));

@@ -3,6 +3,7 @@ package cn.qkmango.ccms.web.interceptor;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.Jwt;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -25,11 +26,23 @@ public class TokenInterceptor implements HandlerInterceptor {
     }
 
     /**
-     * 在请求处理之前进行调用（Controller方法调用之前）解析 token 并将用户信息存入 UserSession
+     * 在请求处理之前进行调用（Controller方法调用之前）解析 token 并将用户信息存入 AccountHolder
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = request.getHeader("Authorization");
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+//        String token = request.getHeader("Authorization");
+//        Claims claims = jwt.parser(token);
+
+        String token = null;
+        String cookieName = "Authorization";
+        Cookie[] cookies = request.getCookies();
+        for (int i = 0; cookies != null && i < cookies.length; i++) {
+            if (cookieName.equals(cookies[i].getName())) {
+                token = cookies[i].getValue();
+                break;
+            }
+        }
+
         Claims claims = jwt.parser(token);
 
         // 将解析的用户信息 Map<String,Object> claims 存入 AccountHolder

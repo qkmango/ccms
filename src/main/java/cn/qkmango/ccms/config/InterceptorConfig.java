@@ -26,24 +26,16 @@ public class InterceptorConfig implements WebMvcConfigurer {
         // JWT 拦截器, 用于验证 token, 并将用户信息放入 ThreadLocal
         TokenInterceptor tokenInterceptor = new TokenInterceptor(jwt);
         registry.addInterceptor(tokenInterceptor)
-                .addPathPatterns("/**/*.do")
-                .excludePathPatterns("/account/login.do")
-                .excludePathPatterns("/account/logout.do")
-                .excludePathPatterns("/system/setLocale.do")
-                .excludePathPatterns("/common/test.do")
-                .excludePathPatterns("/test/**/*.do");
+                .excludePathPatterns("/account/system-login.do")
+                .excludePathPatterns("/account/access-login.do");
 
         //登陆拦截器
-        // LoginInterceptor loginInterceptor = new LoginInterceptor();
-        // registry.addInterceptor(loginInterceptor)
-        //         .addPathPatterns("/**/*.do")
-        //         .excludePathPatterns("/account/login.do")
-        //         .excludePathPatterns("/account/logout.do")
-        //         .excludePathPatterns("/system/setLocale.do")
-        //         .excludePathPatterns("/common/test.do")
-        //         .excludePathPatterns("/test/**/*.do");
-        //
-        //
+//        LoginInterceptor loginInterceptor = new LoginInterceptor();
+//        registry.addInterceptor(loginInterceptor)
+//                .excludePathPatterns("/account/system-login.do")
+//                .excludePathPatterns("/account/access-login.do");
+
+
         // PermissionsInterceptor permissionsInterceptor = new PermissionsInterceptor();
         // registry.addInterceptor(permissionsInterceptor)
         //         .addPathPatterns("/**/*.do")

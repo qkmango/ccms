@@ -7,7 +7,6 @@ import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel2;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
-import cn.qkmango.ccms.domain.dto.AlipayCreatePayDto;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.ExceptionInfo;
 import cn.qkmango.ccms.domain.entity.Trade;
@@ -18,7 +17,6 @@ import cn.qkmango.ccms.mvc.dao.TradeDao;
 import cn.qkmango.ccms.mvc.service.AlipayService;
 import cn.qkmango.ccms.pay.AlipayConfig;
 import cn.qkmango.ccms.pay.AlipayTradeStatus;
-import cn.qkmango.ccms.security.request.RequestURL;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alipay.api.AlipayApiException;
@@ -36,6 +34,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,9 +70,10 @@ public class AlipayServiceImpl implements AlipayService {
     @Resource
     private TransactionTemplate tx;
 
-    private static final RequestURL REQUEST_URL = new RequestURL("/api/pay/alipay/pay.do");
     // 100
     private static final BigDecimal DIVIDE = new BigDecimal("100");
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     // 支付结果页面需要的数据
     private static final String PAY_RESULT_PAGE_PARAM = URLEncoder.encode(JSON.toJSONString(new ResultPageParam<>()
@@ -83,88 +84,43 @@ public class AlipayServiceImpl implements AlipayService {
                     .setChannel("recharge"))
             , StandardCharsets.UTF_8);
 
-    /**
-     * 创建支付
-     */
     @Override
-    public String createPay(Integer account, AlipayCreatePayDto dto) {
-
+    public String pay(Integer account, Integer amount) throws AlipayApiException {
         // 先判断卡状态
         Card card = cardDao.getRecordByAccount(account);
         if (card.getState() != CardState.normal) {
             return null;
         }
 
-        // 金额为 分
-        int amount = dto.getAmount();
+        //交易ID
         long tradeId = sf.nextId();
+        String subject = "一卡通充值";
 
-        Trade trade = new Trade()
-                .setId(tradeId)
-                .setAccount(account)
-                .setLevel1(TradeLevel1.in)
-                .setLevel2(TradeLevel2.alipay)
-                .setLevel3(TradeLevel3.recharge)
-                .setState(TradeState.processing)
-                .setAmount(amount)
-                .setCreator(account)
-                .setCreateTime(System.currentTimeMillis())
-                .setDescription(dto.getSubject())
-                .setVersion(0);
-
-        Boolean result = tx.execute(status -> {
-            int affectedRows = tradeDao.insert(trade);
-            if (affectedRows != 1) {
-                status.setRollbackOnly();
-                return false;
-            }
-            return true;
-        });
-
-        return Boolean.TRUE.equals(result) ?
-                REQUEST_URL.builder()
-                        .with("subject", dto.getSubject())
-                        .with("traceId", tradeId)
-                        .with("amount", new BigDecimal(amount).divide(DIVIDE))
-                        .build().url() :
-                null;
-    }
-
-    @Override
-    public String pay(String subject, Long traceId, String amount) throws AlipayApiException {
-
-        // TODO 由于是请求此接口是直接在地址栏请求，所以没有携带token 可以先获取 trade，从中获取 accountId
-
-        // 查询 trade
-        Trade trade = tradeDao.getRecordById(traceId);
-        if (trade == null) {
+        //添加交易
+        boolean result = this.insertTrade(tradeId, account, subject, amount);
+        if (!result) {
             return null;
         }
-
-        // 先判断卡状态
-        Card card = cardDao.getRecordByAccount(trade.getAccount());
-        if (card.getState() != CardState.normal) {
-            return null;
-        }
-
 
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
         // 异步通知
         request.setNotifyUrl(config.notify);
 
-
         // 同步跳转页面
-        String redirect = config.redirect.url() + "?result=" + PAY_RESULT_PAGE_PARAM;
-        request.setReturnUrl(redirect);
+        request.setReturnUrl(config.redirect.url() + "?result=" + PAY_RESULT_PAGE_PARAM);
 
+        //配置参数
         JSONObject bizContent = new JSONObject();
-        bizContent.put("subject", subject);                         // 订单标题
-        bizContent.put("out_trade_no", traceId);                    // 我们自己生成的订单编号
-        bizContent.put("total_amount", amount);                     // 订单的总金额
-        bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");   // 固定配置
+        bizContent.put("subject", subject);                                     // 订单标题
+        bizContent.put("out_trade_no", tradeId);                                // 我们自己生成的订单编号
+        bizContent.put("total_amount", new BigDecimal(amount).divide(DIVIDE));  // 订单的总金额
+        bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");               // 固定配置
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, 30);
+        bizContent.put("time_expire", DATE_FORMAT.format(calendar.getTime()));            // 绝对超时时间
 
-        request.setBizContent(bizContent.toString());
         // 执行请求，拿到响应的结果，返回给浏览器
+        request.setBizContent(bizContent.toString());
         AlipayTradePagePayResponse response = client.pageExecute(request);
         if (response.isSuccess()) {
             // 调用SDK生成表单
@@ -261,6 +217,38 @@ public class AlipayServiceImpl implements AlipayService {
                 .setVersion(0);
         exceptionInfoDao.insert(info);
 
+    }
+
+
+    /**
+     * 插入交易
+     *
+     * @param amount 金额，单位分
+     */
+    private boolean insertTrade(long id, Integer account, String subject, int amount) {
+        Trade trade = new Trade()
+                .setId(id)
+                .setAccount(account)
+                .setLevel1(TradeLevel1.in)
+                .setLevel2(TradeLevel2.alipay)
+                .setLevel3(TradeLevel3.recharge)
+                .setState(TradeState.processing)
+                .setAmount(amount)
+                .setCreator(account)
+                .setCreateTime(System.currentTimeMillis())
+                .setDescription(subject)
+                .setVersion(0);
+
+        Boolean result = tx.execute(status -> {
+            int affectedRows = tradeDao.insert(trade);
+            if (affectedRows != 1) {
+                status.setRollbackOnly();
+                return false;
+            }
+            return true;
+        });
+
+        return Boolean.TRUE.equals(result);
     }
 
 }

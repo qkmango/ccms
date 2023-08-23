@@ -52,12 +52,12 @@ public class Jwt {
     /**
      * 创建指定过期时间的token
      */
-    public String create(Account account, long expireIn) {
+    public String create(Account account, long expireAt) {
         return builder
                 .claim("id", account.getId())
                 .claim("role", account.getRole().name())
                 .claim("department", account.getDepartment())
-                .setExpiration(new Date(expireIn))
+                .setExpiration(new Date(expireAt))
                 .compact();
     }
 
@@ -66,8 +66,8 @@ public class Jwt {
      * 创建默认过期时间的token
      */
     public String create(Account account) {
-        long expireIn = System.currentTimeMillis() + this.expire * 1000L;
-        return this.create(account, expireIn);
+        long expireAt = System.currentTimeMillis() + this.expire * 1000L;
+        return this.create(account, expireAt);
     }
 
     /**
@@ -85,6 +85,7 @@ public class Jwt {
      * @return TokenEntity, 包含token和过期时间
      */
     public TokenEntity createEntity(Account account) {
+        //绝对过期时间
         long expireIn = System.currentTimeMillis() + this.expire * 1000L;
         String token = create(account, expireIn);
         return new TokenEntity(token, expireIn);
@@ -106,4 +107,7 @@ public class Jwt {
         return null;
     }
 
+    public int getExpire() {
+        return expire;
+    }
 }
