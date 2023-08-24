@@ -54,7 +54,7 @@ rocketmq:
   name-server: 127.0.0.1:9876
   # 默认的消息组
   producer:
-    group: test
+    group: ccms
 
 
 
@@ -76,3 +76,11 @@ ccms:
   jwt:
     secret: 123456
     expire: 36000
+
+  pay:
+    trade:
+      #支付宝支付超时时间 单位秒
+      timeout: 1800
+      mq:
+        # MQ中订单的 topic
+        topic: pay-trade-alipay-timeout

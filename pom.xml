@@ -33,14 +33,9 @@
             <artifactId>spring-boot-starter</artifactId>
             <version>3.1.0</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.tomcat</groupId>-->
-        <!--            <artifactId>tomcat-api</artifactId>-->
-        <!--            <version>10.1.0</version>-->
-        <!--        </dependency>-->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <version>8.0.33</version>
         </dependency>
         <dependency>
