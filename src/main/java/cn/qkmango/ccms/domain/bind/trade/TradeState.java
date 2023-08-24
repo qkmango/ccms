@@ -9,6 +9,10 @@ package cn.qkmango.ccms.domain.bind.trade;
  */
 public enum TradeState {
     /**
+     * 交易进行中
+     */
+    processing,
+    /**
      * 交易成功
      */
     success,
@@ -17,12 +21,12 @@ public enum TradeState {
      */
     fail,
     /**
-     * 交易进行中
-     */
-    processing,
-    /**
      * 交易已退款
      */
-    refund
+    refund,
+    /**
+     * 超时关闭
+     */
+    close
 
 }
