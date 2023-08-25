@@ -35,7 +35,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department record(Integer id) {
-        return dao.getRecordById(id);
+        return dao.getById(id);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         //最大循环次数 5，防止意外情况的死循环
         byte maxLoop = 5;
         byte i = 0;
-        while ((department = dao.getRecordById(childId)) != null
+        while ((department = dao.getById(childId)) != null
                 &&
                 i++ < maxLoop) {
             chain.addFirst(department);
@@ -74,7 +74,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         Integer parent = department.getParent();
 
         //2. 获取给定的父结点对象父节点对象
-        Department parentRecord = dao.getRecordById(parent);
+        Department parentRecord = dao.getById(parent);
 
         /* 2.
             leaf|middle(!root) , 且parent为0, 前后矛盾, 则抛出异常

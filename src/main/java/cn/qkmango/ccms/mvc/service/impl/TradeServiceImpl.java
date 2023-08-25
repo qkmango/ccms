@@ -64,7 +64,7 @@ public class TradeServiceImpl implements TradeService {
 
     @Override
     public Trade record(Long id) {
-        return dao.getRecordById(id);
+        return dao.getById(id);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class TradeServiceImpl implements TradeService {
         TradeVO vo = new TradeVO();
 
         // 交易记录
-        Trade trade = dao.getRecordById(id);
+        Trade trade = dao.getById(id);
         if (trade == null) {
             return null;
         }
@@ -102,7 +102,7 @@ public class TradeServiceImpl implements TradeService {
         Locale locale = LocaleContextHolder.getLocale();
         // 获取数据库中 trade 数据
         // 判空
-        Trade trade = dao.getRecordById(dto.getId());
+        Trade trade = dao.getById(dto.getId());
         if (trade == null) {
             return R.fail(ms.getMessage("response.no-permission@update", null, locale));
         }

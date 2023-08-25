@@ -81,6 +81,6 @@ public class NoticeServiceImpl implements NoticeService {
      */
     @Override
     public Notice record(Integer id) {
-        return dao.getRecordById(id);
+        return dao.getById(id);
     }
 }

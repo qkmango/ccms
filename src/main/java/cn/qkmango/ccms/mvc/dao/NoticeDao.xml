@@ -3,7 +3,7 @@
 
 <mapper namespace="cn.qkmango.ccms.mvc.dao.NoticeDao">
 
-    <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Notice">
+    <select id="getById" resultType="cn.qkmango.ccms.domain.entity.Notice">
         select id,
                title,
                content,

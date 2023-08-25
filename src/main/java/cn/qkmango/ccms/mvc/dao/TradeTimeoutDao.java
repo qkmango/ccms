@@ -15,7 +15,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface TradeTimeoutDao extends BaseDao<TradeTimeout, Integer> {
 
     @Override
-    TradeTimeout getRecordById(Integer id);
+    TradeTimeout getById(Integer id);
 
     TradeTimeout getRecordByTradeId(Long trade);
 

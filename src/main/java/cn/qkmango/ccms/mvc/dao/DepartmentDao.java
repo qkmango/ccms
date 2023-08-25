@@ -24,7 +24,7 @@ public interface DepartmentDao extends BaseDao<Department, Integer> {
      * @return 部门信息
      */
     @Override
-    Department getRecordById(Integer id);
+    Department getById(Integer id);
 
     List<Department> childList(Integer id);
 

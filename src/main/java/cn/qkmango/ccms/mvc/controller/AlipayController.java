@@ -4,6 +4,7 @@ package cn.qkmango.ccms.mvc.controller;
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.mvc.service.AlipayService;
+import cn.qkmango.ccms.pay.AlipayNotify;
 import cn.qkmango.ccms.pay.AlipayTradeStatus;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import com.alipay.api.AlipayApiException;
@@ -39,7 +40,7 @@ public class AlipayController {
      * 支付接口
      * subject=xxx&traceId=xxx&amount=xxx
      *
-     * @param amount  订单的总金额
+     * @param amount 订单的总金额
      */
     @Permission(Role.user)
     @GetMapping(value = "/pay.do", produces = MediaType.TEXT_HTML_VALUE)
@@ -58,7 +59,7 @@ public class AlipayController {
      * @param request       http请求
      */
     @PostMapping("/notify.do")
-    public void payNotify(
+    public void notify(
             @RequestParam("trade_no") String alipayTradeNo,
             @RequestParam("out_trade_no") Long tradeId,
             @RequestParam("gmt_payment") String gmtPayment,
@@ -67,7 +68,16 @@ public class AlipayController {
             @RequestParam("total_amount") String totalAmount,
             @RequestParam("sign") String sign,
             HttpServletRequest request) throws AlipayApiException {
-        service.payNotify(alipayTradeNo, tradeId, gmtPayment, receiptAmount, status, totalAmount, sign, request);
+        AlipayNotify notify = new AlipayNotify();
+        notify.alipayTradeNo = alipayTradeNo;
+        notify.receiptAmount = receiptAmount;
+        notify.totalAmount = totalAmount;
+        notify.gmtPayment = gmtPayment;
+        notify.tradeId = tradeId;
+        notify.status = status;
+        notify.sign = sign;
+
+        service.notify(notify, request);
     }
 
 }

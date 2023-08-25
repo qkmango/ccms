@@ -76,7 +76,7 @@
         LIMIT #{limit}
     </select>
 
-    <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Message">
+    <select id="getById" resultType="cn.qkmango.ccms.domain.entity.Message">
         select id, author, content, create_time
         from t_message
         where id = #{id}

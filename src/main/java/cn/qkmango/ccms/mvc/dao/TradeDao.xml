@@ -40,6 +40,15 @@
           and version = #{version}
     </update>
 
+    <update id="payed">
+        update t_trade
+        set state   = 'success',
+            out_id  = #{outId},
+            version = version + 1
+        where id = #{id}
+          and version = #{version}
+    </update>
+
     <select id="list" resultType="cn.qkmango.ccms.domain.entity.Trade">
         select SQL_CALC_FOUND_ROWS
         id,
@@ -85,7 +94,7 @@
         LIMIT #{skipCount},#{limit}
     </select>
 
-    <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Trade">
+    <select id="getById" resultType="cn.qkmango.ccms.domain.entity.Trade">
         select id,
                account,
                level1,

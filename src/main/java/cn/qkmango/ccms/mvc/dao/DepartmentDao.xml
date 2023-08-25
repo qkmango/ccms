@@ -16,7 +16,7 @@
                 #{type})
     </insert>
 
-    <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.Department">
+    <select id="getById" resultType="cn.qkmango.ccms.domain.entity.Department">
         select id,
                name,
                parent,

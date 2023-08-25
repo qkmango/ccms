@@ -20,9 +20,11 @@ public interface TradeDao extends BaseDao<Trade, Long> {
     int insert(Trade trade);
 
     @Override
-    Trade getRecordById(Long id);
+    Trade getById(Long id);
 
     List<Trade> list(Pagination<TradeQueryDto> pagination);
 
     int updateState(Long id, TradeState state, Integer version);
+
+    int payed(Long id, String outId, Integer version);
 }

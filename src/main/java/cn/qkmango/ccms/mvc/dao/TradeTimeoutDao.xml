@@ -13,7 +13,7 @@
         where trade = ${trade}
     </delete>
 
-    <select id="getRecordById" resultType="cn.qkmango.ccms.domain.entity.TradeTimeout">
+    <select id="getById" resultType="cn.qkmango.ccms.domain.entity.TradeTimeout">
         select id, trade, timeout
         from t_trade_timeout
         where id = #{id};

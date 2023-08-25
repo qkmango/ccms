@@ -8,6 +8,7 @@ import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel2;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
+import cn.qkmango.ccms.domain.bo.TradePayTimeout;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.ExceptionInfo;
 import cn.qkmango.ccms.domain.entity.Trade;
@@ -19,6 +20,7 @@ import cn.qkmango.ccms.mvc.dao.TradeDao;
 import cn.qkmango.ccms.mvc.dao.TradeTimeoutDao;
 import cn.qkmango.ccms.mvc.service.AlipayService;
 import cn.qkmango.ccms.pay.AlipayConfig;
+import cn.qkmango.ccms.pay.AlipayNotify;
 import cn.qkmango.ccms.pay.AlipayTradeStatus;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
@@ -106,38 +108,34 @@ public class AlipayServiceImpl implements AlipayService {
         long tradeId = sf.nextId();
         String subject = "一卡通充值";
 
-        // 2. 发送延迟消息，让订单超时时关闭订单
-        this.sendMQ(tradeId);
-
         // 绝对超时时间
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.SECOND, TRADE_TIMEOUT);
-        // 3. 向数据库中添加交易记录
+        // 2. 向数据库中添加交易记录
         boolean result = this.insert(tradeId, account, subject, amount, calendar.getTimeInMillis());
         if (!result) {
             return null;
         }
 
-        // 4. 构建支付宝支付页面
+        // 3. 构建支付宝支付表单页面
         String form = this.buildAlipayForm(tradeId, subject, amount, DATE_FORMAT.format(calendar.getTime()));
+
+        // 4. 发送延迟消息，让订单超时时关闭订单
+        this.sendMQ(tradeId);
+
+        // 5. 返回支付宝表单
         return form;
     }
 
 
     @Override
-    public void payNotify(
-            String alipayTradeNo,
-            Long tradeId,
-            String gmtPayment,
-            String receiptAmount,
-            AlipayTradeStatus alipayTradeStatus,
-            String totalAmount,
-            String sign,
-            HttpServletRequest request) throws AlipayApiException {
-
+    public void notify(AlipayNotify notify, HttpServletRequest request) throws AlipayApiException {
         // 1. 判断是否支付成功
-        // TRADE_SUCCESS 交易支付成功
-        if (alipayTradeStatus != AlipayTradeStatus.TRADE_SUCCESS) {
+        // TRADE_SUCCESS(可以退款) 商家开通的产品支持退款功能的前提下，买家付款成功
+        // 另外如果签约的产品支持退款，并且对应的产品默认支持能收到 TRADE_SUCCESS 或 TRADE_FINISHED 状态，
+        //      该笔会先收到 TRADE_SUCCESS 交易状态，然后超过 交易有效退款时间 该笔交易会再次收到 TRADE_FINISHED 状态，
+        //      实际该笔交易只支付了一次，切勿认为该笔交易支付两次
+        if (notify.status != AlipayTradeStatus.TRADE_SUCCESS) {
             return;
         }
 
@@ -149,52 +147,57 @@ public class AlipayServiceImpl implements AlipayService {
 
         // 2. 支付宝验签
         String content = AlipaySignature.getSignCheckContentV1(params);
-        boolean checkSignature = AlipaySignature.rsa256CheckContent(content, sign, config.alipayPublicKey, "UTF-8"); // 验证签名
+        boolean checkSignature = AlipaySignature.rsa256CheckContent(content, notify.sign, config.alipayPublicKey, "UTF-8"); // 验证签名
         if (!checkSignature) {
             return;
         }
 
         // 获取 交易
-        Trade trade = tradeDao.getRecordById(tradeId);
+        Trade trade = tradeDao.getById(notify.tradeId);
         if (trade == null) {
-            insertExceptionInfo(tradeId, null, totalAmount);
+            // insertExceptionInfo(notify.tradeId, null, notify.totalAmount);
+            // TODO 退款
             return;
         }
         Integer account = trade.getAccount();
 
         // 3. 支付成功，修改交易状态为 SUCCESS, 将金额添加到一卡通
         // 版本号一定是 0，如果不为0则说明已经被修改
-        Integer version = 0;
         tx.execute(status -> {
             int affectedRows;
             // 回滚点
             Object savepoint = status.createSavepoint();
-
             // 修改交易状态
-            affectedRows = tradeDao.updateState(tradeId, TradeState.success, version);
+            affectedRows = tradeDao.payed(notify.tradeId, notify.alipayTradeNo, 0);
             if (affectedRows != 1) {
-                // status.setRollbackOnly();
+                // TODO 退款
                 status.rollbackToSavepoint(savepoint);
-                insertExceptionInfo(tradeId, account, totalAmount);
                 return null;
             }
 
             // 检查卡
             Card card = cardDao.getRecordByAccount(account);
             if (card == null || card.getState() != CardState.normal) {
-                insertExceptionInfo(tradeId, account, totalAmount);
+                // TODO 退款
+                return null;
             }
 
             // 将金额添加到一卡通
             affectedRows = cardDao.addBalance(account, trade.getAmount(), card.getVersion());
             if (affectedRows != 1) {
                 status.rollbackToSavepoint(savepoint);
-                insertExceptionInfo(tradeId, account, totalAmount);
+                // TODO 退款
                 return null;
             }
 
             return null;
         });
+    }
+
+    @Override
+    public void refund(Long id) {
+        Trade trade = tradeDao.getById(id);
+
     }
 
     /**
@@ -259,8 +262,11 @@ public class AlipayServiceImpl implements AlipayService {
      * 超时时间30分钟
      */
     private void sendMQ(long tradeId) {
+        TradePayTimeout timeout = new TradePayTimeout()
+                .setTrade(tradeId)
+                .setRetry(5);
         mq.asyncSend(TOPIC,
-                MessageBuilder.withPayload(tradeId).build(),
+                MessageBuilder.withPayload(timeout).build(),
                 new SendCallback() {
                     @Override
                     public void onSuccess(SendResult sendResult) {

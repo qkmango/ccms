@@ -19,7 +19,7 @@ import java.util.List;
 public interface OpenPlatformDao extends BaseDao<OpenPlatformDao, Integer> {
 
     @Override
-    OpenPlatformDao getRecordById(Integer id);
+    OpenPlatformDao getById(Integer id);
 
     OpenPlatform getRecordByUid(String uid);
 

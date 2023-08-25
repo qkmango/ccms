@@ -90,6 +90,6 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public Message record(Integer id) {
-        return dao.getRecordById(id);
+        return dao.getById(id);
     }
 }
