@@ -44,7 +44,7 @@
         SELECT LAST_INSERT_ID()
     </select>
 
-    <select id="getRecordByAccount" resultType="cn.qkmango.ccms.domain.entity.Card">
+    <select id="getByAccount" resultType="cn.qkmango.ccms.domain.entity.Card">
         select id,
                balance,
                state,

@@ -99,7 +99,7 @@ public class AlipayServiceImpl implements AlipayService {
     @Override
     public String pay(Integer account, Integer amount) throws AlipayApiException {
         // 1. 先判断卡状态
-        Card card = cardDao.getRecordByAccount(account);
+        Card card = cardDao.getByAccount(account);
         if (card.getState() != CardState.normal) {
             return null;
         }
@@ -129,14 +129,14 @@ public class AlipayServiceImpl implements AlipayService {
 
 
     @Override
-    public void notify(AlipayNotify notify, HttpServletRequest request) throws AlipayApiException {
+    public boolean notify(AlipayNotify notify, HttpServletRequest request) throws AlipayApiException {
         // 1. 判断是否支付成功
         // TRADE_SUCCESS(可以退款) 商家开通的产品支持退款功能的前提下，买家付款成功
         // 另外如果签约的产品支持退款，并且对应的产品默认支持能收到 TRADE_SUCCESS 或 TRADE_FINISHED 状态，
         //      该笔会先收到 TRADE_SUCCESS 交易状态，然后超过 交易有效退款时间 该笔交易会再次收到 TRADE_FINISHED 状态，
         //      实际该笔交易只支付了一次，切勿认为该笔交易支付两次
         if (notify.status != AlipayTradeStatus.TRADE_SUCCESS) {
-            return;
+            return false;
         }
 
         Map<String, String> params = new HashMap<>();
@@ -149,7 +149,7 @@ public class AlipayServiceImpl implements AlipayService {
         String content = AlipaySignature.getSignCheckContentV1(params);
         boolean checkSignature = AlipaySignature.rsa256CheckContent(content, notify.sign, config.alipayPublicKey, "UTF-8"); // 验证签名
         if (!checkSignature) {
-            return;
+            return false;
         }
 
         // 获取 交易
@@ -157,13 +157,13 @@ public class AlipayServiceImpl implements AlipayService {
         if (trade == null) {
             // insertExceptionInfo(notify.tradeId, null, notify.totalAmount);
             // TODO 退款
-            return;
+            return false;
         }
         Integer account = trade.getAccount();
 
         // 3. 支付成功，修改交易状态为 SUCCESS, 将金额添加到一卡通
         // 版本号一定是 0，如果不为0则说明已经被修改
-        tx.execute(status -> {
+        Boolean result = tx.execute(status -> {
             int affectedRows;
             // 回滚点
             Object savepoint = status.createSavepoint();
@@ -172,14 +172,14 @@ public class AlipayServiceImpl implements AlipayService {
             if (affectedRows != 1) {
                 // TODO 退款
                 status.rollbackToSavepoint(savepoint);
-                return null;
+                return false;
             }
 
             // 检查卡
-            Card card = cardDao.getRecordByAccount(account);
+            Card card = cardDao.getByAccount(account);
             if (card == null || card.getState() != CardState.normal) {
                 // TODO 退款
-                return null;
+                return false;
             }
 
             // 将金额添加到一卡通
@@ -187,11 +187,11 @@ public class AlipayServiceImpl implements AlipayService {
             if (affectedRows != 1) {
                 status.rollbackToSavepoint(savepoint);
                 // TODO 退款
-                return null;
+                return false;
             }
-
-            return null;
+            return true;
         });
+        return Boolean.TRUE.equals(result);
     }
 
     @Override

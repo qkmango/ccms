@@ -50,7 +50,7 @@ public interface CardDao {
      * @param account 账户 id
      * @return 校园卡详细信息
      */
-    Card getRecordByAccount(Integer account);
+    Card getByAccount(Integer account);
 
 
     /**

@@ -89,7 +89,7 @@ public class PaySystemServiceImpl implements PaySystemService {
         }
 
         // 2. 检查卡
-        Card card = cardDao.getRecordByAccount(account);
+        Card card = cardDao.getByAccount(account);
         // 卡不存在
         if (card == null) {
             return R.fail(ms.getMessage("db.card.failure@notExist", null, locale));

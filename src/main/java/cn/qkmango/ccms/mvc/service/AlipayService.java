@@ -35,8 +35,9 @@ public interface AlipayService {
      *               - totalAmount   实收金额
      *               - sign          签名
      *               - request       http请求
+     * @return
      */
-    void notify(AlipayNotify notify, HttpServletRequest request) throws AlipayApiException;
+    boolean notify(AlipayNotify notify, HttpServletRequest request) throws AlipayApiException;
 
     /**
      * 退款

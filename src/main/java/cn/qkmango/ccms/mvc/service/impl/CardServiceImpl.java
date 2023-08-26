@@ -75,7 +75,7 @@ public class CardServiceImpl implements CardService {
         Integer amount = dto.getAmount();
 
         // 1. 检查卡
-        Card card = cardDao.getRecordByAccount(account);
+        Card card = cardDao.getByAccount(account);
         // 判断卡是否存在
         if (card == null) {
             throw new UpdateException(ms.getMessage("db.account.failure@notExist", null, locale));
@@ -127,7 +127,7 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public boolean state(Integer account, CardState state, Integer version) {
-        Card card = cardDao.getRecordByAccount(account);
+        Card card = cardDao.getByAccount(account);
 
         // 判断状态
         // 1. 如果已注销则不能修改
@@ -153,7 +153,7 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public Card recordByAccount(Integer account) {
-        return cardDao.getRecordByAccount(account);
+        return cardDao.getByAccount(account);
     }
 
 }

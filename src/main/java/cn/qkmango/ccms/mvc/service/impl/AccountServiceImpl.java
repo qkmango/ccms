@@ -217,7 +217,7 @@ public class AccountServiceImpl implements AccountService {
 
         // 获取 卡信息/用户信息, 如果是user角色才有卡信息
         if (accountRecord.getRole() == Role.user) {
-            cardRecord = cardDao.getRecordByAccount(accountId);
+            cardRecord = cardDao.getByAccount(accountId);
             userRecord = userDao.getRecordByAccount(accountId);
         }
 
@@ -267,7 +267,7 @@ public class AccountServiceImpl implements AccountService {
         Locale locale = LocaleContextHolder.getLocale();
 
         Integer id = dto.getAccount();
-        Card card = cardDao.getRecordByAccount(id);
+        Card card = cardDao.getByAccount(id);
         // 卡不存在
         if (card == null) {
             return R.fail(ms.getMessage("db.card.failure@notExist", null, locale));

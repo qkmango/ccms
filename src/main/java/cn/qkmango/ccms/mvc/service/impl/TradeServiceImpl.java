@@ -109,7 +109,7 @@ public class TradeServiceImpl implements TradeService {
 
         // 获取数据库中 card 数据
         // 判断卡状态
-        Card card = cardDao.getRecordByAccount(trade.getAccount());
+        Card card = cardDao.getByAccount(trade.getAccount());
         if (card.getState() != CardState.normal) {
             return R.fail(ms.getMessage("db.card.failure@state", null, locale));
         }
