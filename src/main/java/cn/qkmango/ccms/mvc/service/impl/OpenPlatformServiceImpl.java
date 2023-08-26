@@ -1,9 +1,9 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.cache.security.SecurityCache;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.bo.OpenPlatformBo;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
+import cn.qkmango.ccms.middleware.cache.security.SecurityCache;
 import cn.qkmango.ccms.mvc.dao.OpenPlatformDao;
 import cn.qkmango.ccms.mvc.service.OpenPlatformService;
 import com.alibaba.fastjson2.JSON;

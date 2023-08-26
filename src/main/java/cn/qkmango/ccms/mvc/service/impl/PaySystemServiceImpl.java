@@ -1,6 +1,5 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.cache.qrcode.QrCodeCache;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.SnowFlake;
 import cn.qkmango.ccms.domain.bind.CardState;
@@ -12,6 +11,7 @@ import cn.qkmango.ccms.domain.bo.AccountPayQrcode;
 import cn.qkmango.ccms.domain.dto.QrCodeConsume;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.Trade;
+import cn.qkmango.ccms.middleware.cache.qrcode.QrCodeCache;
 import cn.qkmango.ccms.mvc.dao.CardDao;
 import cn.qkmango.ccms.mvc.dao.TradeDao;
 import cn.qkmango.ccms.mvc.service.PaySystemService;

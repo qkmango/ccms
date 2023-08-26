@@ -1,23 +1,18 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.constant.Constant;
 import cn.qkmango.ccms.common.util.SnowFlake;
 import cn.qkmango.ccms.domain.bind.CardState;
-import cn.qkmango.ccms.domain.bind.ExceptionInfoState;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel2;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
 import cn.qkmango.ccms.domain.bo.TradePayTimeout;
 import cn.qkmango.ccms.domain.entity.Card;
-import cn.qkmango.ccms.domain.entity.ExceptionInfo;
 import cn.qkmango.ccms.domain.entity.Trade;
-import cn.qkmango.ccms.domain.entity.TradeTimeout;
 import cn.qkmango.ccms.domain.vo.ResultPageParam;
+import cn.qkmango.ccms.middleware.mq.trade.pay.alipay.timeout.TradePayAlipayTimeoutMQSender;
 import cn.qkmango.ccms.mvc.dao.CardDao;
-import cn.qkmango.ccms.mvc.dao.ExceptionInfoDao;
 import cn.qkmango.ccms.mvc.dao.TradeDao;
-import cn.qkmango.ccms.mvc.dao.TradeTimeoutDao;
 import cn.qkmango.ccms.mvc.service.AlipayService;
 import cn.qkmango.ccms.pay.AlipayConfig;
 import cn.qkmango.ccms.pay.AlipayNotify;
@@ -32,10 +27,6 @@ import com.alipay.api.response.AlipayTradePagePayResponse;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
-import org.apache.rocketmq.client.producer.SendCallback;
-import org.apache.rocketmq.client.producer.SendResult;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -64,29 +55,21 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Resource(name = "snowFlake")
     private SnowFlake sf;
-
     @Resource
     private TradeDao tradeDao;
     @Resource
     private CardDao cardDao;
     @Resource
-    private ExceptionInfoDao exceptionInfoDao;
-    @Resource
-    private TradeTimeoutDao tradeTimeoutDao;
-    @Resource
     private TransactionTemplate tx;
     @Resource
-    private RocketMQTemplate mq;
+    private TradePayAlipayTimeoutMQSender mq;
+
     // 订单支付超时时间，单位 秒
-    private static final int TRADE_TIMEOUT = Constant.PAY_TRADE_TIMEOUT_SECOND;
-    private static final int DELAY_LEVEL = Constant.PAY_TRADE_TIMEOUT_MQ_DELAY_LEVEL;
-    private static final String TOPIC = Constant.PAY_TRADE_TIMEOUT_MQ_TOPIC;
+    private static final int TRADE_TIMEOUT = 30 * 60;
     // 100
     private static final BigDecimal DIVIDE = new BigDecimal("100");
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final Logger logger = Logger.getLogger(AlipayServiceImpl.class);
-
-
     // 支付结果页面需要的数据
     private static final String PAY_RESULT_PAGE_PARAM = URLEncoder.encode(JSON.toJSONString(new ResultPageParam<>()
                     .setSuccess(true)
@@ -95,6 +78,7 @@ public class AlipayServiceImpl implements AlipayService {
                     .setType("channel")
                     .setChannel("recharge"))
             , StandardCharsets.UTF_8);
+
 
     @Override
     public String pay(Integer account, Integer amount) throws AlipayApiException {
@@ -108,20 +92,20 @@ public class AlipayServiceImpl implements AlipayService {
         long tradeId = sf.nextId();
         String subject = "一卡通充值";
 
-        // 绝对超时时间
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, TRADE_TIMEOUT);
         // 2. 向数据库中添加交易记录
-        boolean result = this.insert(tradeId, account, subject, amount, calendar.getTimeInMillis());
+        boolean result = this.insert(tradeId, account, subject, amount);
         if (!result) {
             return null;
         }
 
         // 3. 构建支付宝支付表单页面
+        // 绝对超时时间
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, TRADE_TIMEOUT);
         String form = this.buildAlipayForm(tradeId, subject, amount, DATE_FORMAT.format(calendar.getTime()));
 
         // 4. 发送延迟消息，让订单超时时关闭订单
-        this.sendMQ(tradeId);
+        mq.send(new TradePayTimeout(tradeId, 5));
 
         // 5. 返回支付宝表单
         return form;
@@ -155,7 +139,6 @@ public class AlipayServiceImpl implements AlipayService {
         // 获取 交易
         Trade trade = tradeDao.getById(notify.tradeId);
         if (trade == null) {
-            // insertExceptionInfo(notify.tradeId, null, notify.totalAmount);
             // TODO 退款
             return false;
         }
@@ -194,33 +177,10 @@ public class AlipayServiceImpl implements AlipayService {
         return Boolean.TRUE.equals(result);
     }
 
-    @Override
-    public void refund(Long id) {
-        Trade trade = tradeDao.getById(id);
-
-    }
-
-    /**
-     * 添加异常信息
-     */
-    private void insertExceptionInfo(Long tradeId, Integer account, String totalAmount) {
-        String description = "交易ID [%s] 用户ID [%s]用户在支付宝成功支付一笔金额为 [%s] 的金额后系统未成功处理，导致用户实际支付了一笔金额但系统没有将其添加到账户(一卡通中)";
-        ExceptionInfo info = new ExceptionInfo()
-                .setRelationId(tradeId)
-                .setDescription(String.format(description, tradeId, account, totalAmount))
-                .setSolution(String.format("需要管理员手动对其账户(一卡通)进行充值金额为 %s", totalAmount))
-                .setState(ExceptionInfoState.pending)
-                .setVersion(0);
-        exceptionInfoDao.insert(info);
-
-    }
-
-
     /**
      * 插入交易
      */
-    private boolean insert(long id, Integer account, String subject, int amount, long timeout) {
-        // 交易记录
+    private boolean insert(long id, Integer account, String subject, int amount) {
         Trade trade = new Trade()
                 .setId(id)
                 .setAccount(account)
@@ -234,19 +194,9 @@ public class AlipayServiceImpl implements AlipayService {
                 .setDescription(subject)
                 .setVersion(0);
 
-        // 交易超时时间记录
-        TradeTimeout tradeTimeout = new TradeTimeout()
-                .setTrade(id)
-                .setTimeout(timeout);
-
         Boolean result = tx.execute(status -> {
             int affectedRows;
             affectedRows = tradeDao.insert(trade);
-            if (affectedRows != 1) {
-                status.setRollbackOnly();
-                return false;
-            }
-            affectedRows = tradeTimeoutDao.insert(tradeTimeout);
             if (affectedRows != 1) {
                 status.setRollbackOnly();
                 return false;
@@ -255,30 +205,6 @@ public class AlipayServiceImpl implements AlipayService {
         });
 
         return Boolean.TRUE.equals(result);
-    }
-
-    /**
-     * 向MQ发送异步订单消息
-     * 超时时间30分钟
-     */
-    private void sendMQ(long tradeId) {
-        TradePayTimeout timeout = new TradePayTimeout()
-                .setTrade(tradeId)
-                .setRetry(5);
-        mq.asyncSend(TOPIC,
-                MessageBuilder.withPayload(timeout).build(),
-                new SendCallback() {
-                    @Override
-                    public void onSuccess(SendResult sendResult) {
-                        logger.info(sendResult);
-                    }
-
-                    @Override
-                    public void onException(Throwable throwable) {
-                        logger.error(throwable.getMessage());
-                    }
-                },
-                3000, DELAY_LEVEL);
     }
 
     /**

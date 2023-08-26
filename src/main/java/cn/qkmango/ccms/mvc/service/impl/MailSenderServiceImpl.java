@@ -1,16 +1,15 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.cache.captcha.DefaultCaptchaCache;
 import cn.qkmango.ccms.common.util.MailTemplate;
-import cn.qkmango.ccms.common.util.MailUtil;
+import cn.qkmango.ccms.domain.bo.Mail;
 import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.middleware.cache.captcha.DefaultCaptchaCache;
+import cn.qkmango.ccms.middleware.mq.mail.MailSendMQSender;
 import cn.qkmango.ccms.mvc.service.MailSenderService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import jakarta.annotation.Resource;
-import jakarta.mail.MessagingException;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.mail.MailSendException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,19 +21,19 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class MailSenderServiceImpl implements MailSenderService {
-
-
-    @Resource
-    private ReloadableResourceBundleMessageSource message;
-
-    @Resource
-    private MailUtil mailUtil;
-
+    @Value("${spring.mail.from}")
+    private String from;
     @Resource
     private MailTemplate mailTemplate;
-
     @Resource(name = "captchaCache")
     private DefaultCaptchaCache captchaCache;
+    @Resource
+    private MailSendMQSender senderMQ;
+    @Resource
+    private JavaMailSender javaMailSender;
+
+    // private final Logger logger = Logger.getLogger(this.getClass());
+
 
     /**
      * 发送修改邮箱验证码
@@ -48,14 +47,20 @@ public class MailSenderServiceImpl implements MailSenderService {
 
         // 生成验证码，并存入缓存
         String captcha = captchaCache.set(new String[]{id.toString(), email});
-        String mailContent = mailTemplate.build(captcha);
-        // 发送验证码到用户邮箱
-        // 发送邮件
-        try {
-            mailUtil.sendWithHtml(email, "修改邮箱验证码", mailContent);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            throw new MailSendException(message.getMessage("response.email.send.failure", null, LocaleContextHolder.getLocale()));
-        }
+        String content = mailTemplate.build(captcha);
+
+        // 将消息发送到消息队列
+        senderMQ.send( new Mail(from, email, "修改邮箱验证码", content));
+        // try {
+            // MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            // MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+            // mimeMessageHelper.setFrom(from);
+            // mimeMessageHelper.setTo(email);
+            // mimeMessageHelper.setSubject("修改邮箱验证码");
+            // mimeMessageHelper.setText(content, true);
+
+        // } catch (MessagingException e) {
+        //     logger.info("邮件构建失败");
+        // }
     }
 }

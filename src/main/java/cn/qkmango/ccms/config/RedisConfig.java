@@ -1,9 +1,9 @@
 package cn.qkmango.ccms.config;
 
-import cn.qkmango.ccms.common.cache.captcha.DefaultCaptchaCache;
-import cn.qkmango.ccms.common.cache.qrcode.DefaultQrCodeCache;
-import cn.qkmango.ccms.common.cache.security.DefaultSecurityCache;
-import cn.qkmango.ccms.common.cache.security.SecurityCache;
+import cn.qkmango.ccms.middleware.cache.captcha.DefaultCaptchaCache;
+import cn.qkmango.ccms.middleware.cache.qrcode.DefaultQrCodeCache;
+import cn.qkmango.ccms.middleware.cache.security.DefaultSecurityCache;
+import cn.qkmango.ccms.middleware.cache.security.SecurityCache;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

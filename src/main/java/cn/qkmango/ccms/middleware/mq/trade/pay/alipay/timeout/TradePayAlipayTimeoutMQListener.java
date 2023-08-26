@@ -1,12 +1,10 @@
-package cn.qkmango.ccms.pay;
+package cn.qkmango.ccms.middleware.mq.trade.pay.alipay.timeout;
 
-import cn.qkmango.ccms.common.constant.Constant;
 import cn.qkmango.ccms.common.exception.GlobalExceptionHandler;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
 import cn.qkmango.ccms.domain.bo.TradePayTimeout;
 import cn.qkmango.ccms.domain.entity.Trade;
 import cn.qkmango.ccms.mvc.dao.TradeDao;
-import cn.qkmango.ccms.mvc.dao.TradeTimeoutDao;
 import com.alibaba.fastjson2.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -14,39 +12,33 @@ import com.alipay.api.request.AlipayTradeCloseRequest;
 import com.alipay.api.response.AlipayTradeCloseResponse;
 import jakarta.annotation.Resource;
 import org.apache.log4j.Logger;
-import org.apache.rocketmq.client.producer.SendCallback;
-import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * 交易支付订单超时处理（支付宝）
+ * 交易支付订单超时处理监听（支付宝）
  *
  * @author qkmango
  * @version 1.0
  * @date 2023-08-24 19:44
  */
-@Service
+@Service("tradePayAlipayTimeoutMQListener")
 @RocketMQMessageListener(
-        consumerGroup = Constant.PAY_TRADE_MQ_CONSUMER_GROUP,
-        topic = Constant.PAY_TRADE_TIMEOUT_MQ_TOPIC
+        consumerGroup = TradePayAlipayTimeoutMQConfig.GROUP,
+        topic = TradePayAlipayTimeoutMQConfig.TOPIC
 )
-public class TradeTimeoutMQListener implements RocketMQListener<TradePayTimeout> {
+public class TradePayAlipayTimeoutMQListener implements RocketMQListener<TradePayTimeout> {
 
     @Resource(name = "alipayClient")
     private AlipayClient client;
     @Resource
     private TradeDao tradeDao;
     @Resource
-    private TradeTimeoutDao tradeTimeoutDao;
-    @Resource
     private TransactionTemplate tx;
     @Resource
-    private RocketMQTemplate mq;
+    private TradePayAlipayTimeoutMQSender mq;
 
     private static final Logger logger = Logger.getLogger(GlobalExceptionHandler.class);
 
@@ -55,6 +47,7 @@ public class TradeTimeoutMQListener implements RocketMQListener<TradePayTimeout>
      */
     @Override
     public void onMessage(TradePayTimeout timeout) {
+        System.out.println("Trade消费成功: " + timeout.getTrade());
         Long tradeId = timeout.getTrade();
 
         Trade trade = tradeDao.getById(tradeId);
@@ -88,7 +81,8 @@ public class TradeTimeoutMQListener implements RocketMQListener<TradePayTimeout>
                         logger.warn("支付宝关单重试多次失败");
                         return;
                     }
-                    sendRetryMQ(tradeId, --retry);
+                    // 重试,向MQ发送重试关单
+                    mq.send(new TradePayTimeout(tradeId, --retry));
                     return;
                 }
                 // 交易不存在(用户未登录支付宝)，关闭交易
@@ -103,40 +97,12 @@ public class TradeTimeoutMQListener implements RocketMQListener<TradePayTimeout>
                         "ACQ.REASON_TRADE_STATUS_INVALID",  // 交易状态异常,非待支付状态下不支持关单操作
                         "ACQ.REASON_ILLEGAL_STATUS"         // 交易状态异常,非待支付状态下不支持关单操作
                         -> {
-
                 }
             }
         } catch (AlipayApiException e) {
             logger.warn(e.getMessage());
         }
         logger.info("超时关闭订单: " + tradeId);
-
-    }
-
-    /**
-     * 向MQ发送重试关单
-     *
-     * @param retry 剩余重试次数，如果请求支付宝异常，重试
-     */
-    public void sendRetryMQ(Long tradeId, int retry) {
-        TradePayTimeout timeout = new TradePayTimeout()
-                .setTrade(tradeId)
-                .setRetry(retry);
-
-        mq.asyncSend(Constant.PAY_TRADE_TIMEOUT_MQ_TOPIC,
-                MessageBuilder.withPayload(timeout).build(),
-                new SendCallback() {
-                    @Override
-                    public void onSuccess(SendResult sendResult) {
-                        logger.info(sendResult);
-                    }
-
-                    @Override
-                    public void onException(Throwable throwable) {
-                        logger.error(throwable.getMessage());
-                    }
-                },
-                3000, Constant.PAY_TREAD_TIMEOUT_RETRY_MQ_DELAY_LEVEL);
     }
 
     /**
@@ -146,11 +112,6 @@ public class TradeTimeoutMQListener implements RocketMQListener<TradePayTimeout>
         tx.execute(status -> {
             int affectedRows;
             affectedRows = tradeDao.updateState(tradeId, TradeState.close, version);
-            if (affectedRows != 1) {
-                status.setRollbackOnly();
-                return null;
-            }
-            affectedRows = tradeTimeoutDao.deleteByTradeId(tradeId);
             if (affectedRows != 1) {
                 status.setRollbackOnly();
                 return null;

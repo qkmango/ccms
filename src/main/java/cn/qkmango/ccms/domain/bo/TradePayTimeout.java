@@ -13,6 +13,14 @@ public class TradePayTimeout {
     // 剩余重试次数，用于请求支付宝关单时，支付宝端系统异常
     private int retry;
 
+    public TradePayTimeout() {
+    }
+
+    public TradePayTimeout(Long trade, int retry) {
+        this.trade = trade;
+        this.retry = retry;
+    }
+
     public Long getTrade() {
         return trade;
     }

@@ -59,7 +59,7 @@ public class AlipayController {
      * @param request       http请求
      */
     @PostMapping("/notify.do")
-    public void notify(
+    public String notify(
             @RequestParam("trade_no") String alipayTradeNo,
             @RequestParam("out_trade_no") Long tradeId,
             @RequestParam("gmt_payment") String gmtPayment,
@@ -77,7 +77,9 @@ public class AlipayController {
         notify.status = status;
         notify.sign = sign;
 
-        service.notify(notify, request);
+        boolean result = service.notify(notify, request);
+        return result ? "success" : "fail";
+
     }
 
 }
