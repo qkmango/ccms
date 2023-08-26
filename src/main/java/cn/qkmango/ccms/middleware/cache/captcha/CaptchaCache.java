@@ -1,6 +1,6 @@
-package cn.qkmango.ccms.common.cache.captcha;
+package cn.qkmango.ccms.middleware.cache.captcha;
 
-import cn.qkmango.ccms.common.cache.BaseCache;
+import cn.qkmango.ccms.middleware.cache.BaseCache;
 
 /**
  * 验证码缓存

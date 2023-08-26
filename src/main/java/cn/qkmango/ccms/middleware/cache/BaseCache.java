@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.cache;
+package cn.qkmango.ccms.middleware.cache;
 
 /**
  * 安全缓存

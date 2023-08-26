@@ -1,6 +1,6 @@
-package cn.qkmango.ccms.common.cache.qrcode;
+package cn.qkmango.ccms.middleware.cache.qrcode;
 
-import cn.qkmango.ccms.common.cache.BaseCache;
+import cn.qkmango.ccms.middleware.cache.BaseCache;
 
 /**
  * 支付二维码缓存

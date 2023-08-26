@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.cache.security;
+package cn.qkmango.ccms.middleware.cache.security;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
 

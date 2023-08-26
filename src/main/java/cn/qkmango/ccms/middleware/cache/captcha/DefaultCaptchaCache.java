@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.cache.captcha;
+package cn.qkmango.ccms.middleware.cache.captcha;
 
 import cn.qkmango.ccms.common.util.CaptchaUtil;
 import org.springframework.data.redis.core.StringRedisTemplate;

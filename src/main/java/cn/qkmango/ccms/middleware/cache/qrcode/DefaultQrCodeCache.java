@@ -1,4 +1,4 @@
-package cn.qkmango.ccms.common.cache.qrcode;
+package cn.qkmango.ccms.middleware.cache.qrcode;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
 

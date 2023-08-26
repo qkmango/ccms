@@ -1,6 +1,6 @@
-package cn.qkmango.ccms.common.cache.security;
+package cn.qkmango.ccms.middleware.cache.security;
 
-import cn.qkmango.ccms.common.cache.BaseCache;
+import cn.qkmango.ccms.middleware.cache.BaseCache;
 
 /**
  * 安全相关的缓存
