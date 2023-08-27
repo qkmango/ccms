@@ -9,6 +9,6 @@ package cn.qkmango.ccms.middleware.mq.mail;
  * @date 2023-08-26 16:58
  */
 public class MailSendMQConfig {
-    public static final String GROUP = "ccms";
+    public static final String GROUP = "mail";
     public static final String TOPIC = "mail";
 }

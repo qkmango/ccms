@@ -2,13 +2,10 @@ package cn.qkmango.ccms.middleware.mq.mail;
 
 import cn.qkmango.ccms.domain.bo.Mail;
 import jakarta.annotation.Resource;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import org.apache.log4j.Logger;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,16 +28,17 @@ public class MailSendMQListener implements RocketMQListener<Mail> {
 
     @Override
     public void onMessage(Mail message) {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        try {
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-            mimeMessageHelper.setFrom(message.getFrom());
-            mimeMessageHelper.setTo(message.getTo());
-            mimeMessageHelper.setSubject(message.getSubject());
-            mimeMessageHelper.setText(message.getContent(), true);
-            javaMailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            logger.info(e.getLocalizedMessage());
-        }
+        // MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        System.out.println("Mail 消费消息" + message.getContent());
+        // try {
+        //     MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        //     mimeMessageHelper.setFrom(message.getFrom());
+        //     mimeMessageHelper.setTo(message.getTo());
+        //     mimeMessageHelper.setSubject(message.getSubject());
+        //     mimeMessageHelper.setText(message.getContent(), true);
+        //     javaMailSender.send(mimeMessage);
+        // } catch (MessagingException e) {
+        //     logger.info(e.getLocalizedMessage());
+        // }
     }
 }

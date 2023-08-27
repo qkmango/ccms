@@ -33,11 +33,13 @@ public class TradePayAlipayTimeoutMQSender implements BaseMQSender<TradePayTimeo
 
     @Override
     public void send(TradePayTimeout msg) {
+        System.out.println("trade 发送成功" + msg.getTrade());
         mq.asyncSend(TOPIC, MessageBuilder.withPayload(msg).build(), CALLBACK, TIMEOUT, 1);
     }
 
     @Override
     public void send(TradePayTimeout msg, SendCallback callback) {
+        System.out.println("trade 发送成功" + msg.getTrade());
         mq.asyncSend(TOPIC, MessageBuilder.withPayload(msg).build(), callback, TIMEOUT, 1);
     }
 
@@ -47,13 +49,13 @@ public class TradePayAlipayTimeoutMQSender implements BaseMQSender<TradePayTimeo
     private class SendCallbackImpl implements SendCallback {
         @Override
         public void onSuccess(SendResult sendResult) {
-            System.out.println("trade 发送成功" + sendResult.getMsgId());
+            // System.out.println("trade 发送成功" + sendResult.getMsgId());
             logger.info(sendResult);
         }
 
         @Override
         public void onException(Throwable throwable) {
-            System.out.println("trade 失败");
+            // System.out.println("trade 失败");
             logger.error(throwable.getMessage());
         }
     }

@@ -49,6 +49,9 @@ public class TradePayAlipayTimeoutMQListener implements RocketMQListener<TradePa
     public void onMessage(TradePayTimeout timeout) {
         System.out.println("Trade消费成功: " + timeout.getTrade());
         Long tradeId = timeout.getTrade();
+        if (tradeId != null) {
+            return;
+        }
 
         Trade trade = tradeDao.getById(tradeId);
         // 如果超时了，交易不在支付中说明，无需修改交易状态（不需要关单）

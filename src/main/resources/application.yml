@@ -51,10 +51,13 @@ spring:
 
 # rocketmq地址
 rocketmq:
-  name-server: 127.0.0.1:9876
+  name-server: localhost:9876
   # 默认的消息组
   producer:
     group: ccms
+    send-message-timeout: 3000
+    retry-times-when-send-failed: 3
+    retry-times-when-send-async-failed: 3
 
 
 

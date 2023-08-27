@@ -30,9 +30,9 @@ public class MailSendMQSender implements BaseMQSender<Mail> {
 
     @Override
     public void send(Mail msg) {
-        System.out.println("Mail消费成功: ");
-        mq.asyncSend(MailSendMQConfig.TOPIC, MessageBuilder.withPayload(msg).build(), CALLBACK, 3000, 0);
-        // mq.sendOneWay(MailSendMQConfig.TOPIC, msg);
+        System.out.println("Mail发送" + msg.getContent());
+        // mq.convertAndSend(MailSendMQConfig.TOPIC, msg);
+        mq.asyncSend(MailSendMQConfig.TOPIC, MessageBuilder.withPayload(msg).build(), CALLBACK, 3000);
     }
 
     @Override
@@ -46,13 +46,13 @@ public class MailSendMQSender implements BaseMQSender<Mail> {
     private class SendCallbackImpl implements SendCallback {
         @Override
         public void onSuccess(SendResult sendResult) {
-            System.out.println("Mail 发送成功");
+            // System.out.println("Mail 发送成功");
             logger.info(sendResult);
         }
 
         @Override
         public void onException(Throwable throwable) {
-            System.out.println("Mail 发送成功");
+            // System.out.println("Mail 发送成功");
             logger.warn(throwable.getMessage());
         }
     }
