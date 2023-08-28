@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Validated
 @RestController
-@RequestMapping("sender")
+@RequestMapping("mail")
 public class MailSenderController {
 
     @Resource
@@ -41,7 +41,7 @@ public class MailSenderController {
     @Permission({Role.admin, Role.user})
     @GetMapping("captcha/update-email.do")
     public R sendCaptchaEmail(@Email String email) {
-        service.sendCaptchaEmail(email);
+        service.sendCaptchaUpdateEmail(email);
         return R.success(ms.getMessage("response.email.send.success", null, LocaleContextHolder.getLocale()));
     }
 

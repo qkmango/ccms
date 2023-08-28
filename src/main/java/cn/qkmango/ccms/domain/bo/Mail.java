@@ -1,16 +1,18 @@
 package cn.qkmango.ccms.domain.bo;
 
+import java.io.Serializable;
+
 /**
- * 邮件
- * <p>用于封装邮件信息</p>
+ * 描述
+ * <p></p>
  *
  * @author qkmango
  * @version 1.0
- * @date 2023-08-26 17:52
+ * @date 2023-08-28 18:38
  */
-public class Mail {
-    private String to;
+public class Mail implements Serializable {
     private String from;
+    private String to;
     private String subject;
     private String content;
 
@@ -24,39 +26,36 @@ public class Mail {
         this.content = content;
     }
 
-    public String getTo() {
-        return to;
-    }
-
-    public Mail setTo(String to) {
-        this.to = to;
-        return this;
-    }
 
     public String getFrom() {
         return from;
     }
 
-    public Mail setFrom(String from) {
+    public void setFrom(String from) {
         this.from = from;
-        return this;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
     }
 
     public String getSubject() {
         return subject;
     }
 
-    public Mail setSubject(String subject) {
+    public void setSubject(String subject) {
         this.subject = subject;
-        return this;
     }
 
     public String getContent() {
         return content;
     }
 
-    public Mail setContent(String content) {
+    public void setContent(String content) {
         this.content = content;
-        return this;
     }
 }

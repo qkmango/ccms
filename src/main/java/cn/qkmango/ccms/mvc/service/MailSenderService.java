@@ -12,9 +12,9 @@ public interface MailSenderService {
     /**
      * 发送修改邮箱验证码
      *
-     * @param email  邮箱
+     * @param email 邮箱
      */
-    void sendCaptchaEmail(String email);
+    void sendCaptchaUpdateEmail(String email);
 
 
 }

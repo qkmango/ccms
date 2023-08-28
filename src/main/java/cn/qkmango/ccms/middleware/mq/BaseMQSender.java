@@ -5,7 +5,7 @@ import org.apache.rocketmq.client.producer.SendCallback;
 /**
  * MQ 消息发送者
  *
- * @param <T> 消息类型
+ * @param <T> 发送的消息类型
  * @author qkmango
  * @version 1.0
  * @date 2023-08-26 15:21

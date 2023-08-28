@@ -84,8 +84,7 @@ public class TradePayAlipayTimeoutMQListener implements RocketMQListener<TradePa
                         logger.warn("支付宝关单重试多次失败");
                         return;
                     }
-                    // 重试,向MQ发送重试关单
-                    mq.send(new TradePayTimeout(tradeId, --retry));
+                    // 重试 TODO
                     return;
                 }
                 // 交易不存在(用户未登录支付宝)，关闭交易
