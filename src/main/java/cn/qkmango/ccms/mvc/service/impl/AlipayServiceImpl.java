@@ -6,7 +6,6 @@ import cn.qkmango.ccms.domain.bind.trade.TradeLevel1;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel2;
 import cn.qkmango.ccms.domain.bind.trade.TradeLevel3;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
-import cn.qkmango.ccms.domain.bo.TradePayTimeout;
 import cn.qkmango.ccms.domain.entity.Card;
 import cn.qkmango.ccms.domain.entity.Trade;
 import cn.qkmango.ccms.domain.vo.ResultPageParam;
@@ -93,7 +92,8 @@ public class AlipayServiceImpl implements AlipayService {
         String subject = "一卡通充值";
 
         // 2. 向数据库中添加交易记录
-        boolean result = this.insert(tradeId, account, subject, amount);
+        // 并发送延迟消息，让订单超时时关闭订单
+        boolean result = this.insertAndSend(tradeId, account, subject, amount);
         if (!result) {
             return null;
         }
@@ -103,9 +103,6 @@ public class AlipayServiceImpl implements AlipayService {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.SECOND, TRADE_TIMEOUT);
         String form = this.buildAlipayForm(tradeId, subject, amount, DATE_FORMAT.format(calendar.getTime()));
-
-        // 4. 发送延迟消息，让订单超时时关闭订单
-        mq.send(new TradePayTimeout(tradeId, 5));
 
         // 5. 返回支付宝表单
         return form;
@@ -178,9 +175,9 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     /**
-     * 插入交易
+     * 将交易插入数据库，并发送延迟消息MQ
      */
-    private boolean insert(long id, Integer account, String subject, int amount) {
+    private boolean insertAndSend(long id, Integer account, String subject, int amount) {
         Trade trade = new Trade()
                 .setId(id)
                 .setAccount(account)
@@ -196,11 +193,20 @@ public class AlipayServiceImpl implements AlipayService {
 
         Boolean result = tx.execute(status -> {
             int affectedRows;
+            // DB
             affectedRows = tradeDao.insert(trade);
             if (affectedRows != 1) {
                 status.setRollbackOnly();
                 return false;
             }
+
+            // MQ
+            boolean send = mq.syncSend(id);
+            if (!send) {
+                status.setRollbackOnly();
+                return false;
+            }
+
             return true;
         });
 

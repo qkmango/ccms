@@ -1,8 +1,6 @@
 package cn.qkmango.ccms.middleware.mq.trade.pay.alipay.timeout;
 
-import cn.qkmango.ccms.common.exception.GlobalExceptionHandler;
 import cn.qkmango.ccms.domain.bind.trade.TradeState;
-import cn.qkmango.ccms.domain.bo.TradePayTimeout;
 import cn.qkmango.ccms.domain.entity.Trade;
 import cn.qkmango.ccms.mvc.dao.TradeDao;
 import com.alibaba.fastjson2.JSONObject;
@@ -14,8 +12,11 @@ import jakarta.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import static cn.qkmango.ccms.middleware.mq.trade.pay.alipay.timeout.TradePayAlipayTimeoutMQConfig.GROUP;
+import static cn.qkmango.ccms.middleware.mq.trade.pay.alipay.timeout.TradePayAlipayTimeoutMQConfig.TOPIC;
 
 /**
  * 交易支付订单超时处理监听（支付宝）
@@ -24,12 +25,9 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @version 1.0
  * @date 2023-08-24 19:44
  */
-@Service("tradePayAlipayTimeoutMQListener")
-@RocketMQMessageListener(
-        consumerGroup = TradePayAlipayTimeoutMQConfig.GROUP,
-        topic = TradePayAlipayTimeoutMQConfig.TOPIC
-)
-public class TradePayAlipayTimeoutMQListener implements RocketMQListener<TradePayTimeout> {
+@Component
+@RocketMQMessageListener(consumerGroup = GROUP, topic = TOPIC)
+public class TradePayAlipayTimeoutMQListener implements RocketMQListener<Long> {
 
     @Resource(name = "alipayClient")
     private AlipayClient client;
@@ -40,21 +38,17 @@ public class TradePayAlipayTimeoutMQListener implements RocketMQListener<TradePa
     @Resource
     private TradePayAlipayTimeoutMQSender mq;
 
-    private static final Logger logger = Logger.getLogger(GlobalExceptionHandler.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     /**
      * 订单超时后处理
      */
     @Override
-    public void onMessage(TradePayTimeout timeout) {
-        System.out.println("Trade消费成功: " + timeout.getTrade());
-        Long tradeId = timeout.getTrade();
-        if (tradeId != null) {
-            return;
-        }
-
+    public void onMessage(Long tradeId) {
+        logger.info("超时关闭订单: " + tradeId);
         Trade trade = tradeDao.getById(tradeId);
-        // 如果超时了，交易不在支付中说明，无需修改交易状态（不需要关单）
+
+        // 1. 判断交易状态：如果超时了，交易不在支付中说明，无需修改交易状态（不需要关单）
         if (trade.getState() != TradeState.processing) {
             return;
         }
@@ -65,46 +59,41 @@ public class TradePayAlipayTimeoutMQListener implements RocketMQListener<TradePa
         JSONObject bizContent = new JSONObject();
         bizContent.put("out_trade_no", tradeId);
         request.setBizContent(bizContent.toString());
-        try {
-            AlipayTradeCloseResponse response = client.execute(request);
-            // 关单成功
-            if (response.isSuccess()) {
-                // 此时如果其他线程修改交易，更新了版本号导系统交易关单失败，
-                // 此时支付宝交易关单无法支付，但系统交易还在待支付
-                this.closeInTrade(tradeId, trade.getVersion());
-                return;
-            }
 
-            // 关单失败
-            switch (response.getSubCode()) {
-                // 系统异常，重新发起请求
-                case "ACQ.SYSTEM_ERROR" -> {
-                    int retry = timeout.getRetry();
-                    if (retry <= 0) {
-                        logger.warn("支付宝关单重试多次失败");
-                        return;
-                    }
-                    // 重试 TODO
-                    return;
-                }
-                // 交易不存在(用户未登录支付宝)，关闭交易
-                case "ACQ.TRADE_NOT_EXIST" -> {
-                    // 此时如果其他线程修改交易，更新了版本号导系统交易关单失败，
-                    // 此时支付宝交易也超时无法支付，但系统交易还在待支付
-                    this.closeInTrade(tradeId, trade.getVersion());
-                    return;
-                }
-                case "ACQ.TRADE_STATUS_ERROR",              // 交易状态不合法,只有等待买家付款状态下才能发起交易关闭
-                        "ACQ.INVALID_PARAMETER",            // 参数无效
-                        "ACQ.REASON_TRADE_STATUS_INVALID",  // 交易状态异常,非待支付状态下不支持关单操作
-                        "ACQ.REASON_ILLEGAL_STATUS"         // 交易状态异常,非待支付状态下不支持关单操作
-                        -> {
-                }
-            }
+        // 2. 发起关单请求
+        AlipayTradeCloseResponse response = null;
+        try {
+            response = client.execute(request);
         } catch (AlipayApiException e) {
             logger.warn(e.getMessage());
         }
-        logger.info("超时关闭订单: " + tradeId);
+        if (response == null) {
+            return;
+        }
+
+        // 3A关单成功
+        if (response.isSuccess()) {
+            // 此时如果其他线程修改交易，更新了版本号导系统交易关单失败，
+            // 此时支付宝交易关单无法支付，但系统交易还在待支付
+            this.closeInTrade(tradeId, trade.getVersion());
+            return;
+        }
+        // 3B关单失败
+        switch (response.getSubCode()) {
+            // 系统异常，重新发起请求
+            case "ACQ.SYSTEM_ERROR" -> throw new RuntimeException("支付宝系统异常");
+            // 交易不存在(用户未登录支付宝)，关闭交易
+            // 此时如果其他线程修改交易，更新了版本号导系统交易关单失败，
+            // 此时支付宝交易也超时无法支付，但系统交易还在待支付
+            case "ACQ.TRADE_NOT_EXIST" -> {
+                this.closeInTrade(tradeId, trade.getVersion());
+            }
+            case "ACQ.TRADE_STATUS_ERROR",              // 交易状态不合法,只有等待买家付款状态下才能发起交易关闭
+                    "ACQ.INVALID_PARAMETER",            // 参数无效
+                    "ACQ.REASON_TRADE_STATUS_INVALID",  // 交易状态异常,非待支付状态下不支持关单操作
+                    "ACQ.REASON_ILLEGAL_STATUS"         // 交易状态异常,非待支付状态下不支持关单操作
+                    -> throw new RuntimeException("交易状态异常,非待支付状态下不支持关单操作");
+        }
     }
 
     /**

@@ -13,18 +13,26 @@ import org.apache.rocketmq.client.producer.SendCallback;
 public interface BaseMQSender<T> {
 
     /**
-     * 发送消息
-     * 默认回调
+     * 同步发送
      *
-     * @param msg 消息
+     * @return 发送是否成功
      */
-    void send(T msg);
+    default boolean syncSend(T msg) {
+        throw new UnsupportedOperationException("未实现该方法");
+    }
 
     /**
-     * 发送消息
-     *
-     * @param msg      消息
-     * @param callback 回调
+     * 异步发送
      */
-    void send(T msg, SendCallback callback);
+    default void asyncSend(T msg, SendCallback callback) {
+        throw new UnsupportedOperationException("未实现该方法");
+    }
+
+    /**
+     * 发送
+     */
+    default void send(T msg) {
+        throw new UnsupportedOperationException("未实现该方法");
+    }
+
 }

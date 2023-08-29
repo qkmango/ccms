@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class TokenInterceptor implements HandlerInterceptor {
 
     private final Jwt jwt;
+    private static final String TOKEN_NAME = "Authorization";
 
     public TokenInterceptor(Jwt jwt) {
         this.jwt = jwt;
@@ -30,22 +31,23 @@ public class TokenInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-//        String token = request.getHeader("Authorization");
-//        Claims claims = jwt.parser(token);
-
         String token = null;
-        String cookieName = "Authorization";
-        Cookie[] cookies = request.getCookies();
-        for (int i = 0; cookies != null && i < cookies.length; i++) {
-            if (cookieName.equals(cookies[i].getName())) {
-                token = cookies[i].getValue();
-                break;
+
+        // 从请求头中获取 token
+        token = request.getHeader(TOKEN_NAME);
+        if (token == null) {
+            // 从 cookie 中获取 token
+            Cookie[] cookies = request.getCookies();
+            for (int i = 0; cookies != null && i < cookies.length; i++) {
+                if (TOKEN_NAME.equals(cookies[i].getName())) {
+                    token = cookies[i].getValue();
+                    break;
+                }
             }
         }
 
-        Claims claims = jwt.parser(token);
-
         // 将解析的用户信息 Map<String,Object> claims 存入 AccountHolder
+        Claims claims = jwt.parser(token);
         if (claims != null) {
             AccountHolder.set(claims);
         }

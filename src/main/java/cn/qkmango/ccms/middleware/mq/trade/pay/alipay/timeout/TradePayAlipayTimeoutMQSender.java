@@ -1,16 +1,15 @@
 package cn.qkmango.ccms.middleware.mq.trade.pay.alipay.timeout;
 
-import cn.qkmango.ccms.domain.bo.TradePayTimeout;
 import cn.qkmango.ccms.middleware.mq.BaseMQSender;
 import org.apache.log4j.Logger;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
-import static cn.qkmango.ccms.middleware.mq.trade.pay.alipay.timeout.TradePayAlipayTimeoutMQConfig.TIMEOUT;
-import static cn.qkmango.ccms.middleware.mq.trade.pay.alipay.timeout.TradePayAlipayTimeoutMQConfig.TOPIC;
+import static cn.qkmango.ccms.middleware.mq.trade.pay.alipay.timeout.TradePayAlipayTimeoutMQConfig.*;
 
 /**
  * 交易支付订单超时发送（支付宝）
@@ -21,7 +20,7 @@ import static cn.qkmango.ccms.middleware.mq.trade.pay.alipay.timeout.TradePayAli
  * @date 2023-08-26 15:29
  */
 @Component("tradePayAlipayTimeoutMQSender")
-public class TradePayAlipayTimeoutMQSender implements BaseMQSender<TradePayTimeout> {
+public class TradePayAlipayTimeoutMQSender implements BaseMQSender<Long> {
 
     private final RocketMQTemplate mq;
     private final Logger logger = Logger.getLogger(this.getClass());
@@ -32,14 +31,11 @@ public class TradePayAlipayTimeoutMQSender implements BaseMQSender<TradePayTimeo
     }
 
     @Override
-    public void send(TradePayTimeout msg) {
-        mq.asyncSend(TOPIC, MessageBuilder.withPayload(msg).build(), CALLBACK, TIMEOUT, 1);
+    public boolean syncSend(Long msg) {
+        SendResult result = mq.syncSend(TOPIC, MessageBuilder.withPayload(msg).build(), TIMEOUT, DELAY_LEVEL);
+        return result.getSendStatus() == SendStatus.SEND_OK;
     }
 
-    @Override
-    public void send(TradePayTimeout msg, SendCallback callback) {
-        mq.asyncSend(TOPIC, MessageBuilder.withPayload(msg).build(), callback, TIMEOUT, 1);
-    }
 
     /**
      * 发送回调

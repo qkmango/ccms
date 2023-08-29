@@ -1,7 +1,7 @@
 package cn.qkmango.ccms.security;
 
 /**
- * 认证结果
+ * 第三方认证结果
  *
  * @author qkmango
  * @version 1.0

@@ -3,12 +3,11 @@ package cn.qkmango.ccms.middleware.mq.mail;
 import cn.qkmango.ccms.domain.bo.Mail;
 import cn.qkmango.ccms.middleware.mq.BaseMQSender;
 import org.apache.log4j.Logger;
-import org.apache.rocketmq.client.producer.SendCallback;
-import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
+
+import static cn.qkmango.ccms.middleware.mq.mail.MailSendMQConfig.TOPIC;
 
 /**
  * 邮件发送消息队列发送者
@@ -22,11 +21,7 @@ import org.springframework.stereotype.Component;
 public class MailSendMQSender implements BaseMQSender<Mail> {
 
     private final RocketMQTemplate mq;
-    private final SendCallback CALLBACK = new SendCallbackImpl();
-    private final Logger logger = Logger.getLogger(this.getClass());
-    @Value("${spring.mail.from}")
-    private String from;
-
+    private final Logger logger = Logger.getLogger(getClass());
 
     public MailSendMQSender(RocketMQTemplate mq) {
         this.mq = mq;
@@ -34,29 +29,6 @@ public class MailSendMQSender implements BaseMQSender<Mail> {
 
     @Override
     public void send(Mail mail) {
-        System.out.println("Mail发送");
-        mq.asyncSend(MailSendMQConfig.TOPIC, MessageBuilder.withPayload(mail).build(), CALLBACK, 3000);
-    }
-
-    @Override
-    public void send(Mail msg, SendCallback callback) {
-        logger.error("不支持的方法调用");
-    }
-
-    /**
-     * 发送回调
-     */
-    private class SendCallbackImpl implements SendCallback {
-        @Override
-        public void onSuccess(SendResult sendResult) {
-            // System.out.println("Mail 发送成功");
-            logger.info(sendResult);
-        }
-
-        @Override
-        public void onException(Throwable throwable) {
-            // System.out.println("Mail 发送成功");
-            logger.warn(throwable.getMessage());
-        }
+        mq.sendOneWay(TOPIC, MessageBuilder.withPayload(mail).build());
     }
 }

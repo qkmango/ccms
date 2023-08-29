@@ -7,6 +7,7 @@ import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.auth.PlatformType;
+import cn.qkmango.ccms.domain.bind.AuthType;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
 import cn.qkmango.ccms.domain.dto.CanceledDto;
@@ -15,9 +16,11 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
+import cn.qkmango.ccms.domain.vo.LoginResult;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.Jwt;
+import cn.qkmango.ccms.security.token.TokenEntity;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -64,13 +67,9 @@ public class AccountController {
      * @throws LoginException 登陆异常登陆失败
      */
     @PostMapping("system-login.do")
-    public R<Object> systemLogin(@Validated(Query.Login.class) Account account, HttpServletResponse response) throws LoginException {
+    public R<Object> systemLogin(@Validated(Query.Login.class) Account account, AuthType type, HttpServletResponse response) throws LoginException {
         Account loginAccount = service.systemLogin(account);
-        Cookie cookie = new Cookie("Authorization", jwt.create(loginAccount));
-        cookie.setMaxAge(jwt.getExpire());
-        cookie.setPath("/api/");
-        response.addCookie(cookie);
-        return R.success(loginAccount, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
+        return this.createAuth(loginAccount, type, response);
     }
 
     /**
@@ -79,15 +78,10 @@ public class AccountController {
      * 时返回的重定向URL中的授权码</p>
      */
     @PostMapping("access-login.do")
-    public R accessLogin(@NotBlank String accessCode, HttpServletResponse response) throws LoginException {
+    public R accessLogin(@NotBlank String accessCode, AuthType type, HttpServletResponse response) throws LoginException {
         Account loginAccount = service.accessLogin(accessCode);
-        Cookie cookie = new Cookie("Authorization", jwt.create(loginAccount));
-        cookie.setMaxAge(jwt.getExpire());
-        cookie.setPath("/api/");
-        response.addCookie(cookie);
-        return R.success(loginAccount, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
+        return this.createAuth(loginAccount, type, response);
     }
-
 
     /**
      * 修改密码
@@ -95,7 +89,6 @@ public class AccountController {
      *
      * @param dto 新的密码
      */
-
     @PostMapping("update/password.do")
     public R<Object> updatePassword(@Validated UpdatePasswordDto dto) throws UpdateException {
         Integer id = AccountHolder.getId();
@@ -103,7 +96,6 @@ public class AccountController {
         service.updatePassword(dto);
         return R.success(ms.getMessage("db.update.password.success", null, LocaleContextHolder.getLocale()));
     }
-
 
     /**
      * 重置密码
@@ -113,7 +105,7 @@ public class AccountController {
      * @throws UpdateException 更新异常
      */
     @Permission(Role.admin)
-    @PostMapping(value = "update/resetPassword.do")
+    @PostMapping(value = "update/reset-password.do")
     public R<Object> resetPassword(Integer account) throws UpdateException {
         service.resetPassword(account);
         return R.success(ms.getMessage("db.resetPassword.success", null, LocaleContextHolder.getLocale()));
@@ -202,5 +194,20 @@ public class AccountController {
     public R insert(@RequestBody @Validated AccountInsertDto account) throws InsertException {
         service.insert(account);
         return R.success(ms.getMessage("db.account.insert.success", null, LocaleContextHolder.getLocale()));
+    }
+
+    private R createAuth(Account account, AuthType type, HttpServletResponse response) {
+        Object result;
+        if (type == AuthType.ACCESS_TOKEN) {
+            TokenEntity token = jwt.createEntity(account);
+            result = new LoginResult(account, token);
+        } else {
+            Cookie cookie = new Cookie("Authorization", jwt.create(account));
+            cookie.setMaxAge(jwt.getExpire());
+            cookie.setPath(contextPath);
+            response.addCookie(cookie);
+            result = account;
+        }
+        return R.success(result, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
     }
 }
