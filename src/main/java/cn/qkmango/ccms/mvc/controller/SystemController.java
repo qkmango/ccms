@@ -33,7 +33,6 @@ public class SystemController {
      * <p>
      * 基于cookie的语言环境切换
      *
-     * @param locale 当前语言环境
      * @return 更改后的语言环境
      * 前端直接修改cookie即可，修改后的cookie会随请求发送到后端，实现国际化
      * 前端设置cookie的方法：

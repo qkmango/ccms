@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RestController
 @RequestMapping("/pay/alipay")
-public class AlipayController {
+public class PayAlipayController {
 
     @Resource
     private AlipayService service;
