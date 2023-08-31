@@ -35,9 +35,6 @@ public class TradePayAlipayTimeoutMQListener implements RocketMQListener<Long> {
     private TradeDao tradeDao;
     @Resource
     private TransactionTemplate tx;
-    @Resource
-    private TradePayAlipayTimeoutMQSender mq;
-
     private final Logger logger = Logger.getLogger(getClass());
 
     /**

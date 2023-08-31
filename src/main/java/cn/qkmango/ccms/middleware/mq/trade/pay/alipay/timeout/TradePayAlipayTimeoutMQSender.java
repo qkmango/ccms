@@ -24,7 +24,6 @@ public class TradePayAlipayTimeoutMQSender implements BaseMQSender<Long> {
 
     private final RocketMQTemplate mq;
     private final Logger logger = Logger.getLogger(this.getClass());
-    private final SendCallback CALLBACK = new SendCallbackImpl();
 
     public TradePayAlipayTimeoutMQSender(RocketMQTemplate mq) {
         this.mq = mq;

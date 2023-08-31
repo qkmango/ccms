@@ -12,6 +12,6 @@ import cn.qkmango.ccms.middleware.mq.MQDelayLevel;
 public class TradePayAlipayTimeoutMQConfig {
     public static final String TOPIC = "pay-trade-alipay-timeout-topic";
     public static final String GROUP = "pay-trade-alipay-timeout-consumer-group";
-    public static final int DELAY_LEVEL = MQDelayLevel.LEVEL_10S;
+    public static final int DELAY_LEVEL = MQDelayLevel.LEVEL_30M;
     public static final int TIMEOUT = 3000;
 }
