@@ -5,6 +5,7 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.dto.TradeQueryDto;
 import cn.qkmango.ccms.domain.dto.TradeRefundDto;
+import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.Trade;
 import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
@@ -17,6 +18,10 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
+
+import static cn.qkmango.ccms.domain.bind.Role.admin;
 
 /**
  * 交易
@@ -64,7 +69,7 @@ public class TradeController {
     /**
      * 信息
      */
-    @Permission(Role.admin)
+    @Permission(admin)
     @GetMapping("/one/record.do")
     public R<Trade> record(@NotNull Long id) {
         Trade record = service.record(id);
@@ -76,19 +81,42 @@ public class TradeController {
     /**
      * 交易详情
      */
-    @Permission(Role.admin)
+    // @Permission({Role.admin, Role.user})
     @GetMapping("/one/detail.do")
     public R<TradeVO> detail(@NotNull Long id) {
         TradeVO detail = service.detail(id);
-        return detail == null ?
-                R.fail(ms.getMessage("response.no-record", null, LocaleContextHolder.getLocale())) :
-                R.success(detail);
+        Locale locale = LocaleContextHolder.getLocale();
+
+        if (detail == null) {
+            R.fail(ms.getMessage("response.no-record", null, locale));
+        }
+
+        Account account = AccountHolder.getAccount();
+        Role role = account.getRole();
+        Integer accountId = account.getId();
+
+        switch (role) {
+            case admin -> {
+                return R.success(detail);
+            }
+            case user -> {
+                if (detail.getPayer().getId().equals(accountId)) {
+                    return R.success(detail);
+                }
+            }
+            case pos -> {
+                if (detail.getCreator().getId().equals(accountId)) {
+                    return R.success(detail);
+                }
+            }
+        }
+        return R.fail(ms.getMessage("response.no-permission", null, locale));
     }
 
     /**
      * 退款
      */
-    @Permission({Role.admin, Role.pos})
+    @Permission({admin, Role.pos})
     @PostMapping("/update/refund.do")
     public R refund(@Validated TradeRefundDto dto) {
         // 如果是POS，则只能退款自己创建的交易
@@ -98,9 +126,6 @@ public class TradeController {
         }
         return service.refund(dto);
     }
-
-
-
 
 
 }
