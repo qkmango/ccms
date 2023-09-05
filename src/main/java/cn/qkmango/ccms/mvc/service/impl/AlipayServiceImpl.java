@@ -143,35 +143,13 @@ public class AlipayServiceImpl implements AlipayService {
 
         // 3. 支付成功，修改交易状态为 SUCCESS, 将金额添加到一卡通
         // 版本号一定是 0，如果不为0则说明已经被修改
-        Boolean result = tx.execute(status -> {
-            int affectedRows;
-            // 回滚点
-            Object savepoint = status.createSavepoint();
-            // 修改交易状态
-            affectedRows = tradeDao.payed(notify.tradeId, notify.alipayTradeNo, 0);
-            if (affectedRows != 1) {
-                // TODO 退款
-                status.rollbackToSavepoint(savepoint);
-                return false;
-            }
+        boolean result = this.updateTradeBalance(account, trade.getAmount(), notify.tradeId, notify.alipayTradeNo, 0);
 
-            // 检查卡
-            Card card = cardDao.getByAccount(account);
-            if (card == null || card.getState() != CardState.normal) {
-                // TODO 退款
-                return false;
-            }
+        if (!result) {
+            // TODO 退款？ 发送到MQ，MQ进行重新修改金额
+        }
 
-            // 将金额添加到一卡通
-            affectedRows = cardDao.addBalance(account, trade.getAmount(), card.getVersion());
-            if (affectedRows != 1) {
-                status.rollbackToSavepoint(savepoint);
-                // TODO 退款
-                return false;
-            }
-            return true;
-        });
-        return Boolean.TRUE.equals(result);
+        return result;
     }
 
     /**
@@ -212,6 +190,41 @@ public class AlipayServiceImpl implements AlipayService {
 
         return Boolean.TRUE.equals(result);
     }
+
+    /**
+     * 修改交易状态
+     * 修改账户余额
+     */
+    @Override
+    public boolean updateTradeBalance(Integer account, Integer amount, Long tradeId, String alipayTradeNo, int version) {
+        Boolean result = tx.execute(status -> {
+            int affectedRows;
+            // 回滚点
+            Object savepoint = status.createSavepoint();
+            // 修改交易状态
+            affectedRows = tradeDao.payed(tradeId, alipayTradeNo, version);
+            if (affectedRows != 1) {
+                status.rollbackToSavepoint(savepoint);
+                return false;
+            }
+
+            // 检查卡
+            Card card = cardDao.getByAccount(account);
+            if (card == null || card.getState() != CardState.normal) {
+                return false;
+            }
+
+            // 将金额添加到一卡通
+            affectedRows = cardDao.addBalance(account, amount, card.getVersion());
+            if (affectedRows != 1) {
+                status.rollbackToSavepoint(savepoint);
+                return false;
+            }
+            return true;
+        });
+        return Boolean.TRUE.equals(result);
+    }
+
 
     /**
      * 构建支付宝支付表单

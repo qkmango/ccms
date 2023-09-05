@@ -5,7 +5,6 @@ import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.mvc.service.AlipayService;
 import cn.qkmango.ccms.pay.AlipayNotify;
-import cn.qkmango.ccms.pay.AlipayTradeStatus;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import com.alipay.api.AlipayApiException;
 import jakarta.annotation.Resource;
@@ -16,6 +15,8 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * 支付宝
@@ -52,34 +53,13 @@ public class PayAlipayController {
     /**
      * 支付结果异步通知
      * 必须是POST
-     *
-     * @param alipayTradeNo 支付宝交易号
-     * @param tradeId       本系统 trade id
-     * @param gmtPayment    交易付款时间, 格式为 yyyy-MM-dd HH:mm:ss
-     * @param request       http请求
      */
     @PostMapping("/notify.do")
-    public String notify(
-            @RequestParam("trade_no") String alipayTradeNo,
-            @RequestParam("out_trade_no") Long tradeId,
-            @RequestParam("gmt_payment") String gmtPayment,
-            @RequestParam("receipt_amount") String receiptAmount,
-            @RequestParam("trade_status") AlipayTradeStatus status,
-            @RequestParam("total_amount") String totalAmount,
-            @RequestParam("sign") String sign,
-            HttpServletRequest request) throws AlipayApiException {
-        AlipayNotify notify = new AlipayNotify();
-        notify.alipayTradeNo = alipayTradeNo;
-        notify.receiptAmount = receiptAmount;
-        notify.totalAmount = totalAmount;
-        notify.gmtPayment = gmtPayment;
-        notify.tradeId = tradeId;
-        notify.status = status;
-        notify.sign = sign;
+    public String notify(@RequestParam Map<String, String> param, HttpServletRequest request) throws AlipayApiException {
+        AlipayNotify notify = AlipayNotify.build(param);
 
         boolean result = service.notify(notify, request);
         return result ? "success" : "fail";
-
     }
 
 }

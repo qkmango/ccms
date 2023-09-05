@@ -37,4 +37,6 @@ public interface AlipayService {
      *               - request       http请求
      */
     boolean notify(AlipayNotify notify, HttpServletRequest request) throws AlipayApiException;
+
+    boolean updateTradeBalance(Integer account, Integer amount, Long tradeId, String alipayTradeNo, int version);
 }
