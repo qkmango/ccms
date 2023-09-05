@@ -1,6 +1,6 @@
 package cn.qkmango.ccms.pay;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Map;
 
 /**
  * 支付宝异步通知
@@ -10,9 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @date 2023-08-25 14:21
  */
 public class AlipayNotify {
-    @JsonProperty("alipay_trade_no")
+    // 支付宝交易号
     public String alipayTradeNo;
+    // 本系统 trade id
     public Long tradeId;
+    // 交易付款时间, 格式为 yyyy-MM-dd HH:mm:ss
     public String gmtPayment;
     public String receiptAmount;
     public AlipayTradeStatus status;
@@ -80,5 +82,18 @@ public class AlipayNotify {
     public AlipayNotify setSign(String sign) {
         this.sign = sign;
         return this;
+    }
+
+    public static AlipayNotify build(Map<String, String> map) {
+        AlipayNotify notify = new AlipayNotify();
+        notify.alipayTradeNo = map.get("trade_no");
+        notify.receiptAmount = map.get("receipt_amount");
+        notify.totalAmount = map.get("total_amount");
+        notify.gmtPayment = map.get("gmt_payment");
+        notify.tradeId = Long.parseLong(map.get("out_trade_no"));
+        notify.status = AlipayTradeStatus.valueOf(map.get("trade_status"));
+        notify.sign = map.get("sign");
+
+        return notify;
     }
 }

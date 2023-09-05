@@ -20,12 +20,6 @@ public interface PosDao {
 
     int count();
 
-    int add(Pos pos);
-
-    int delete(String id);
-
-    String lastInsertId();
-
     List<PosVO> list(Pagination<PosDto> pagination);
 
     PosVO detail(String id);

@@ -1,7 +1,5 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
-import cn.qkmango.ccms.common.exception.database.DeleteException;
-import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
 import cn.qkmango.ccms.domain.dto.PosDto;
 import cn.qkmango.ccms.domain.entity.Pos;
@@ -35,41 +33,6 @@ public class PosServiceImpl implements PosService {
     @Resource
     private PosDao dao;
 
-    /**
-     * 添加刷卡机
-     * TODO 修改表结构，密码字段待处理
-     *
-     * @param pos    刷卡机
-     * @param locale 语言环境
-     * @return 新添加的刷卡机ID
-     * @throws InsertException 插入异常
-     */
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public String add(Pos pos, Locale locale) throws InsertException {
-        //设置默认密码
-//        pos.setPassword(POS_DEFAULT_PASSWORD);
-        int affectedRows = dao.add(pos);
-        if (affectedRows != 1) {
-            throw new InsertException(messageSource.getMessage("db.pos.add.failure", null, locale));
-        }
-        return dao.lastInsertId();
-    }
-
-    /**
-     * 删除刷卡机
-     *
-     * @param id     刷卡机id
-     * @param locale 语言环境
-     */
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void delete(String id, Locale locale) throws DeleteException {
-        int affectedRows = dao.delete(id);
-        if (affectedRows != 1) {
-            throw new DeleteException(messageSource.getMessage("db.pos.delete.failure", null, locale));
-        }
-    }
 
     /**
      * 分页查询刷卡机

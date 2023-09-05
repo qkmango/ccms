@@ -19,21 +19,6 @@
         SELECT FOUND_ROWS()
     </select>
 
-    <insert id="add">
-        insert into t_pos (name, password, address, type, store)
-        values (#{name}, #{password}, #{address}, #{type}, #{store});
-    </insert>
-
-    <delete id="delete">
-        delete
-        from t_pos
-        where id = #{id};
-    </delete>
-
-    <select id="lastInsertId" resultType="java.lang.String">
-        SELECT LAST_INSERT_ID();
-    </select>
-
     <select id="detail" resultMap="PosResultMap">
         select p.id          as posId,
                p.name        as posName,
