@@ -1,48 +1,48 @@
 spring:
-  config:
-    activate:
-      on-profile: dev
+    config:
+        activate:
+            on-profile: dev
 
-  mail:
-    host: smtp.qiye.aliyun.com
-    port: 25
-    username: youEmailAddress
-    password: youEmailPassword
-    default-encoding: UTF-8
-    from: nickname<youEmailAddress>
-    properties:
-      mail:
-        smtp:
-          socketFactoryClass: javax.net.ssl.SSLSocketFactory
-        debug: true
+    mail:
+        host: smtp.qiye.aliyun.com
+        port: 25
+        username: youEmailAddress
+        password: youEmailPassword
+        default-encoding: UTF-8
+        from: nickname<youEmailAddress>
+        properties:
+            mail:
+                smtp:
+                    socketFactoryClass: javax.net.ssl.SSLSocketFactory
+                debug: true
 
 # 以下是自定义配置
 ccms:
-  authentication:
-    gitee:
-      id:
-      secret:
-      authorize: https://gitee.com/oauth/authorize
-      accessToken: https://gitee.com/oauth/token
-      userInfo: https://gitee.com/api/v5/user
-      callback: http://localhost/api/auth/gitee/callback.do
-      redirect: redirect:/page/common/authentication/result.html
+    authentication:
+        gitee:
+            id:
+            secret:
+            authorize: https://gitee.com/oauth/authorize
+            accessToken: https://gitee.com/oauth/token
+            userInfo: https://gitee.com/api/v5/user
+            callback: http://localhost/api/auth/gitee/callback.do
+            redirect: redirect:/page/common/authentication/result.html
 
-    dingtalk:
-      id:
-      secret:
-      authorize: https://login.dingtalk.com/oauth2/auth
-      accessToken: https://oapi.dingtalk.com/gettoken
-      userInfo: https://oapi.dingtalk.com/sns/getuserinfo_bycode
-      callback: http://localhost/api/auth/dingtalk/callback.do
-      redirect: redirect:/page/common/authentication/result.html
+        dingtalk:
+            id:
+            secret:
+            authorize: https://login.dingtalk.com/oauth2/auth
+            accessToken: https://oapi.dingtalk.com/gettoken
+            userInfo: https://oapi.dingtalk.com/sns/getuserinfo_bycode
+            callback: http://localhost/api/auth/dingtalk/callback.do
+            redirect: redirect:/page/common/authentication/result.html
 
-    #支付宝开发环境使用沙箱
-    alipay:
-      id:
-      authorize: https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm
-      callback: http://localhost/api/auth/alipay/callback.do
-      redirect: redirect:/page/common/authentication/result.html
-      gateway: https://openapi.alipaydev.com/gateway.do
-      appPrivateKey:
-      alipayPublicKey:
+        #支付宝开发环境使用沙箱
+        alipay:
+            id:
+            authorize: https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm
+            callback: http://localhost/api/auth/alipay/callback.do
+            redirect: redirect:/page/common/authentication/result.html
+            gateway: https://openapi.alipaydev.com/gateway.do
+            appPrivateKey:
+            alipayPublicKey:

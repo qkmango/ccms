@@ -1,89 +1,89 @@
 server:
-  port: 80
-  servlet:
-    encoding:
-      charset: utf-8
-      enabled: true
-      force: true
+    port: 80
+    servlet:
+        encoding:
+            charset: utf-8
+            enabled: true
+            force: true
 
 spring:
-  mvc:
-    servlet:
-      path: /api
-  datasource:
-    druid:
-      initial-size: 1
-      max-active: 3
-    password: admin
-    type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://localhost:3306/ccms?useUnicode=true&characterEncoding=utf8
-    username: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jackson:
-    default-property-inclusion: non_null
-    serialization:
-      write-dates-as-timestamps: true
-    date-format: java.text.SimpleDateFormat
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      database: 0
-      connect-timeout: 5000
-      lettuce:
-        pool:
-          max-active: 8
-          max-idle: 3
-          min-idle: 1
-          max-wait: 5000
-  mail:
-    host: smtp.qiye.aliyun.com
-    port: 25
-    username: youEmailAddress
-    password: youEmailPassword
-    default-encoding: UTF-8
-    from: nickname<youEmailAddress>
-    properties:
-      mail:
-        smtp:
-          socketFactoryClass: javax.net.ssl.SSLSocketFactory
-        debug: true
+    mvc:
+        servlet:
+            path: /api
+    datasource:
+        druid:
+            initial-size: 1
+            max-active: 3
+        password: admin
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://localhost:3306/ccms?useUnicode=true&characterEncoding=utf8
+        username: root
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jackson:
+        default-property-inclusion: non_null
+        serialization:
+            write-dates-as-timestamps: true
+        date-format: java.text.SimpleDateFormat
+    data:
+        redis:
+            host: localhost
+            port: 6379
+            database: 0
+            connect-timeout: 5000
+            lettuce:
+                pool:
+                    max-active: 8
+                    max-idle: 3
+                    min-idle: 1
+                    max-wait: 5000
+    mail:
+        host: smtp.qiye.aliyun.com
+        port: 25
+        username: youEmailAddress
+        password: youEmailPassword
+        default-encoding: UTF-8
+        from: nickname<youEmailAddress>
+        properties:
+            mail:
+                smtp:
+                    socketFactoryClass: javax.net.ssl.SSLSocketFactory
+                debug: true
 
 # rocketmq地址
 rocketmq:
-  name-server: localhost:9876
-  # 默认的消息组
-  producer:
-    group: ccms
-    send-message-timeout: 3000
-    retry-times-when-send-failed: 3
-    retry-times-when-send-async-failed: 3
+    name-server: localhost:9876
+    # 默认的消息组
+    producer:
+        group: ccms
+        send-message-timeout: 3000
+        retry-times-when-send-failed: 3
+        retry-times-when-send-async-failed: 3
 
 
 
 mybatis:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: true
+    configuration:
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+        map-underscore-to-camel-case: true
 
 
 logging:
-  level:
-    root: info
+    level:
+        root: info
 
 # 以下是自定义配置
 ccms:
-  snowflake:
-    machine-id: 0
-    data-center-id: 0
-  jwt:
-    secret: 123456
-    expire: 36000
+    snowflake:
+        machine-id: 0
+        data-center-id: 0
+    jwt:
+        secret: 123456
+        expire: 36000
 
-  pay:
-    trade:
-      #支付宝支付超时时间 单位秒
-      timeout: 1800
-      mq:
-        # MQ中订单的 topic
-        topic: pay-trade-alipay-timeout
+    pay:
+        trade:
+            #支付宝支付超时时间 单位秒
+            timeout: 1800
+            mq:
+                # MQ中订单的 topic
+                topic: pay-trade-alipay-timeout
