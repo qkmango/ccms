@@ -3,11 +3,7 @@ package cn.qkmango.ccms.mvc.controller;
 import cn.qkmango.ccms.common.annotation.Permission;
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
-import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
-import cn.qkmango.ccms.common.validate.group.Query;
-import cn.qkmango.ccms.domain.auth.PlatformType;
-import cn.qkmango.ccms.domain.bind.AuthType;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
 import cn.qkmango.ccms.domain.dto.CanceledDto;
@@ -16,24 +12,15 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.domain.vo.AccountDetailVO;
-import cn.qkmango.ccms.domain.vo.LoginResult;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
-import cn.qkmango.ccms.security.token.Jwt;
-import cn.qkmango.ccms.security.token.TokenEntity;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 /**
  * 账户控制器
@@ -52,36 +39,6 @@ public class AccountController {
 
     @Resource
     private AccountService service;
-
-    @Value("${spring.mvc.servlet.path}")
-    private String contextPath;
-
-    @Resource
-    private Jwt jwt;
-
-    /**
-     * 使用账户密码登陆
-     *
-     * @param account 用户对象
-     * @return 登陆结果
-     * @throws LoginException 登陆异常登陆失败
-     */
-    @PostMapping("system-login.do")
-    public R<Object> systemLogin(@Validated(Query.Login.class) Account account, AuthType type, HttpServletResponse response) throws LoginException {
-        Account loginAccount = service.systemLogin(account);
-        return this.createAuth(loginAccount, type, response);
-    }
-
-    /**
-     * 使用授权码登陆
-     * <p>授权码为第三方认证后回调 {@link cn.qkmango.ccms.mvc.controller.AuthenticationController#callback(PlatformType, String, Map)}
-     * 时返回的重定向URL中的授权码</p>
-     */
-    @PostMapping("access-login.do")
-    public R accessLogin(@NotBlank String accessCode, AuthType type, HttpServletResponse response) throws LoginException {
-        Account loginAccount = service.accessLogin(accessCode);
-        return this.createAuth(loginAccount, type, response);
-    }
 
     /**
      * 修改密码
@@ -194,20 +151,5 @@ public class AccountController {
     public R insert(@RequestBody @Validated AccountInsertDto account) throws InsertException {
         service.insert(account);
         return R.success(ms.getMessage("db.account.insert.success", null, LocaleContextHolder.getLocale()));
-    }
-
-    private R createAuth(Account account, AuthType type, HttpServletResponse response) {
-        Object result;
-        if (type == AuthType.ACCESS_TOKEN) {
-            TokenEntity token = jwt.createEntity(account);
-            result = new LoginResult(account, token);
-        } else {
-            Cookie cookie = new Cookie("Authorization", jwt.create(account));
-            cookie.setMaxAge(jwt.getExpire());
-            cookie.setPath(contextPath);
-            response.addCookie(cookie);
-            result = account;
-        }
-        return R.success(result, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
     }
 }

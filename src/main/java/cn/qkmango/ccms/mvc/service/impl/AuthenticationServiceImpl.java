@@ -1,5 +1,6 @@
 package cn.qkmango.ccms.mvc.service.impl;
 
+import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.bind.AccountState;
@@ -8,11 +9,11 @@ import cn.qkmango.ccms.domain.entity.Account;
 import cn.qkmango.ccms.domain.entity.OpenPlatform;
 import cn.qkmango.ccms.middleware.cache.security.SecurityCache;
 import cn.qkmango.ccms.mvc.dao.AccountDao;
-import cn.qkmango.ccms.mvc.dao.AuthenticationDao;
 import cn.qkmango.ccms.mvc.dao.OpenPlatformDao;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import cn.qkmango.ccms.security.AuthenticationResult;
 import cn.qkmango.ccms.security.client.AuthHttpClient;
+import cn.qkmango.ccms.security.encoder.PasswordEncoder;
 import cn.qkmango.ccms.security.request.RequestURL;
 import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
@@ -36,9 +37,6 @@ import java.util.Map;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Resource
-    private AuthenticationDao dao;
-
-    @Resource
     private OpenPlatformDao openPlatformDao;
 
     @Resource
@@ -49,6 +47,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Resource(name = "authAccessCodeCache")
     private SecurityCache authAccessCodeCache;
+
+    @Resource
+    private PasswordEncoder passwordEncoder;
 
     @Resource
     private ReloadableResourceBundleMessageSource ms;
@@ -63,6 +64,59 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private AuthHttpClient alipayAuthHttpClient;
 
     /**
+     * 登陆接口
+     *
+     * @param account 账户
+     * @return 登陆成功返回登陆用户信息
+     * @throws LoginException 登陆异常
+     */
+    @Override
+    public Account systemLogin(Account account) throws LoginException {
+
+        Account loginAccount = accountDao.getRecordById(account.getId(), true);
+
+        // 检查账户状态
+        checkLoginAccount(loginAccount);
+
+        // 判断密码是否正确
+        String dbPassword = loginAccount.getPassword();
+        boolean matches = passwordEncoder.matches(account.getPassword(), dbPassword);
+        if (!matches) {
+            throw new LoginException(ms.getMessage("response.login.password.error", null, LocaleContextHolder.getLocale()));
+        }
+
+        // 清除密码
+        loginAccount.setPassword(null);
+
+        // 返回登陆用户信息，创建 token 由 controller 层完成
+        return loginAccount;
+    }
+
+
+    @Override
+    public Account accessLogin(String accessCode) throws LoginException {
+        // 从 redis 中获取 accessCode 对应的账户ID
+        String value = authAccessCodeCache.get(accessCode);
+        // 删除 accessCode
+        authAccessCodeCache.delete(accessCode);
+
+        // 判断 accessCode 是否存在/是否过期
+        if (value == null) {
+            throw new LoginException(ms.getMessage("response.login.access-code.not.exist", null, LocaleContextHolder.getLocale()));
+        }
+
+        // 将 value 转换为 OpenPlatformBo 对象
+        OpenPlatformBo platform = JSON.parseObject(value, OpenPlatformBo.class);
+
+        // 查询数据库
+        Account loginAccount = accountDao.getRecordById(platform.getAccount(), false);
+        // 检查账户状态
+        checkLoginAccount(loginAccount);
+
+        return loginAccount;
+    }
+
+    /**
      * 获取授权登陆地址
      *
      * @param authAccount 授权信息
@@ -73,10 +127,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // 用于第三方应用防止CSRF攻击
         String state = authStateCache.create();
-        //获取 第三方平台
+        // 获取 第三方平台
         PlatformType platform = authAccount.getPlatform();
 
-        //授权地址
+        // 授权地址
         String url = null;
 
         switch (platform) {
@@ -117,7 +171,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public String callback(String state, PlatformType platform, Map<String, String> params) {
         String message = null;
 
-        //获取重定向地址
+        // 获取重定向地址
         RequestURL.Builder builder = null;
         switch (platform) {
             case gitee -> builder = giteeAuthHttpClient.getAppConfig().getRedirect().builder()
@@ -138,7 +192,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .build().url();
         }
 
-        //获取第三方认证结果
+        // 获取第三方认证结果
         AuthenticationResult result = null;
         switch (platform) {
             case gitee -> result = giteeAuthHttpClient.authentication(state, params.get("code"), params.get("error"));
@@ -146,13 +200,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             case dingtalk -> result = dingtalkAuthHttpClient.authentication(state, params.get("authCode"));
         }
 
-        //第三方认证成功
-        //检查账户
+        // 第三方认证成功
+        // 检查账户
         if (result.success) {
-            //是否绑定
+            // 是否绑定
             OpenPlatform platformRecord = openPlatformDao.getRecordByUid(result.getUserInfo().getUid());
 
-            //业务对象
+            // 业务对象
             OpenPlatformBo platformBo = new OpenPlatformBo();
 
             // 未绑定
@@ -225,5 +279,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build().url();
     }
 
+
+    /**
+     * 检查登录账户
+     * 1. 判断账户是否存在
+     * 2. 判断账户状态
+     *
+     * @param account
+     */
+    private void checkLoginAccount(Account account) {
+        // 判断账户是否存在
+        if (account == null) {
+            throw new LoginException(ms.getMessage("db.account.failure@notExist", null, LocaleContextHolder.getLocale()));
+        }
+
+        // 判断账户状态
+        switch (account.getState()) {
+            case canceled ->
+                    throw new LoginException(ms.getMessage("db.account.canceled.failure@canceled", null, LocaleContextHolder.getLocale()));
+            case frozen ->
+                    throw new LoginException(ms.getMessage("db.account.canceled.failure@frozen", null, LocaleContextHolder.getLocale()));
+        }
+    }
 
 }

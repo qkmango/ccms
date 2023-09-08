@@ -2,7 +2,6 @@ package cn.qkmango.ccms.mvc.service;
 
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
-import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
 import cn.qkmango.ccms.domain.dto.CanceledDto;
@@ -20,14 +19,7 @@ import cn.qkmango.ccms.domain.vo.AccountDetailVO;
  * @date 2022-10-22 14:58
  */
 public interface AccountService {
-    /**
-     * 登陆接口
-     *
-     * @param account 账户
-     * @return 登陆成功返回登陆用户信息
-     * @throws LoginException 登陆异常
-     */
-    Account systemLogin(Account account) throws LoginException;
+
 
     /**
      * 修改密码
@@ -95,6 +87,5 @@ public interface AccountService {
      */
     Account getRecordById(Integer id, boolean password);
 
-    Account accessLogin(String accessCode) throws LoginException;
 
 }

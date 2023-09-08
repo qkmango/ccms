@@ -2,13 +2,11 @@ package cn.qkmango.ccms.mvc.service.impl;
 
 import cn.qkmango.ccms.common.exception.database.InsertException;
 import cn.qkmango.ccms.common.exception.database.UpdateException;
-import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.util.SnowFlake;
 import cn.qkmango.ccms.domain.bind.AccountState;
 import cn.qkmango.ccms.domain.bind.CardState;
 import cn.qkmango.ccms.domain.bind.Role;
-import cn.qkmango.ccms.domain.bo.OpenPlatformBo;
 import cn.qkmango.ccms.domain.dto.AccountInsertDto;
 import cn.qkmango.ccms.domain.dto.CanceledDto;
 import cn.qkmango.ccms.domain.dto.UpdatePasswordDto;
@@ -27,7 +25,6 @@ import cn.qkmango.ccms.mvc.dao.UserDao;
 import cn.qkmango.ccms.mvc.service.AccountService;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
 import cn.qkmango.ccms.security.encoder.PasswordEncoder;
-import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -88,59 +85,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account getRecordById(Integer id, boolean password) {
         return dao.getRecordById(id, password);
-    }
-
-    /**
-     * 登陆接口
-     *
-     * @param account 账户
-     * @return 登陆成功返回登陆用户信息
-     * @throws LoginException 登陆异常
-     */
-    @Override
-    public Account systemLogin(Account account) throws LoginException {
-
-        Account loginAccount = dao.getRecordById(account.getId(), true);
-
-        // 检查账户状态
-        checkLoginAccount(loginAccount);
-
-        // 判断密码是否正确
-        String dbPassword = loginAccount.getPassword();
-        boolean matches = passwordEncoder.matches(account.getPassword(), dbPassword);
-        if (!matches) {
-            throw new LoginException(ms.getMessage("response.login.password.error", null, LocaleContextHolder.getLocale()));
-        }
-
-        // 清除密码
-        loginAccount.setPassword(null);
-
-        // 返回登陆用户信息，创建 token 由 controller 层完成
-        return loginAccount;
-    }
-
-
-    @Override
-    public Account accessLogin(String accessCode) throws LoginException {
-        // 从 redis 中获取 accessCode 对应的账户ID
-        String value = authAccessCodeCache.get(accessCode);
-        // 删除 accessCode
-        authAccessCodeCache.delete(accessCode);
-
-        // 判断 accessCode 是否存在/是否过期
-        if (value == null) {
-            throw new LoginException(ms.getMessage("response.login.access-code.not.exist", null, LocaleContextHolder.getLocale()));
-        }
-
-        // 将 value 转换为 OpenPlatformBo 对象
-        OpenPlatformBo platform = JSON.parseObject(value, OpenPlatformBo.class);
-
-        // 查询数据库
-        Account loginAccount = dao.getRecordById(platform.getAccount(), false);
-        // 检查账户状态
-        checkLoginAccount(loginAccount);
-
-        return loginAccount;
     }
 
     /**
@@ -373,25 +317,5 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-    /**
-     * 检查登录账户
-     * 1. 判断账户是否存在
-     * 2. 判断账户状态
-     *
-     * @param account
-     */
-    private void checkLoginAccount(Account account) {
-        // 判断账户是否存在
-        if (account == null) {
-            throw new LoginException(ms.getMessage("db.account.failure@notExist", null, LocaleContextHolder.getLocale()));
-        }
 
-        // 判断账户状态
-        switch (account.getState()) {
-            case canceled ->
-                    throw new LoginException(ms.getMessage("db.account.canceled.failure@canceled", null, LocaleContextHolder.getLocale()));
-            case frozen ->
-                    throw new LoginException(ms.getMessage("db.account.canceled.failure@frozen", null, LocaleContextHolder.getLocale()));
-        }
-    }
 }

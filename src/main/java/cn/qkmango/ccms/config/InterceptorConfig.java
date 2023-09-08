@@ -26,14 +26,15 @@ public class InterceptorConfig implements WebMvcConfigurer {
         // JWT 拦截器, 用于验证 token, 并将用户信息放入 ThreadLocal
         TokenInterceptor tokenInterceptor = new TokenInterceptor(jwt);
         registry.addInterceptor(tokenInterceptor)
-                .excludePathPatterns("/account/system-login.do")
-                .excludePathPatterns("/account/access-login.do");
+                .excludePathPatterns("/auth/system-login.do")
+                .excludePathPatterns("/auth/access-login.do");
 
         //登陆拦截器
 //        LoginInterceptor loginInterceptor = new LoginInterceptor();
 //        registry.addInterceptor(loginInterceptor)
-//                .excludePathPatterns("/account/system-login.do")
-//                .excludePathPatterns("/account/access-login.do");
+//                .excludePathPatterns("/auth/system-login.do")
+//                .excludePathPatterns("/auth/access-login.do");
+//                .excludePathPatterns("/auth/ping.do");
 
 
         // PermissionsInterceptor permissionsInterceptor = new PermissionsInterceptor();

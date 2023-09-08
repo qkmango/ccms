@@ -1,18 +1,29 @@
 package cn.qkmango.ccms.mvc.controller;
 
 import cn.qkmango.ccms.common.annotation.Permission;
+import cn.qkmango.ccms.common.exception.permission.LoginException;
 import cn.qkmango.ccms.common.map.R;
+import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
+import cn.qkmango.ccms.domain.bind.AuthCarryType;
 import cn.qkmango.ccms.domain.bind.Role;
+import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.domain.vo.LoginResult;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
+import cn.qkmango.ccms.security.holder.AccountHolder;
+import cn.qkmango.ccms.security.token.Jwt;
+import cn.qkmango.ccms.security.token.TokenEntity;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -32,6 +43,38 @@ public class AuthenticationController {
     @Resource
     private AuthenticationService service;
 
+    @Value("${spring.mvc.servlet.path}")
+    private String contextPath;
+
+    @Resource
+    private Jwt jwt;
+
+    @Resource
+    private ReloadableResourceBundleMessageSource ms;
+
+
+    /**
+     * 使用账户密码登陆
+     */
+    @ResponseBody
+    @PostMapping("system-login.do")
+    public R<Object> systemLogin(@Validated(Query.Login.class) Account account, AuthCarryType authCarryType, HttpServletResponse response) throws LoginException {
+        Account loginAccount = service.systemLogin(account);
+        return this.createAuth(loginAccount, authCarryType, response);
+    }
+
+
+    /**
+     * 使用授权码登陆
+     * <p>授权码为第三方认证后回调 {@link cn.qkmango.ccms.mvc.controller.AuthenticationController#callback(PlatformType, String, Map)}
+     * 时返回的重定向URL中的授权码</p>
+     */
+    @ResponseBody
+    @PostMapping("access-login.do")
+    public R accessLogin(@NotBlank String accessCode, AuthCarryType authCarryType, HttpServletResponse response) throws LoginException {
+        Account loginAccount = service.accessLogin(accessCode);
+        return this.createAuth(loginAccount, authCarryType, response);
+    }
 
     /**
      * 授权登陆地址（认证地址）
@@ -68,4 +111,29 @@ public class AuthenticationController {
         return service.callback(state, platform, params);
     }
 
+
+    /**
+     * 测试是否登陆
+     */
+    @ResponseBody
+    @RequestMapping("ping.do")
+    public R<Boolean> ping() {
+        Account account = AccountHolder.getAccount();
+        return account == null ? R.success(false) : R.success(true);
+    }
+
+    private R createAuth(Account account, AuthCarryType type, HttpServletResponse response) {
+        Object result;
+        if (type == AuthCarryType.ACCESS_TOKEN) {
+            TokenEntity token = jwt.createEntity(account);
+            result = new LoginResult(account, token);
+        } else {
+            Cookie cookie = new Cookie("Authorization", jwt.create(account));
+            cookie.setMaxAge(jwt.getExpire());
+            cookie.setPath(contextPath);
+            response.addCookie(cookie);
+            result = account;
+        }
+        return R.success(result, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
+    }
 }
