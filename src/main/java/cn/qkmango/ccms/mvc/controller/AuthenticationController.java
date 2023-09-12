@@ -71,7 +71,7 @@ public class AuthenticationController {
      */
     @ResponseBody
     @PostMapping("access-login.do")
-    public R accessLogin(@NotBlank String accessCode, AuthCarryType authCarryType, HttpServletResponse response) throws LoginException {
+    public R<Object> accessLogin(@NotBlank String accessCode, AuthCarryType authCarryType, HttpServletResponse response) throws LoginException {
         Account loginAccount = service.accessLogin(accessCode);
         return this.createAuth(loginAccount, authCarryType, response);
     }
@@ -122,7 +122,7 @@ public class AuthenticationController {
         return account == null ? R.success(false) : R.success(true);
     }
 
-    private R createAuth(Account account, AuthCarryType type, HttpServletResponse response) {
+    private R<Object> createAuth(Account account, AuthCarryType type, HttpServletResponse response) {
         Object result;
         if (type == AuthCarryType.ACCESS_TOKEN) {
             TokenEntity token = jwt.createEntity(account);

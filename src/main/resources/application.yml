@@ -16,7 +16,7 @@ spring:
             max-active: 3
         password: admin
         type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://192.168.0.102:3306/ccms?useUnicode=true&characterEncoding=utf8
+        url: jdbc:mysql://192.168.0.100:3306/ccms?useUnicode=true&characterEncoding=utf8
         username: root
         driver-class-name: com.mysql.cj.jdbc.Driver
     jackson:
@@ -26,7 +26,7 @@ spring:
         date-format: java.text.SimpleDateFormat
     data:
         redis:
-            host: 192.168.0.102
+            host: 192.168.0.100
             port: 6379
             database: 0
             connect-timeout: 5000
@@ -51,7 +51,7 @@ spring:
 
 # rocketmq地址
 rocketmq:
-    name-server: 192.168.0.21:9876
+    name-server: 192.168.0.100:9876
     # 默认的消息组
     producer:
         group: ccms
@@ -66,6 +66,12 @@ mybatis:
         log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
         map-underscore-to-camel-case: true
 
+oss:
+    endpoint: http://192.168.0.100:9000
+    access-key: ZTGyZlVKjGtP0FUZh36v
+    secret-key: PNRcgigN95skIZ5ZZQ3zSBBAu344uAtL8O0PeQVs
+#    bucket-name: ccms
+    bucket-url: http://xxx.oss-cn-shenzhen.aliyuncs.com
 
 logging:
     level:
