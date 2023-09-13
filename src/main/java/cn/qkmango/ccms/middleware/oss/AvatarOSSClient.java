@@ -1,9 +1,11 @@
 package cn.qkmango.ccms.middleware.oss;
 
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.ObjectWriteResponse;
 import io.minio.PutObjectArgs;
 import io.minio.errors.MinioException;
+import io.minio.http.Method;
 import org.apache.log4j.Logger;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +43,7 @@ public class AvatarOSSClient {
         PutObjectArgs objectArgs = null;
         try {
             objectArgs = PutObjectArgs.builder()
-                    .object(name)
+                    .object(PREFIX + name)
                     .bucket(bucket)
                     .contentType(contentType)
                     .stream(file.getInputStream(), file.getSize(), -1).build();
@@ -58,8 +60,25 @@ public class AvatarOSSClient {
     /**
      * 获取文件URL
      */
-    // public String url() {
-    //
-    // }
+    public String get(String name) {
+        String url = null;
+        try {
+            url = client.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .bucket(bucket)
+                            .object(this.absolutePath(name))
+                            .method(Method.GET)
+                            // .expiry()
+                            .build()
+            );
+        } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
+            logger.error("获取头像文件URL失败", e);
+        }
+        return url;
+    }
+
+    private String absolutePath(String name) {
+        return properties.getEndpoint() + "/" + OSSProperties.BUCKET_NAME + "/" + PREFIX + name;
+    }
 
 }

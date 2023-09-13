@@ -12,5 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
  * @date 2023-09-12 23:11
  */
 public interface OSSService {
-    R upload(MultipartFile file, String name);
+    R upload(MultipartFile file, String account);
+
+    String getAvatarUrl(String account);
+
 }
