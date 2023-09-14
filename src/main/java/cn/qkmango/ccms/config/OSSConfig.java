@@ -36,16 +36,17 @@ public class OSSConfig {
     @Bean("minioClient")
     public MinioClient minioClient(OSSProperties properties) {
         MinioClient minioClient = null;
+        String bucket = properties.getBucket();
         try {
             minioClient = MinioClient.builder()
                     .endpoint(properties.getEndpoint())
                     .credentials(properties.getAccessKey(), properties.getSecretKey())
                     .build();
-            boolean exist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(OSSProperties.BUCKET_NAME).build());
+            boolean exist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
             if (exist) {
-                logger.info("Bucket '" + OSSProperties.BUCKET_NAME + "' already exists.");
+                logger.info("Bucket '" + bucket + "' already exists.");
             } else {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(OSSProperties.BUCKET_NAME).build());
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
             }
         } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
             logger.error("Minio 客户端创建失败", e);
@@ -55,7 +56,7 @@ public class OSSConfig {
 
     @Bean("AvatarOSSClient")
     public AvatarOSSClient avatarOSSClient(MinioClient minioClient, OSSProperties properties) {
-        return new AvatarOSSClient(minioClient, OSSProperties.BUCKET_NAME, properties);
+        return new AvatarOSSClient(minioClient, properties);
     }
 
 

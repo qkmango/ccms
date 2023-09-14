@@ -35,13 +35,13 @@ public class OSSController {
 
     @PostMapping("upload/avatar.do")
     public R uploadAvatar(@NotNull MultipartFile avatar) {
-        return service.upload(avatar, "2222156148");
+        return service.upload(avatar, 2222156148);
     }
 
     @GetMapping("one/avatar.do")
     public R getAvatarUrl() {
         Locale locale = LocaleContextHolder.getLocale();
-        String url = service.getAvatarUrl("2222156148");
+        String url = service.getAvatarUrl(2222156148);
         return url == null ?
                 R.fail(ms.getMessage("response.file.get.failure", null, locale)) :
                 R.success(url);

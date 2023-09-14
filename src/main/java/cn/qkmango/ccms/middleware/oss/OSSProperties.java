@@ -12,7 +12,8 @@ public class OSSProperties {
     private String endpoint;
     private String accessKey;
     private String secretKey;
-    public static final String BUCKET_NAME = "ccms";
+    // public static final String BUCKET_NAME = "ccms";
+    private String bucket;
 
     public String getEndpoint() {
         return endpoint;
@@ -38,4 +39,11 @@ public class OSSProperties {
         this.secretKey = secretKey;
     }
 
+    public String getBucket() {
+        return bucket;
+    }
+
+    public void setBucket(String bucket) {
+        this.bucket = bucket;
+    }
 }

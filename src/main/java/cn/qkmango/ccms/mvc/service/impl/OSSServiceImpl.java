@@ -32,7 +32,7 @@ public class OSSServiceImpl implements OSSService {
 
 
     @Override
-    public R upload(MultipartFile file, String account) {
+    public R upload(MultipartFile file, Integer account) {
         Locale locale = LocaleContextHolder.getLocale();
 
         // 判断文件类型是否为 jpg
@@ -46,15 +46,20 @@ public class OSSServiceImpl implements OSSService {
         }
 
         // 存储到 OSS
-        String path = avatarOSSClient.upload(file, account + ".jpg");
+        String path = avatarOSSClient.upload(file, account);
         return path == null ?
                 R.fail(ms.getMessage("response.file.upload.failure", null, locale)) :
                 R.success(path, ms.getMessage("response.file.upload.success", null, locale));
     }
 
 
+    /**
+     * 获取指定账号的头像
+     *
+     * @param account 给定的账号
+     */
     @Override
-    public String getAvatarUrl(String account) {
-        return avatarOSSClient.get(account + ".jpg");
+    public String getAvatarUrl(Integer account) {
+        return avatarOSSClient.get(account);
     }
 }
