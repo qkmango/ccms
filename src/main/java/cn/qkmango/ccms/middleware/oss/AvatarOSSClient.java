@@ -1,7 +1,6 @@
 package cn.qkmango.ccms.middleware.oss;
 
 import io.minio.MinioClient;
-import io.minio.ObjectWriteResponse;
 import io.minio.PutObjectArgs;
 import io.minio.errors.MinioException;
 import org.apache.log4j.Logger;
@@ -54,14 +53,13 @@ public class AvatarOSSClient {
                     .bucket(bucket)
                     .contentType(contentType)
                     .stream(file.getInputStream(), file.getSize(), -1).build();
-            ObjectWriteResponse response = client.putObject(objectArgs);
+            client.putObject(objectArgs);
         } catch (MinioException | IOException | InvalidKeyException | NoSuchAlgorithmException e) {
             logger.error("头像文件上传到 OSS 失败");
             return null;
         }
 
         // 组装桶中文件的访问url
-        // return properties.getEndpoint() + "/" + bucket + "/" + PREFIX + name;
         return this.get(account);
     }
 
@@ -69,25 +67,8 @@ public class AvatarOSSClient {
      * 获取文件URL
      */
     public String get(Integer account) {
-        // String url = null;
-        // try {
-        //     url = client.getPresignedObjectUrl(
-        //             GetPresignedObjectUrlArgs.builder()
-        //                     .bucket(bucket)
-        //                     .object(this.absolutePath(name))
-        //                     .method(Method.GET)
-        //                     // .expiry()
-        //                     .build()
-        //     );
-        // } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
-        //     logger.error("获取头像文件URL失败", e);
-        // }
-        // return url;
-
         // TODO 先判断文件是否存在，不存在返回null
-
-
-        return endpoint + "/" + bucket + "/" + PREFIX + account + ".jpg";
+        return "/oss/" + bucket + "/" + PREFIX + account + ".jpg";
 
     }
 }
