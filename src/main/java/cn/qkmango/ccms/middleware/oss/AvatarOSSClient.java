@@ -2,6 +2,7 @@ package cn.qkmango.ccms.middleware.oss;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.StatObjectArgs;
 import io.minio.errors.MinioException;
 import org.apache.log4j.Logger;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +21,7 @@ import java.security.NoSuchAlgorithmException;
 public class AvatarOSSClient {
     private final String bucket;
     private final MinioClient client;
-    private static final String PREFIX = "avatar";
+    private static final String FOLDER = "avatar";
     private final Logger logger = Logger.getLogger(getClass());
     private final OSSProperties properties;
     private final String endpoint;
@@ -35,8 +36,8 @@ public class AvatarOSSClient {
         this.properties = properties;
         this.endpoint = properties.getEndpoint();
         this.bucket = properties.getBucket();
-        this.objectPreUrl = endpoint + "/" + bucket + "/" + PREFIX + "/";
-        this.uploadPrePath = PREFIX + "/";
+        this.objectPreUrl = endpoint + "/" + bucket + "/" + FOLDER + "/";
+        this.uploadPrePath = FOLDER + "/";
     }
 
     /**
@@ -68,7 +69,21 @@ public class AvatarOSSClient {
      */
     public String get(Integer account) {
         // TODO 先判断文件是否存在，不存在返回null
-        return "/oss/" + bucket + "/" + PREFIX + account + ".jpg";
+        return "/oss/" + bucket + "/" + FOLDER + account + ".jpg";
+    }
 
+    public boolean exist(Integer account) {
+        String name = "avatar/" + account + ".jpg";
+        try {
+            client.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(name)
+                            .build()
+            );
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }

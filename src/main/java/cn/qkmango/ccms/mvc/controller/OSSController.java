@@ -37,6 +37,9 @@ public class OSSController {
     private ReloadableResourceBundleMessageSource ms;
 
 
+    /**
+     * 上传头像
+     */
     @PostMapping("upload/avatar.do")
     public R uploadAvatar(@NotNull MultipartFile avatar) {
         Integer id = AccountHolder.getId();
@@ -44,7 +47,10 @@ public class OSSController {
         return service.upload(avatar, id);
     }
 
-    @GetMapping("one/avatar.do")
+    /**
+     * 获取头像URL
+     */
+    @GetMapping("get/avatar.do")
     public R getAvatarUrl() {
         Locale locale = LocaleContextHolder.getLocale();
         // TODO 账号最大值超过int
@@ -53,6 +59,16 @@ public class OSSController {
         return url == null ?
                 R.fail(ms.getMessage("response.file.get.failure", null, locale)) :
                 R.success(url);
+    }
+
+    /**
+     * 判断头像是否存在
+     */
+    @GetMapping("exist/avatar.do")
+    public R existAvatar() {
+        Integer id = AccountHolder.getId();
+        boolean exist = service.existAvatar(id);
+        return R.success(exist);
     }
 
 }

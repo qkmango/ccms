@@ -16,4 +16,5 @@ public interface OSSService {
 
     String getAvatarUrl(Integer account);
 
+    boolean existAvatar(Integer id);
 }

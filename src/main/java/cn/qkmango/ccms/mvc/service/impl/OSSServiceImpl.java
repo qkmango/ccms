@@ -62,4 +62,9 @@ public class OSSServiceImpl implements OSSService {
     public String getAvatarUrl(Integer account) {
         return avatarOSSClient.get(account);
     }
+
+    @Override
+    public boolean existAvatar(Integer id) {
+        return avatarOSSClient.exist(id);
+    }
 }
