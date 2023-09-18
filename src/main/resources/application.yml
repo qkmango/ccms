@@ -71,7 +71,6 @@ oss:
     endpoint: http://192.168.0.100:9000
     access-key: ZTGyZlVKjGtP0FUZh36v
     secret-key: PNRcgigN95skIZ5ZZQ3zSBBAu344uAtL8O0PeQVs
-    bucket-url: http://xxx.oss-cn-shenzhen.aliyuncs.com
 
 logging:
     level:
