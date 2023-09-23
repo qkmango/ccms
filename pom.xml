@@ -175,40 +175,40 @@
 
 
             <!--数据库文档生成插件-->
-            <plugin>
-                <groupId>cn.smallbun.screw</groupId>
-                <artifactId>screw-maven-plugin</artifactId>
-                <version>1.0.5</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>8.0.20</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <username>root</username>
-                    <password>admin</password>
-                    <driverClassName>com.mysql.cj.jdbc.Driver</driverClassName>
-                    <jdbcUrl>jdbc:mysql://localhost:3306/ccms?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai</jdbcUrl>
-                    <fileType>HTML</fileType>
-                    <openOutputDir>false</openOutputDir>
-                    <produceType>freemarker</produceType>
-                    <fileName>database_doc</fileName>
-                    <fileOutputDir>doc/DATABASE</fileOutputDir>
-                    <description>校园一卡通系统数据库</description>
-                    <version>${project.version}</version>
-                    <title>CCMS校园一卡通管理系统数据库文档</title>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>cn.smallbun.screw</groupId>-->
+<!--                <artifactId>screw-maven-plugin</artifactId>-->
+<!--                <version>1.0.5</version>-->
+<!--                <dependencies>-->
+<!--                    <dependency>-->
+<!--                        <groupId>mysql</groupId>-->
+<!--                        <artifactId>mysql-connector-java</artifactId>-->
+<!--                        <version>8.0.20</version>-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
+<!--                <configuration>-->
+<!--                    <username>root</username>-->
+<!--                    <password>admin</password>-->
+<!--                    <driverClassName>com.mysql.cj.jdbc.Driver</driverClassName>-->
+<!--                    <jdbcUrl>jdbc:mysql://localhost:3306/ccms?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai</jdbcUrl>-->
+<!--                    <fileType>HTML</fileType>-->
+<!--                    <openOutputDir>false</openOutputDir>-->
+<!--                    <produceType>freemarker</produceType>-->
+<!--                    <fileName>database_doc</fileName>-->
+<!--                    <fileOutputDir>doc/DATABASE</fileOutputDir>-->
+<!--                    <description>校园一卡通系统数据库</description>-->
+<!--                    <version>${project.version}</version>-->
+<!--                    <title>CCMS校园一卡通管理系统数据库文档</title>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>compile</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>run</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
         </plugins>
 
