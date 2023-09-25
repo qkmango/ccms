@@ -9,6 +9,7 @@ import cn.qkmango.ccms.domain.entity.Department;
 import cn.qkmango.ccms.domain.pagination.PageData;
 import cn.qkmango.ccms.domain.pagination.Pagination;
 import cn.qkmango.ccms.mvc.service.DepartmentService;
+import cn.qkmango.ccms.security.holder.AccountHolder;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -16,6 +17,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -69,13 +71,22 @@ public class DepartmentController {
 
     /**
      * 获取部门链
-     *
-     * @param id 终端子部门id
-     * @return
      */
     @GetMapping("one/chain.do")
     public R chain(Integer id) {
-        return R.success(service.departmentChain(id));
+        LinkedList<Department> chain = service.departmentChain(id);
+        return chain == null ?
+                R.fail() :
+                R.success(chain);
+    }
+
+    /**
+     * 获取当前用户所在部门链
+     */
+    @GetMapping("one/curr-chain.do")
+    public R currChain() {
+        Integer department = AccountHolder.getAccount().getDepartment();
+        return R.success(service.departmentChain(department));
     }
 
 }
