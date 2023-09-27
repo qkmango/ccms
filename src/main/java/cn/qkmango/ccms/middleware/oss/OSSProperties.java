@@ -1,8 +1,8 @@
 package cn.qkmango.ccms.middleware.oss;
 
 /**
- * 描述
- * <p></p>
+ * OSS对象存储配置类
+ * Minio 的对象存储
  *
  * @author qkmango
  * @version 1.0
@@ -12,7 +12,6 @@ public class OSSProperties {
     private String endpoint;
     private String accessKey;
     private String secretKey;
-    // public static final String BUCKET_NAME = "ccms";
     private String bucket;
 
     public String getEndpoint() {
