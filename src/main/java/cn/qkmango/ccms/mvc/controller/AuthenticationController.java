@@ -6,20 +6,15 @@ import cn.qkmango.ccms.common.map.R;
 import cn.qkmango.ccms.common.validate.group.Query;
 import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
-import cn.qkmango.ccms.domain.bind.AuthCarryType;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.domain.vo.LoginResult;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.Jwt;
-import cn.qkmango.ccms.security.token.TokenEntity;
+import cn.qkmango.ccms.security.token.Token;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -58,9 +53,10 @@ public class AuthenticationController {
      */
     @ResponseBody
     @PostMapping("system-login.do")
-    public R<Object> systemLogin(@Validated(Query.Login.class) Account account, AuthCarryType authCarryType, HttpServletResponse response) throws LoginException {
+    public R<Object> systemLogin(@Validated(Query.Login.class) Account account) throws LoginException {
         Account loginAccount = service.systemLogin(account);
-        return this.createAuth(loginAccount, authCarryType, response);
+        Token token = jwt.create(loginAccount);
+        return R.success().setData(token);
     }
 
 
@@ -71,9 +67,10 @@ public class AuthenticationController {
      */
     @ResponseBody
     @PostMapping("access-login.do")
-    public R<Object> accessLogin(@NotBlank String accessCode, AuthCarryType authCarryType, HttpServletResponse response) throws LoginException {
+    public R<Object> accessLogin(@NotBlank String accessCode) throws LoginException {
         Account loginAccount = service.accessLogin(accessCode);
-        return this.createAuth(loginAccount, authCarryType, response);
+        Token token = jwt.create(loginAccount);
+        return R.success().setData(token);
     }
 
     /**
@@ -122,18 +119,4 @@ public class AuthenticationController {
         return account == null ? R.success(false) : R.success(true);
     }
 
-    private R<Object> createAuth(Account account, AuthCarryType type, HttpServletResponse response) {
-        Object result;
-        if (type == AuthCarryType.ACCESS_TOKEN) {
-            TokenEntity token = jwt.createEntity(account);
-            result = new LoginResult(account, token);
-        } else {
-            Cookie cookie = new Cookie("Authorization", jwt.create(account));
-            cookie.setMaxAge(jwt.getExpire());
-            cookie.setPath(contextPath);
-            response.addCookie(cookie);
-            result = account;
-        }
-        return R.success(result, ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()));
-    }
 }

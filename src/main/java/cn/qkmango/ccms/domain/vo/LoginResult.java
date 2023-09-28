@@ -1,7 +1,7 @@
 package cn.qkmango.ccms.domain.vo;
 
 import cn.qkmango.ccms.domain.entity.Account;
-import cn.qkmango.ccms.security.token.TokenEntity;
+import cn.qkmango.ccms.security.token.Token;
 
 /**
  * 登陆账户返回的数据
@@ -18,13 +18,13 @@ public class LoginResult {
     /**
      * 登陆成功后返回的 token
      */
-    private TokenEntity token;
+    private Token token;
 
 
     public LoginResult() {
     }
 
-    public LoginResult(Account account, TokenEntity token) {
+    public LoginResult(Account account, Token token) {
         this.account = account;
         this.token = token;
     }
@@ -38,11 +38,11 @@ public class LoginResult {
         return this;
     }
 
-    public TokenEntity getToken() {
+    public Token getToken() {
         return token;
     }
 
-    public LoginResult setToken(TokenEntity token) {
+    public LoginResult setToken(Token token) {
         this.token = token;
         return this;
     }

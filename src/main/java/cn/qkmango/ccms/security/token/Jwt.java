@@ -48,49 +48,31 @@ public class Jwt {
         parser.setSigningKey(bytes);
     }
 
-
-    /**
-     * 创建指定过期时间的token
-     */
-    public String create(Account account, long expireAt) {
-        return builder
-                .claim("id", account.getId())
-                .claim("role", account.getRole().name())
-                .claim("department", account.getDepartment())
-                .setExpiration(new Date(expireAt))
-                .compact();
-    }
-
-
     /**
      * 创建默认过期时间的token
      */
-    public String create(Account account) {
+    public Token create(Account account) {
         long expireAt = System.currentTimeMillis() + this.expire * 1000L;
         return this.create(account, expireAt);
     }
 
     /**
-     * 创建指定过期时间的 TokenEntity
+     * 创建指定过期时间的token
      */
-    public TokenEntity createEntity(Account account, long expireIn) {
-        String token = create(account, expireIn);
-        return new TokenEntity(token, expireIn);
+    public Token create(Account account, long expireAt) {
+        String token = builder
+                .claim("id", account.getId())
+                .claim("role", account.getRole().name())
+                .claim("department", account.getDepartment())
+                .setExpiration(new Date(expireAt))
+                .compact();
+
+        return new Token(token, expire, expireAt);
     }
 
     /**
-     * 创建 默认过期时间的 TokenEntity
-     *
-     * @param account 必须包含 id 和 role
-     * @return TokenEntity, 包含token和过期时间
+     * 解析token
      */
-    public TokenEntity createEntity(Account account) {
-        //绝对过期时间
-        long expireIn = System.currentTimeMillis() + this.expire * 1000L;
-        String token = create(account, expireIn);
-        return new TokenEntity(token, expireIn);
-    }
-
     public Claims parser(String token) {
         // 如果token为空，则返回null
         if (!StringUtils.hasText(token)) {
