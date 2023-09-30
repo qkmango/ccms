@@ -8,6 +8,7 @@ import cn.qkmango.ccms.domain.auth.AuthenticationAccount;
 import cn.qkmango.ccms.domain.auth.PlatformType;
 import cn.qkmango.ccms.domain.bind.Role;
 import cn.qkmango.ccms.domain.entity.Account;
+import cn.qkmango.ccms.domain.vo.LoginResult;
 import cn.qkmango.ccms.mvc.service.AuthenticationService;
 import cn.qkmango.ccms.security.holder.AccountHolder;
 import cn.qkmango.ccms.security.token.Jwt;
@@ -15,6 +16,7 @@ import cn.qkmango.ccms.security.token.Token;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -53,10 +55,12 @@ public class AuthenticationController {
      */
     @ResponseBody
     @PostMapping("system-login.do")
-    public R<Object> systemLogin(@Validated(Query.Login.class) Account account) throws LoginException {
+    public R systemLogin(@Validated(Query.Login.class) Account account) throws LoginException {
         Account loginAccount = service.systemLogin(account);
         Token token = jwt.create(loginAccount);
-        return R.success().setData(token);
+        LoginResult result = new LoginResult(loginAccount, token);
+        return R.success(ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()))
+                .setData(result);
     }
 
 
@@ -67,10 +71,13 @@ public class AuthenticationController {
      */
     @ResponseBody
     @PostMapping("access-login.do")
-    public R<Object> accessLogin(@NotBlank String accessCode) throws LoginException {
+    public R accessLogin(@NotBlank String accessCode) throws LoginException {
         Account loginAccount = service.accessLogin(accessCode);
         Token token = jwt.create(loginAccount);
-        return R.success().setData(token);
+        LoginResult result = new LoginResult(loginAccount, token);
+
+        return R.success(ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()))
+                .setData(result);
     }
 
     /**
