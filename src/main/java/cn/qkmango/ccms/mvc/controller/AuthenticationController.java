@@ -55,12 +55,14 @@ public class AuthenticationController {
      */
     @ResponseBody
     @PostMapping("system-login.do")
-    public R systemLogin(@Validated(Query.Login.class) Account account) throws LoginException {
+    public R<LoginResult> systemLogin(@Validated(Query.Login.class) Account account) throws LoginException {
         Account loginAccount = service.systemLogin(account);
+
         Token token = jwt.create(loginAccount);
         LoginResult result = new LoginResult(loginAccount, token);
-        return R.success(ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()))
-                .setData(result);
+        String message = ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale());
+
+        return R.success(result, message);
     }
 
 
@@ -71,13 +73,14 @@ public class AuthenticationController {
      */
     @ResponseBody
     @PostMapping("access-login.do")
-    public R accessLogin(@NotBlank String accessCode) throws LoginException {
+    public R<LoginResult> accessLogin(@NotBlank String accessCode) throws LoginException {
         Account loginAccount = service.accessLogin(accessCode);
+
         Token token = jwt.create(loginAccount);
         LoginResult result = new LoginResult(loginAccount, token);
+        String message = ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale());
 
-        return R.success(ms.getMessage("response.login.success", null, LocaleContextHolder.getLocale()))
-                .setData(result);
+        return R.success(result, message);
     }
 
     /**
